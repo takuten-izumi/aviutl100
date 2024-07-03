@@ -1,0 +1,98 @@
+function particle_obj(t,t0,life,pi,pj,seed,track1,track2,track3,v1,v2,v3,v4,col1)
+local type=function(v)
+local v=v
+local s=tostring(v)
+if s==v then return "string" end
+if s=="nil" then return "nil" end
+if s=="true" or s=="false" then return "boolean" end
+if string.find(s,"table:") then return "table" end
+if string.find(s,"function:") then return "function" end
+if string.find(s,"userdata:") then return "userdata" end
+return "number"
+end
+local track1=track1
+if type(track1)~="number" then track1=100 end
+if track1<0 then
+track1=0
+end
+local track2=track2
+if type(track2)~="number" then track2=80 end
+if track2<0 then
+track2=0
+end
+local track3=track3
+if type(track3)~="number" then track3=20 end
+if track3<0 then
+track3=0
+end
+local v1=v1
+if type(v1)~="number" then v1=0 end
+if v1<0 then
+v1=0
+end
+local v2=v2
+if type(v2)~="number" then v2=0 end
+if v2<0 then
+v2=0
+end
+local v3=v3
+if type(v3)~="number" then v3=0 end
+if v3<0 then
+v3=0
+elseif 100<v3 then
+v3=100
+end
+local v4=v4
+if type(v4)~="number" then v4=0 end
+local col1=col1
+if type(col1)~="number" then col1=0xafc5cf end
+if track3~=0 then
+local rl1=obj.rand(100-v1,100,seed,1)*track2*0.01
+local rl2=obj.rand(100-v3,100,seed,2)*v2*0.01
+obj.setoption("drawtarget","tempbuffer",track3,track3+rl1)
+obj.setoption("blend","alpha_add")
+obj.load("figure","四角形",0,track3)
+obj.effect("斜めクリッピング","ぼかし",0)
+obj.draw()
+obj.load("figure","四角形",0,track3)
+obj.effect("ラスター","横幅",rl1,"高さ",rl2,"周期",0,"縦ラスター",1,"ランダム振幅",1)
+obj.effect("斜めクリッピング","角度",180,"ぼかし",0)
+obj.draw()
+obj.copybuffer("obj","tmp")
+obj.effect("クリッピング","上",rl1*0.5,"中心の位置を変更",1)
+obj.effect("斜めクリッピング","中心Y",-rl1*0.5,"ぼかし",(track3+rl1*0.5)*1.2+v4)
+obj.effect("極座標変換")
+obj.copybuffer("cache:ba","obj")
+obj.setoption("drawtarget","tempbuffer",track1,track1)
+obj.load("figure","円",col1,track1)
+obj.draw(0,0,0,1,0.8)
+obj.setoption("blend","alpha_sub")
+obj.copybuffer("obj","cache:ba")
+obj.draw()
+obj.load("tempbuffer")
+else
+obj.load("figure","円",col1,track1)
+end
+end
+
+function particle_disp()
+obj.setfont("",40,1,0xffffff,0)
+obj.load("使用引数の{1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,0}としてください")
+obj.draw(0,-160)
+obj.load("トラック1は泡のサイズです")
+obj.draw(0,-120)
+obj.load("トラック2は中心のギザギザの高さです")
+obj.draw(0,-80)
+obj.load("トラック3は中心の大きさです")
+obj.draw(0,-40)
+obj.load("設定値1は泡の高さの個別の割合です")
+obj.draw(0,0)
+obj.load("設定値2は泡のギザギザの間隔です")
+obj.draw(0,40)
+obj.load("設定値3は泡のギザギザの間隔の個別の割合です")
+obj.draw(0,80)
+obj.load("設定値4は中心のぼかしの強度です")
+obj.draw(0,120)
+obj.load("色1は泡の色です")
+obj.draw(0,160)
+end

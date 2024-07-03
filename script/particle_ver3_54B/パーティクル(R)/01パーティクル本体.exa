@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=100.00
+track1=100.00
+track2=0.00
+track3=60.00
+check0=0
+type=0
+filter=0
+name=パーティクル本体@particle_ri_ver3
+param=sync=0;grav={0,0};ac=0;rotxyz="{0,0,r}";degvxyz={0,0,60};revrot=0;ju=3;palpha={100,50};pzoom={100,100};tsub=0;cam=0;heymen=0;plate={1280,720};seiti=2;throughf=0;ran=0;

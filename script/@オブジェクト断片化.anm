@@ -1,0 +1,140 @@
+@オブジェクト断片化
+--track0:X分割,1,2048,50,1
+--track1:Y分割,1,2048,50,1
+--track2:X位置%,0,1000,50,1
+--track3:Y位置%,0,1000,50,1
+--check0:変化有無,0
+--dialog:変化速度,local spd=30;ランダムX係数,local xc=1.00;ランダムY係数,local yc=1.00;SEED,sd=100;
+-------------------------------------set
+local t0=math.floor(obj.track0)
+local t1=math.floor(obj.track1)
+local t2=math.floor(obj.track2) * 0.001
+local t3=math.floor(obj.track3) * 0.001
+local sw,sh = obj.screen_w,obj.screen_h
+local ow,oh = obj.getpixel()
+-------------------------------------set
+if(t0 > ow)then t0 = ow end
+if(t1 > oh)then t1 = oh end
+
+local spxn,spyn = t0,t1
+local dstx = ow / spxn
+local dsty = oh / spyn
+
+if(obj.check0)then
+	sd = math.floor(sd + spd * obj.time)
+end
+obj.setoption("drawtarget","tempbuffer",sw,sh)
+for j=0,spyn-1 do
+	for i=0,spxn-1 do
+		u0,v0 = dstx * i,	dsty * j
+		u1,v1 = dstx * (i+1),	dsty * j
+		u2,v2 = dstx * (i+1),	dsty * (j+1)
+		u3,v3 = dstx * i,	dsty * (j+1)
+
+		rnd0 = obj.rand(-sw,sw,sd+j+1,i+1) * t2 * xc
+		rnd1 = obj.rand(-sh,sh,sd*2+j+1,i+1) * t3 * yc
+		xhosei,yhosei = ow * 0.5,oh * 0.5
+
+		x0,y0,z0 = dstx * i - xhosei + rnd0,	dsty * j - yhosei + rnd1,	0
+		x1,y1,z1 = dstx * (i+1) - xhosei + rnd0,	dsty * j - yhosei + rnd1,	0
+		x2,y2,z2 = dstx * (i+1) - xhosei + rnd0,	dsty * (j+1) - yhosei + rnd1,	0
+		x3,y3,z3 = dstx * i - xhosei + rnd0,	dsty * (j+1) - yhosei + rnd1,	0
+
+		obj.setoption("antialias",0)
+		obj.drawpoly(x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3,u0,v0,u1,v1,u2,v2,u3,v3,1)
+	end
+end
+obj.load("tempbuffer")
+
+
+@オブジェクトR幅断片化
+--track0:Min幅,1,4096,4,1
+--track1:Max幅,1,4096,50,1
+--track2:X位置%,0,1000,50,1
+--track3:Y位置%,0,1000,5,1
+--check0:横⇔縦,0
+--dialog:RX係数,local xx=1.0;RY係数,local yy=1.0;変化速度,local spd=0;処理回数表示/chk,chk1=0;SEED,sd=100;
+-------------------------------------set
+local t0=math.floor(obj.track0)
+local t1=math.floor(obj.track1)
+local t2=math.floor(obj.track2) * 0.001
+local t3=math.floor(obj.track3) * 0.001
+local sw,sh = obj.screen_w,obj.screen_h
+local ow,oh = obj.getpixel()
+obj.setfont("",34)
+-------------------------------------set
+
+local len
+if(obj.check0)then
+	len = ow
+	if(t0 >= ow)then t0 = ow end
+	if(t1 >= ow)then t1 = ow end
+else
+	len = oh
+	if(t0 >= oh)then t0 = oh end
+	if(t1 >= oh)then t1 = oh end
+end
+
+if(spd > 0)then
+	sd = sd + math.floor(spd * obj.time)
+end
+
+local len0,len1 = 0,0
+local sum = 0
+local idx = 0
+local nidx = 0
+
+obj.setoption("drawtarget","tempbuffer",sw,sh)
+repeat
+	idx = idx + 1
+	sum = sum + obj.rand(t0,t1,sd,idx+1)
+	len1 = sum
+
+	rnd0 = obj.rand(-sw,sw,sd,idx+1) * t2 * xx
+	rnd1 = obj.rand(-sh,sh,sd,idx+1) * t3 * yy
+	xhosei = ow * 0.5
+	yhosei = oh * 0.5
+
+	if(obj.check0)then
+		if(len1 >= ow)then len1 = ow end
+		u0,v0 = len0,	0
+		u1,v1 = len1,	0
+		u2,v2 = len1,	oh
+		u3,v3 = len0,	oh
+
+		x0,y0,z0 = len0 - xhosei + rnd0,	- yhosei + rnd1,	0
+		x1,y1,z1 = len1 - xhosei + rnd0,	- yhosei + rnd1,	0
+		x2,y2,z2 = len1 - xhosei + rnd0,	oh - yhosei + rnd1,	0
+		x3,y3,z3 = len0 - xhosei + rnd0,	oh - yhosei + rnd1,	0
+	else
+		if(len1 >= oh)then len1 = oh end
+		u0,v0 = 0,	len0
+		u1,v1 = ow,	len0
+		u2,v2 = ow,	len1
+		u3,v3 = 0,	len1
+
+		x0,y0,z0 = - xhosei + rnd0,		len0 - yhosei + rnd1,	0
+		x1,y1,z1 = ow - xhosei + rnd0,	len0 - yhosei + rnd1,	0
+		x2,y2,z2 = ow - xhosei + rnd0,	len1 - yhosei + rnd1,	0
+		x3,y3,z3 = - xhosei + rnd0,		len1 - yhosei + rnd1,	0
+	end
+
+	obj.setoption("antialias",0)
+	obj.drawpoly(x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3,u0,v0,u1,v1,u2,v2,u3,v3,1)
+
+	len0 = len1
+	nidx = nidx + 1
+
+until sum >= len
+
+obj.load("tempbuffer")
+
+
+if(chk1 == 1)then
+	obj.setfont("",sh/24,0,0xffffff)
+	obj.load("text",nidx)
+	obj.draw()
+end
+
+
+--[[http://madeinpc.blog50.fc2.com/]]--

@@ -1,0 +1,30 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack2 == 0 ) then
+	obj.ox = obj.ox+rand(-objtrack0,objtrack0,0)
+	obj.oy = obj.oy+rand(-objtrack0,objtrack0,1)
+	obj.rz = obj.rz+rand(-objtrack1,objtrack1,2)
+else
+	t = objtime*100/objtrack2
+	p = math.floor(t)
+	t = t-p
+	x0 = obj.rand(-1000,1000,0,p+0)/1000*objtrack0
+	x1 = obj.rand(-1000,1000,0,p+1)/1000*objtrack0
+	x2 = obj.rand(-1000,1000,0,p+2)/1000*objtrack0
+	x3 = obj.rand(-1000,1000,0,p+3)/1000*objtrack0
+	y0 = obj.rand(-1000,1000,1,p+0)/1000*objtrack0
+	y1 = obj.rand(-1000,1000,1,p+1)/1000*objtrack0
+	y2 = obj.rand(-1000,1000,1,p+2)/1000*objtrack0
+	y3 = obj.rand(-1000,1000,1,p+3)/1000*objtrack0
+	r0 = obj.rand(-1000,1000,2,p+0)/1000*objtrack1
+	r1 = obj.rand(-1000,1000,2,p+1)/1000*objtrack1
+	r2 = obj.rand(-1000,1000,2,p+2)/1000*objtrack1
+	r3 = obj.rand(-1000,1000,2,p+3)/1000*objtrack1
+	x,y = obj.interpolation(t,x0,y0,x1,y1,x2,y2,x3,y3)
+	obj.ox = obj.ox + x
+	obj.oy = obj.oy + y
+	r = obj.interpolation(t,r0,r1,r2,r3)
+	obj.rz = obj.rz + r
+end
+
+
+end

@@ -1,0 +1,210 @@
+@BPM同期簡易セット
+--track0:BPM,30,1000,120,1
+--track1:間隔,1,10,1,1
+--track2:適用フレーム,0,50,0,1
+--track3:変化演出,0,7,5,1
+--■check0:色ずれ有,0
+--dialog:相対座標X,local ox=0;相対座標Y,local oy=0;相対座標Z,local oz=0;X軸回転,local rx=0;Y軸回転,local ry=0;Z軸回転,local rz=0;拡大率up(%),local zoom=0;縦横比(%),local aspect=0;上項目加算方式/chk,local addition=0;不透明度(%),local alpha=100;不透明度を固定/chk,local alpha_fixed=1;適用f以外透明に/chk,local except_alpha = 1;
+
+
+--■変数にパラメータを代入
+local BPM = obj.track0
+local interval = obj.track1
+local display_flame = obj.track2
+local direction = obj.track3
+local bpm = math.floor(BPM)
+local effect_val = 1
+local fps = obj.framerate
+
+--■表示フレーム算出
+--■フレーム/拍を算出
+local tempo = fps * 60/bpm
+--■1拍ごとにかかるフレームを調整
+local t = tempo * interval 
+local s = obj.frame
+
+if display_flame == 0 then
+ display_flame = math.ceil(tempo)
+end
+
+local display = s % t - display_flame
+
+
+--■効果適用フレームかチェック
+if display < 0 then
+
+ --■演出チェック
+ if direction == 0 then
+  effect_val = 1
+ elseif direction == 1 then
+  effect_val = math.abs(math.floor(display))/display_flame
+ elseif direction == 2 then
+  effect_val = math.sqrt(1 - (1 - math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 3 then
+  effect_val = 1 - math.sqrt(1 - (math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 4 then
+  effect_val = 1 - math.abs(math.floor(display))/display_flame
+ elseif direction == 5 then
+  effect_val = math.sqrt(1 - (math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 6 then
+  effect_val = 1 - math.sqrt(1 - (1 - math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 7 then
+  effect_val = math.abs(math.sin((1 - math.abs(math.floor(display))/display_flame)*math.pi))
+ end
+
+ if alpha_fixed == 1 then
+  obj.alpha = obj.alpha * 0.01 * alpha
+ else
+  obj.alpha = obj.alpha * 0.01 * alpha * effect_val
+ end
+ 
+ 
+ --■
+ if addition == 1 then
+  effect_val = effect_val + math.floor(s / tempo)
+ end
+ 
+ obj.ox = obj.ox + ox * effect_val
+ obj.oy = obj.oy + oy * effect_val
+ obj.oz = obj.oz + oz * effect_val
+ obj.rx = obj.rx + rx * effect_val
+ obj.ry = obj.ry + ry * effect_val
+ obj.rz = obj.rz + rz * effect_val
+ obj.zoom = obj.zoom + 0.01 * zoom * effect_val
+ obj.aspect = obj.aspect + 0.01 * aspect * effect_val
+
+elseif except_alpha == 1 then
+ obj.alpha = 0
+end
+
+@BPM同期フィルタ効果
+--track0:BPM,30,1000,120,1
+--track1:間隔,1,10,1,1
+--track2:適用フレーム,0,50,0,1
+--track3:変化演出,0,7,5,1
+--■check0:色ずれ有,0
+--dialog:エフェクト名前,local ef_name="色ずれ";パラメータ1,local ef_param1="ずれ幅";パラ1値(変動枠),local ef_val1=10;パラ1値(固定枠),local val1_f=0;パラメータ2,local ef_param2="角度";パラ2値(変動枠),local ef_val2=60;パラ2値(固定枠),local val2_f=0;パラメータ3,local ef_param3="type";パラ3値(変動枠),local ef_val3=0;パラ3値(固定枠),local val3_f=0;パラメータ4,local ef_param4="";パラ4値(変動枠),local ef_val4=0;パラ4値(固定枠),local val4_f=0;
+
+
+--■変数にパラメータを代入
+local BPM = obj.track0
+local interval = obj.track1
+local display_flame = obj.track2
+local direction = obj.track3
+local bpm = math.floor(BPM)
+local effect_val = 1
+local fps = obj.framerate
+
+--■表示フレーム算出
+--■フレーム/拍を算出
+local tempo = fps * 60/bpm
+--■1拍ごとにかかるフレームを調整
+local t = tempo * interval 
+local s = obj.frame
+
+if display_flame == 0 then
+ display_flame = math.ceil(tempo)
+end
+
+local display = s % t - display_flame
+
+--■効果適用フレームかチェック
+if display < 0 then
+
+ --■演出チェック
+ if direction == 0 then
+  effect_val = 1
+ elseif direction == 1 then
+  effect_val = math.abs(math.floor(display))/display_flame
+ elseif direction == 2 then
+  effect_val = math.sqrt(1 - (1 - math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 3 then
+  effect_val = 1 - math.sqrt(1 - (math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 4 then
+  effect_val = 1 - math.abs(math.floor(display))/display_flame
+ elseif direction == 5 then
+  effect_val = math.sqrt(1 - (math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 6 then
+  effect_val = 1 - math.sqrt(1 - (1 - math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 7 then
+  effect_val = math.abs(math.sin((1 - math.abs(math.floor(display))/display_flame)*math.pi))
+ end
+ 
+
+
+ ef_array = {ef_val1,ef_val2,ef_val3,ef_val4,val1_f,val2_f,val3_f,val4_f}
+  --■値を固定するかの判定
+ for i = 1,4 do
+  
+  ef_array[i] = ef_array[i] * effect_val + ef_array[4+i]
+  
+ end
+ 
+ obj.effect(ef_name,ef_param1,ef_array[1],ef_param2,ef_array[2],ef_param3,ef_array[3],ef_param4,ef_array[4])
+ 
+end
+
+@BPM同期アニメ効果(試)
+--track0:BPM,30,1000,120,1
+--track1:間隔,1,10,1,1
+--track2:適用フレーム,0,50,0,1
+--track3:変化演出,0,7,5,1
+--■check0:色ずれ有,0
+--dialog:アニメ効果名,local anime_name="斜めブラインド@ANM1";トラック0値(変動枠),local val0=100;トラック0値(固定枠),local val0_f=0;トラック1値(変動枠),local val1=10;トラック1値(固定枠),local val1_f=20;トラック2値(変動枠),local val2=0;トラック2値(固定枠),local val2_f=60;トラック3値(変動枠),local val3=0;トラック3値(固定枠),local val3_f=1;チェック,local check=0;タイプ,local type=0;フィルター,local filter=0;
+
+--■変数にパラメータを代入
+local BPM = obj.track0
+local interval = obj.track1
+local display_flame = obj.track2
+local direction = obj.track3
+local bpm = math.floor(BPM)
+local effect_val = 1
+local fps = obj.framerate
+
+--■表示フレーム算出
+--■フレーム/拍を算出
+local tempo = fps * 60/bpm
+--■1拍ごとにかかるフレームを調整
+local t = tempo * interval 
+local s = obj.frame
+
+if display_flame == 0 then
+ display_flame = math.ceil(tempo)
+end
+
+local display = s % t - display_flame
+
+--■効果適用フレームかチェック
+if display < 0 then
+
+ --■演出チェック
+ if direction == 0 then
+  effect_val = 1
+ elseif direction == 1 then
+  effect_val = math.abs(math.floor(display))/display_flame
+ elseif direction == 2 then
+  effect_val = math.sqrt(1 - (1 - math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 3 then
+  effect_val = 1 - math.sqrt(1 - (math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 4 then
+  effect_val = 1 - math.abs(math.floor(display))/display_flame
+ elseif direction == 5 then
+  effect_val = math.sqrt(1 - (math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 6 then
+  effect_val = 1 - math.sqrt(1 - (1 - math.abs(math.floor(display))/display_flame)^2)
+ elseif direction == 7 then
+  effect_val = math.abs(math.sin((1 - math.abs(math.floor(display))/display_flame)*math.pi))
+ end
+ 
+
+ anime_array = {val0,val1,val2,val3,val0_f,val1_f,val2_f,val3_f}
+  --■値を固定するかの判定
+ for i = 1,4 do
+  anime_array[i] = anime_array[i] * effect_val + anime_array[4+i]
+ end
+ 
+ obj.effect("アニメーション効果","name",anime_name,"track0",anime_array[1],"track1",anime_array[2],"track2",anime_array[3],"track3",anime_array[4],"check0",check,"type",type,"filter",filter)
+ 
+end
+
+

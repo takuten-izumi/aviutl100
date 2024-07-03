@@ -1,0 +1,85 @@
+--[[
+  ・"長さ" : 適応した元オブジェクトの複製数。
+  ・"高さ" : サイン波の係数。値の絶対値が大きくなるほど縦方向(または横方向)に大きくなります。
+  ・"周期" : サイン波の引数の係数の逆数。値が小さくなるほど詰まった波になります。
+  ・"間隔" : 元オブジェクトを複製させる間隔。
+  ・"設定>方向" : オブジェクトを複製させる方向を変更するためのパラメータ。
+       0 : 左方向
+       1 : 右方向
+       2 : 上方向
+       3 : 下方向
+  ・"設定>固定" : オブジェクトのx(y)座標に関わらず個々の位置が固定されます。
+  ・"設定>傾きに追従" : 個オブジェクトの角度をサイン波の傾きに合わせて変化させます。
+
+  製作:たけ(Twitter : @oyctk)
+]]
+
+
+--track0:長さ,0,1000,10,1
+--track1:高さ,-1000,1000,30
+--track2:周期,0,1000,100
+--track3:間隔,0,500,100
+--dialog:方向,local ang=0;固定/chk,local fix=0;傾きに追従/chk,local slp_check=0;
+
+
+local lng = obj.track0
+local hei = obj.track1
+local cyc = obj.track2
+local itv = obj.track3
+local a = obj.x
+local slp = 0
+
+if (ang >= 2) then
+  a = obj.y
+end
+
+local pos_x = 0
+local pos_y = a
+obj.effect()
+
+if (fix==1) then
+  pos_x = -(a%itv)
+  pos_y = a-(a%itv)
+end
+
+if (lng > 0) then
+  if (ang <= 0) then
+    for i=1, lng do
+      pos_x = pos_x - itv
+      pos_y = pos_y - itv
+      if (slp_check==1) then
+        slp=math.cos(pos_y/cyc*1.0)*hei*(1.0/cyc)
+      end
+      obj.draw(pos_x,math.sin(pos_y/cyc*1.0)*hei,0,1,1,0,0,(math.atan(slp)*360.0)/(2*math.pi))
+    end
+  elseif (ang == 1) then
+    for i=1, lng do
+      pos_x = pos_x + itv
+      pos_y = pos_y + itv
+      if (slp_check==1) then
+        slp=math.cos(pos_y/cyc*1.0)*hei*(1.0/cyc)
+      end
+      obj.draw(pos_x,math.sin(pos_y/cyc*1.0)*hei,0,1,1,0,0,(math.atan(slp)*360.0)/(2*math.pi))
+    end
+  elseif (ang == 2) then
+    for i=1, lng do
+      pos_x = pos_x - itv
+      pos_y = pos_y - itv
+      if (slp_check==1) then
+        slp=math.cos(pos_y/cyc*1.0)*hei*(1.0/cyc)
+      end
+      obj.draw(math.sin(pos_y/cyc*1.0)*hei,pos_x,0,1,1,0,0,90-(math.atan(slp)*360.0)/(2*math.pi))
+    end
+  elseif (ang >= 3) then
+    for i=1, lng do
+      pos_x = pos_x + itv
+      pos_y = pos_y + itv
+      if (slp_check==1) then
+        slp=math.cos(pos_y/cyc*1.0)*hei*(1.0/cyc)
+      end
+      obj.draw(math.sin(pos_y/cyc*1.0)*hei,pos_x,0,1,1,0,0,90-(math.atan(slp)*360.0)/(2*math.pi))
+    end
+  end
+else
+    obj.draw(0,0,0,0)
+end

@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=2.00
+track1=30.00
+track2=150.00
+track3=0.00
+check0=0
+type=0
+filter=0
+name=ファンネル@particle_ri_ver3
+param=fig="円";col="0xff0000";revo=80;fanlink=0;rot=50;csize={150,2};cfig="円";crot=50;clink=0;cdeg=nil;falzo={100,50,100,100};alzolink={0,0};ksrs={0,0,50};threed={0,0,0};fanfil={1,1,1,1,1,1,1,1,1,1,1};fcam={0,0};

@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=1.00
+track1=1.00
+track2=0.00
+track3=0.00
+check0=100
+type=0
+filter=0
+name=フィルター@particle_ri_ver3
+param=nae="単色化";paran1="color";para1={0xff,0xff0000};kpara1={10,0,0,0};paran2="";para2={0,0};rann="";rane="{0,0}";othern1="輝度を保持する";other1=0;othern2="";other2=0;othern3="";other3=0;othern4="";other4=0;

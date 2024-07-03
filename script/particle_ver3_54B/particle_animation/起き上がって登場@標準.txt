@@ -1,0 +1,25 @@
+function particle_anm(objtrack0,objtrack1,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack0 == 0 ) then
+	return
+elseif( objtrack0 < 0 ) then
+	t = (objtrack0-objtime+objtotaltime)/objtrack0
+else
+	t = (objtrack0-objtime)/objtrack0
+end
+if( t >= 0 ) then
+	n = objtrack1*2+1
+	if( n <= 1 ) then
+		t = t*t
+	elseif( t > 1-1/n ) then
+		t = 1-(1-t)*n
+	else
+		t = t*n/(n-1)
+		t = math.sin((t-1)*(n-1)*math.pi)*t*0.4/(1+(1-t)*3)
+	end
+	obj.rx = obj.rx - 90*t
+	obj.oy = obj.oy + obj.h*(1-math.cos(t*math.pi/2))/2
+	obj.oz = obj.oz + obj.h*math.sin(t*math.pi/2)/2
+end
+
+
+end

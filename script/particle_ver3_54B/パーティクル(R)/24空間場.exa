@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=0.00
+track1=0.00
+track2=0.00
+track3=0.00
+check0=0
+type=0
+filter=0
+name=空間場@particle_ri_ver3
+param=local strong=50;local inft=0;local soft=1;local rela=1;local scaa=100;local ftime=0;local indi=0;local fran=1;local heavy=0;

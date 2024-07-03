@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=60.00
+track1=0.00
+track2=0.00
+track3=0.00
+check0=100
+type=0
+filter=0
+name=回転@particle_ri_ver3
+param=kv=0;yx=0;yy=0;yz=0;syncr=0;upx=0;upy=0;upz=0;rxyzac={0,0,0};no_ac=1;xlimit=nil;ylimit=nil;zlimit=nil;xyztim={0,0,0};abrot=1;xyzb={0,0,0,0};

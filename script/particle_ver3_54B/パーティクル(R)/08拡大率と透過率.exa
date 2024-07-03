@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=100.00
+track1=100.00
+track2=100.00
+track3=100.00
+check0=100
+type=0
+filter=0
+name=拡大率と透過率@particle_ri_ver3
+param=czoom={};nzoom={};tzoom={1};kzoom={0,0,0};calpha={};nalpha={};talpha={1};kalpha={0,0,0};trzb=nil;trab=nil;trzk=nil;trak=nil;cycz=nil;cyca=nil;zalink=0;

@@ -1,0 +1,681 @@
+[debug]: Init():イベント "AUOSETUP_EVENT_ABORT_54368"を監視開始
+[info ]: Aviutlフォルダ: "C:\Users\Owner\aviutl100" にインストールします...
+[debug]: searchFileExceptInstallDir():[1]
+[debug]: C:\Users\Owner\aviutl100\Plugins\x264guiEx.auo
+[debug]: Init():auoSetup設定
+[debug]: auoSetup build     Sep  9 2017 07:43:00
+[debug]: OS Version:        Windows 10 x64 (0)
+[debug]: current dir:       C:\Users\Owner\aviutl100\plugins\setup\setup
+[debug]: clr ver (build):   v4.0.30319
+[debug]: clr ver (runtime): v4.0.30319
+[debug]: 
+[debug]: auoSetup:          C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup.exe
+[debug]: installName:       x264guiEx.auo
+[debug]: AviutlDir:         C:\Users\Owner\aviutl100
+[debug]: bAviutlExists:     True
+[debug]: PluginsDir:        C:\Users\Owner\aviutl100\Plugins
+[debug]: DownloadTmpDir:    C:\Users\Owner\aviutl100\plugins\setup\setup
+[debug]: bUpdateOverwrite:  False
+[debug]: bInstallX264:      True
+[debug]: nInstallX265:      0
+[debug]: bInstallNero:      False
+[debug]: bInstallQaac:      True
+[debug]: _appledll:         False
+[debug]: bInstallLsmash:    True
+[debug]: bInstallStg:       False
+[debug]: nInstallIni:       0
+[debug]: bInstallAuo:       False
+[debug]: autoRun:           True
+[debug]: autoUpdateIni:     False
+[debug]: autoUpdateStg:     False
+[debug]: updateOverwrite:   False
+[debug]: 
+[debug]: auoSetup Dir [C:\Users\Owner\aviutl100\plugins\setup\setup]
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup.exe
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.06.19.00607.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.07.25.10341.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.09.08.220931.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.09.08.221645.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.09.23.115422.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.11.10.220059.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.12.24.190234.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.02.20.02124.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.02.27.130228.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.03.11.14756.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.03.28.74721.txt
+[debug]:   C:\Users\Owner\aviutl100\plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.04.07.211117.txt
+[debug]: 
+[debug]: AviutlDir [C:\Users\Owner\aviutl100]
+[debug]:   C:\Users\Owner\aviutl100\aviutl.exe
+[debug]:   C:\Users\Owner\aviutl100\aviutl.ini
+[debug]:   C:\Users\Owner\aviutl100\aviutl.sav
+[debug]:   C:\Users\Owner\aviutl100\aviutl.txt
+[debug]:   C:\Users\Owner\aviutl100\aviutl.vfp
+[debug]:   C:\Users\Owner\aviutl100\batch0.aup
+[debug]:   C:\Users\Owner\aviutl100\DirectGIFExport2.auo
+[debug]:   C:\Users\Owner\aviutl100\exedit.anm
+[debug]:   C:\Users\Owner\aviutl100\exedit.auf
+[debug]:   C:\Users\Owner\aviutl100\exedit.aui
+[debug]:   C:\Users\Owner\aviutl100\exedit.auo
+[debug]:   C:\Users\Owner\aviutl100\exedit.cam
+[debug]:   C:\Users\Owner\aviutl100\exedit.ini
+[debug]:   C:\Users\Owner\aviutl100\exedit.obj
+[debug]:   C:\Users\Owner\aviutl100\exedit.scn
+[debug]:   C:\Users\Owner\aviutl100\exedit.tra
+[debug]:   C:\Users\Owner\aviutl100\exedit.txt
+[debug]:   C:\Users\Owner\aviutl100\gifsicle_x64.exe
+[debug]:   C:\Users\Owner\aviutl100\gif_export_config.ini
+[debug]:   C:\Users\Owner\aviutl100\libiomp5md.dll
+[debug]:   C:\Users\Owner\aviutl100\lua.txt
+[debug]:   C:\Users\Owner\aviutl100\lua51.dll
+[debug]:   C:\Users\Owner\aviutl100\ZRamPreview.auf
+[debug]:   C:\Users\Owner\aviutl100\ZRamPreview.auo
+[debug]:   C:\Users\Owner\aviutl100\ZRamPreview.exe
+[debug]:   C:\Users\Owner\aviutl100\デフォルト.cfg
+[debug]:   C:\Users\Owner\aviutl100\デフォルト.sav
+[debug]:   C:\Users\Owner\aviutl100\backup\2019-12-24_15-45-39 - コ.aup
+[debug]:   C:\Users\Owner\aviutl100\backup\2019-12-24_15-50-42 - コピー.aup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-03-29_09-48-12.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-03-29_23-42-41.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-03-31_21-07-06.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-03-31_23-59-16.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-04-07_01-28-38.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-04-07_15-40-49.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-04-07_15-45-50.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-04-07_21-08-48.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-04-07_21-11-00.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\backup\2020-04-07_21-11-10.exedit_backup
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.anm
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.auf
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.aui
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.auo
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.cam
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.ini
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.obj
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.scn
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.tra
+[debug]:   C:\Users\Owner\aviutl100\exedit92\exedit.txt
+[debug]:   C:\Users\Owner\aviutl100\exedit92\lua.txt
+[debug]:   C:\Users\Owner\aviutl100\exedit92\lua51.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\ASL.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\boxdumper.exe
+[debug]:   C:\Users\Owner\aviutl100\exe_files\CoreAudioToolbox.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\CoreFoundation.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\icudt55.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\libdispatch.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\libicuin.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\libicuuc.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\libsoxconvolver.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\libsoxr.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\msvcp100.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\msvcr100.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\muxer.exe
+[debug]:   C:\Users\Owner\aviutl100\exe_files\objc.dll
+[debug]:   C:\Users\Owner\aviutl100\exe_files\qaac.exe
+[debug]:   C:\Users\Owner\aviutl100\exe_files\refalac.exe
+[debug]:   C:\Users\Owner\aviutl100\exe_files\remuxer.exe
+[debug]:   C:\Users\Owner\aviutl100\exe_files\timelineeditor.exe
+[debug]:   C:\Users\Owner\aviutl100\exe_files\x264_2901_x64.exe
+[debug]:   C:\Users\Owner\aviutl100\Plugins\auls_outputpng.auf
+[debug]:   C:\Users\Owner\aviutl100\Plugins\lwcolor.auc
+[debug]:   C:\Users\Owner\aviutl100\Plugins\lwdumper.auf
+[debug]:   C:\Users\Owner\aviutl100\Plugins\lwinput.aui
+[debug]:   C:\Users\Owner\aviutl100\Plugins\lwmuxer.auf
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx.auo
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx.conf
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx.ini
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup.exe
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.06.19.00607.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.07.25.10341.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.09.08.220931.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.09.08.221645.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.09.23.115422.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.11.10.220059.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2019.12.24.190234.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.02.20.02124.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.02.27.130228.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.03.11.14756.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.03.28.74721.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\setup\setup\auoSetup_log_console_x264guiEx_2020.04.07.211117.txt
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\PS3.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\PSP.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\twitter.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\Xbox 360.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\youtube.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\アニメ (高圧縮).stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\アニメ (高画質).stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\バランス.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\高画質.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\高速.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\Bluray\Bluray (tff).stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\Bluray\Bluray.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\iPhone iPod iPad\iPhone3G, iPodtouch2-3.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\iPhone iPod iPad\iPhone4, iPad, iPodtouch4.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\iPhone iPod iPad\iPhone4S, iPad2.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\ニコ動 2018\ニコ動  30分以下.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\ニコ動 2018\ニコ動 30分～60分.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\ニコ動 2018\ニコ動 60分以上.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\ニコ動 2018\ニコ動 静止画  30分以下.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\ニコ動 2018\ニコ動 静止画 30分～60分.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\ニコ動 2018\ニコ動 静止画 60分以上.stg
+[debug]:   C:\Users\Owner\aviutl100\Plugins\x264guiEx_stg\ニコ動 2018\ニコ動 音質重視.stg
+[debug]:   C:\Users\Owner\aviutl100\script\@ANM1.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@ANM2.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@DelayMove.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@FIGURE.obj
+[debug]:   C:\Users\Owner\aviutl100\script\@LOAD.obj
+[debug]:   C:\Users\Owner\aviutl100\script\@MorphDots.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@MultiSlicer.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@イージング.tra
+[debug]:   C:\Users\Owner\aviutl100\script\@オブジェクト断片化.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@カスタムフレア.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@全方位ミラー.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@削除済みFIG.obj
+[debug]:   C:\Users\Owner\aviutl100\script\@加減速.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@文字輪郭追跡.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@範囲指定で変化.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@連番.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@音声.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@魚眼レンズ.anm
+[debug]:   C:\Users\Owner\aviutl100\script\B2_RoundAcorner.anm
+[debug]:   C:\Users\Owner\aviutl100\script\B2_Trapezoid.obj
+[debug]:   C:\Users\Owner\aviutl100\script\easing.lua
+[debug]:   C:\Users\Owner\aviutl100\script\easing_aviutl.lua
+[debug]:   C:\Users\Owner\aviutl100\script\Extram.dll
+[debug]:   C:\Users\Owner\aviutl100\script\fan_clipping.lua
+[debug]:   C:\Users\Owner\aviutl100\script\light_leaks.exo.lwi
+[debug]:   C:\Users\Owner\aviutl100\script\Moscn.scn
+[debug]:   C:\Users\Owner\aviutl100\script\noise.lua
+[debug]:   C:\Users\Owner\aviutl100\script\sinwave.anm
+[debug]:   C:\Users\Owner\aviutl100\script\uf.lua
+[debug]:   C:\Users\Owner\aviutl100\script\uf_opencv.dll
+[debug]:   C:\Users\Owner\aviutl100\script\VHS風.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ティルトシフト.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ハンディキャム.cam
+[debug]:   C:\Users\Owner\aviutl100\script\ハーフトーンT.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ベジエ軌道Ｔ.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ベジエ軌道Ｔ.tra
+[debug]:   C:\Users\Owner\aviutl100\script\ポリゴン.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ライントーンT.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ランダム登場.anm
+[debug]:   C:\Users\Owner\aviutl100\script\扇クリッピングR.anm
+[debug]:   C:\Users\Owner\aviutl100\script\手ぶれ(R).cam
+[debug]:   C:\Users\Owner\aviutl100\script\減衰振動.tra
+[debug]:   C:\Users\Owner\aviutl100\script\直線(アンカータイプ).obj
+[debug]:   C:\Users\Owner\aviutl100\script\色収差.anm
+[debug]:   C:\Users\Owner\aviutl100\script\色抽出T.anm
+[debug]:   C:\Users\Owner\aviutl100\script\風揺れT.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@DelayMove.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@effect-B.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@GetColor.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@GetColorTool.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@MultiSlicer.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@PlainEffector.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@Reflection_poly.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@Sphere.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@SpotLight.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@Stretch.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@TA-Easing.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@カメラ目標化.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@カメラ目標指定.cam
+[debug]:   C:\Users\Owner\aviutl100\script\93\@ディスプレイスメントマップB.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@ディスプレイスメントマップB_old.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@座標plus.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\@座標格納.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\Audio_waveform_R.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\Border.zip
+[debug]:   C:\Users\Owner\aviutl100\script\93\CHAP_93.lua
+[debug]:   C:\Users\Owner\aviutl100\script\93\Contour.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\DisplacementPoly.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\DOF2.lua
+[debug]:   C:\Users\Owner\aviutl100\script\93\ObjectCopyEXT.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\SimpleTube.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\SimpleTube2.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\SPfield.lua
+[debug]:   C:\Users\Owner\aviutl100\script\93\SphericalField.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\オートブラー+.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\カスタムトラックバー.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\パイシートグラフ.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\ベジエ軌道Ｔ+.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\レイヤー座標を合成.exa
+[debug]:   C:\Users\Owner\aviutl100\script\93\個別座標再配置2.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\偽被写界深度2.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\偽被写界深度2c.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\座標の取得.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\簡易変形(oct).anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\背景色スポイト.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\輪郭トレス.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\音声玉.obj
+[debug]:   C:\Users\Owner\aviutl100\script\93\＠＠スクリプトの使用方法＠＠.txt
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\93_default.cpe
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\@PlainEffector.anm
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\@Sphere
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\Contour_old
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\DelayMove_参考.aup
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\demo20160610.aup
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\Flat Shading_b.exo
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\Flat Shading_c.exo
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\GETCOLOR and TA.aup
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\light_leaks.exo
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\LineEffector.exo
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\ObjectCopy_smp.exo
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\Particle R V3 Demo.aup
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\pixel.txt
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\SPC.exa
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\Sphere_Delay.exo
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\くるくる(黒塗り).exa
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\くるくる.exa
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\カメラオブジェクト.exa
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\カメラオブジェクト.txt
+[debug]:   C:\Users\Owner\aviutl100\script\93\aup_exo\ノイズシェーダ.exa
+[debug]:   C:\Users\Owner\aviutl100\script\@hksy\@hksy.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@hksy\@hksy.obj
+[debug]:   C:\Users\Owner\aviutl100\script\@hksy\@hksy.scn
+[debug]:   C:\Users\Owner\aviutl100\script\@hksy\QED「495年の波紋」.anm
+[debug]:   C:\Users\Owner\aviutl100\script\@hksy\readme.txt
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\2値化ノイズ.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\@加減速TRA.tra
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\@範囲指定で変化.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\しきい値ランダム移動.tra
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\ふらふら.tra
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\カクカク.tra
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\タータンチェック_ISTN.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\ホログラム.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\ランダムラインEX.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\ランダム軌道.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\ランダム軌道_方向.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\三角クリッピング.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\三角括弧.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\円矢印.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\分度器.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\千鳥格子.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\可変速度動画読込.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\回転万華鏡.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\多角形_震える.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\斜め三角クリッピング.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\日の出.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\矢がすり.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\簡易変形マスク.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\紙飛行機.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\裏面塗りつぶし.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\透過判定図形並べ.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\連番画像読込_改変.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\集中線plus.obj
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\震える_連動.anm
+[debug]:   C:\Users\Owner\aviutl100\script\ANM_ssd\麻の葉模様.obj
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@3Dobject.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@BufferScripts.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@OriginalToon.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@ParallelCamera.cam
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@ParallelCameraToObj.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@Repeater.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@WipeClipping.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\@抜き出し縁取り.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\Aodaruma.lua
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\Aodaruma_default.cpe
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\Aodaruma_mono.cpe
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\Aodaruma_pt2.cpe
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\Aodaruma_pt3.cpe
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\AviutlLongShadow.dll
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\FlatShadow.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\PixelSort.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\RepeatingClip.anm
+[debug]:   C:\Users\Owner\aviutl100\script\Aodaruma\段付き円形.anm
+[debug]:   C:\Users\Owner\aviutl100\script\effect\PixelSorter_s.anm
+[debug]:   C:\Users\Owner\aviutl100\script\effect\PixelSorter_s.dll
+[debug]:   C:\Users\Owner\aviutl100\script\FrontLine\@FrontLine.anm
+[debug]:   C:\Users\Owner\aviutl100\script\FrontLine\@FrontLine.obj
+[debug]:   C:\Users\Owner\aviutl100\script\getColor\@GetColor-V2R.anm
+[debug]:   C:\Users\Owner\aviutl100\script\getColor\getcolortools.lua
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\@particle_ri_ver3.anm
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\@標準_particle_anime.anm
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\desktop.ini
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\from_anime_to_anime.exe
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\from_ver2_to_ver3.exe
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_set3.dll
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)について.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\格子マスク_particle_anime.anm
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\ランダム方向から登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\ランダム間隔で落ちながら登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\リール回転@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\万華鏡@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\何処からともなく登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\反復移動@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\広がって登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\弾む@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\弾んで登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\拡大縮小して登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\振り子@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\格子マスク.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\点滅@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\点滅して登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\画面外から登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\砕け散る@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\起き上がって登場@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_animation\震える@標準.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_music\録音サンプル.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_userobj\particle_renamer.exe
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_userobj\particle_userobj1.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_userobj\particle_userobj2.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_userobj\particle_userobj3.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_userobj\particle_userobj4.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\particle_userobj\particle_userobj5.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\01.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\02.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\03.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\04.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\05.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\06.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\07.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\08.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\09.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\サンプル連番\10.png
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\ひらがな.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\アルファベット_大文字.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\アルファベット_小文字.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\カタカナ_全角.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\カタカナ_半角.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\数字_全角.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\数字_半角.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_お金持ち.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_かっこいい.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_かわいい、美しい.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_スポーツが得意.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_健康.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_優しい、穏やか.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_力強い.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_幸せ、楽しい.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_怖い.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_明るい.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_自然.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_賢い、頭が良い.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\テキスト出力用サンプル\漢字_音楽、歌、ダンス.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\01パーティクル本体.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\02パス.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\03前後表裏その他切替.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\04方向と格子.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\05出力.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\06回転.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\07集結点.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\08拡大率と透過率.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\09フィルター.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\10フィルター(単色化専用).exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\11個別微調整.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\12時間.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\13時間2.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\14跳ね返り.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\15跳ね返り2.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\16テキスト.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\17画像.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\18動画.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\19風.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\20挙動.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\21挙動2.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\22挙動3.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\23挙動4.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\24空間場.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\25軌跡.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\26ファンネル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\27メッシュ.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\28立体物.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\29ガラス化(二次元).exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\31他作アニメーション効果オプション.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\パーティクル(R)\32音.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\カラフル公転軌道.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\ガラス化サンプル.exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\テキストサンプル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\テキストサンプルその2.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\テキストサンプルその3.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\パスサンプル(パスは未設定).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\パスサンプルその2(パスは未設定).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\パーティクル本体サンプル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\フィルターサンプル(単色化).exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\フィルターサンプル(宇宙風).exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\メッシュサンプル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(オブジェクト追跡).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(ポイント).exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(ラインループ).exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(ライン出力).exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(球からバーン).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(球出力).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(箱出力).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\出力サンプル(領域出力).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\奥行きのある雪.exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\弾んで登場.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\拡大率サンプル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\格子サンプル(グリッド情報).exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\格子サンプル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\煙.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\花火.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\集結点サンプル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\集結点サンプルその2.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\集結点サンプルその3.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\風サンプル.exo
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\使用例サンプル\鮮やか渦巻.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力と挙動自作関数.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力自作関数.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力自作関数_asteroid.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力自作関数_cardioid.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力自作関数_heart.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力自作関数_trochoid.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力自作関数_擬似オブジェクト追跡.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\出力自作関数_擬似オブジェクト追跡＋円運動.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\挙動自作関数その1.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\挙動自作関数その2.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\自作関数サンプル\挙動自作関数その3.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\01@パーティクル本体の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\02@パスと@前後表裏その他切替の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\03@z方向と格子の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\04@出力の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\05@回転の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\06@集結点の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\07@拡大率と透過率の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\08@フィルターと@フィルター(単色化専用)の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\08@フィルターの補足.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\09@個別微調整と@時間と@時間2の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\10@跳ね返りと@跳ね返り2の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\11@テキストと@画像と@動画の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\12@風の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\13@挙動と@挙動2と@挙動3と@挙動4の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\14@空間場の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\15@軌跡の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\16@ファンネルの説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\17@メッシュの説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\18@立体物と@ガラス化(二次元)の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\19@ユーザーカスタムオブジェクトの説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\20@他作アニメーション効果オプションとfrom_anime_to_anime.exeの説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\21@音の説明.txt
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\01@パーティクル本体のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\02-1@ゲームサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\02@パスと@前後表裏その他切替のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\03@z方向と格子のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\04@出力のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\05@回転のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\06@集結点のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\07@拡大率と透過率のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\08@フィルターと@フィルター(単色化専用)のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\09@個別微調整と@時間と@時間2のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\10@跳ね返りと@跳ね返り2のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\11@テキストと@画像と@動画のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\12@風のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\13@挙動と@挙動2と@挙動3と@挙動4のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\14@空間場のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\15@軌跡のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\16@ファンネルのサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\17@メッシュのサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\18@立体物と@ガラス化(二次元)のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\19@ユーザーカスタムオブジェクトのサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\20@他作アニメーション効果オプションのサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\説明書\サンプルプロジェクトファイル一覧\21@音のサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄｴｲﾘｴｽ\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄ@1とげ.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄｴｲﾘｴｽ\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄ@2フレア.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄｴｲﾘｴｽ\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄ@3泡.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄｴｲﾘｴｽ\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄ@4雪の結晶.exa
+[debug]:   C:\Users\Owner\aviutl100\script\particle_ver3_54B\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄｴｲﾘｴｽ\ﾊﾟｰﾃｨｸﾙｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄ@5インパーティクル.exa
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\@スライドカット.anm
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\@スライドカットテクスチャについて.txt
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\@パペットツール(R).anm
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\@パペットツールサンプル.aup
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\aviutl_puppet.dll
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\PNGJPG保存(R).anm
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\slide_cut_texture.lua
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\グラデーション(R).anm
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\グラデーション(R)の使い方.txt
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\グラデーションエディタ(R).obj
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\ハンディキャム.cam
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\中点無視(R).anm
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\中点無視(R).tra
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\中点無視使い方.aup
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\中点無視使い方.txt
+[debug]:   C:\Users\Owner\aviutl100\script\rikky\部分簡易フィルタ.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\@TA-Easing.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\@TA.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\@TAテキスト配置.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TAぽよよーんと登場.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA位置調整で移動.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA回転停止で登場.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA字間XY.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA操作SP.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA数珠つなぎ.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA標準登場2.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA標準移動.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA移動軌跡.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA範囲指定で変化.anm
+[debug]:   C:\Users\Owner\aviutl100\script\TA_ssd\TA起き上がって登場.anm
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@ANM1.anm
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@ANM2.anm
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@FIGURE.obj
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@LOAD.obj
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@TA.anm
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@加減速.anm
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@連番.anm
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\@音声.anm
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\readme.txt
+[debug]:   C:\Users\Owner\aviutl100\script\さつき\使い方.txt
+[debug]:   C:\Users\Owner\aviutl100\script\その他\@Sin Cos Curve.obj
+[debug]:   C:\Users\Owner\aviutl100\script\その他\@粒子化.anm
+[debug]:   C:\Users\Owner\aviutl100\script\その他\@粒子化TA用.anm
+[debug]:   C:\Users\Owner\aviutl100\script\シーンチェンジ\レンズ補正もどき.anm
+[debug]:   C:\Users\Owner\aviutl100\script\シーンチェンジ\ロール巻取(ページめくり).anm
+[debug]:   C:\Users\Owner\aviutl100\script\シーンチェンジ\動画背景スクリプト.exo
+[debug]:   C:\Users\Owner\aviutl100\script\スライドカット\@スライドカット.anm
+[debug]:   C:\Users\Owner\aviutl100\script\スライドカット\slide_cut_texture.lua
+[debug]:   C:\Users\Owner\aviutl100\script\スライドカット\テクスチャについて.txt
+[debug]:   C:\Users\Owner\aviutl100\script\削除済み\@削除済みANM.anm
+[debug]:   C:\Users\Owner\aviutl100\script\削除済み\@削除済みFIG.obj
+[debug]: 
+[debug]: ex_stg
+[debug]:   s_x264.fullpath:                [file exists: yes]: C:\Users\Owner\aviutl100\exe_files\x264_2901_x64.exe
+[debug]:   s_x264.fullpath_highbit:        [file exists: no ]: C:\Users\Owner\aviutl100\
+[debug]:   s_aud[QAAC_IDX].fullpath:       [file exists: yes]: C:\Users\Owner\aviutl100\exe_files\qaac.exe
+[debug]:   s_aud[REFALAC_IDX].fullpath:    [file exists: yes]: C:\Users\Owner\aviutl100\exe_files\refalac.exe
+[debug]:   s_mux[MUXER_MP4].fullpath:      [file exists: yes]: C:\Users\Owner\aviutl100\exe_files\remuxer.exe
+[debug]:   s_mux[MUXER_MP4_RAW].fullpath:  [file exists: yes]: C:\Users\Owner\aviutl100\exe_files\muxer.exe
+[debug]:   s_mux[MUXER_TC2MP4].fullpath:   [file exists: yes]: C:\Users\Owner\aviutl100\exe_files\timelineeditor.exe
+[debug]: Init():qtmode: QAAC_APPLEDLL_IN_EXEDIR
+[debug]: x264::init():
+[debug]:   aviutlDir:        C:\Users\Owner\aviutl100
+[debug]:   pluginsDir:       C:\Users\Owner\aviutl100\Plugins
+[debug]:   downloadTmpDir:   C:\Users\Owner\aviutl100\plugins\setup\setup
+[debug]:   bAviutlExists:    True
+[debug]:   bUpdateOverwrite: False
+[debug]: Init():installer->init() [x264]
+[debug]: x264 10bit::init():
+[debug]:   aviutlDir:        C:\Users\Owner\aviutl100
+[debug]:   pluginsDir:       C:\Users\Owner\aviutl100\Plugins
+[debug]:   downloadTmpDir:   C:\Users\Owner\aviutl100\plugins\setup\setup
+[debug]:   bAviutlExists:    True
+[debug]:   bUpdateOverwrite: False
+[debug]: Init():installer->init() [x264 10bit]
+[debug]: qaac::init():
+[debug]:   aviutlDir:        C:\Users\Owner\aviutl100
+[debug]:   pluginsDir:       C:\Users\Owner\aviutl100\Plugins
+[debug]:   downloadTmpDir:   C:\Users\Owner\aviutl100\plugins\setup\setup
+[debug]:   bAviutlExists:    True
+[debug]:   bUpdateOverwrite: False
+[debug]: Init():installer->init() [qaac]
+[debug]: l-smash::init():
+[debug]:   aviutlDir:        C:\Users\Owner\aviutl100
+[debug]:   pluginsDir:       C:\Users\Owner\aviutl100\Plugins
+[debug]:   downloadTmpDir:   C:\Users\Owner\aviutl100\plugins\setup\setup
+[debug]:   bAviutlExists:    True
+[debug]:   bUpdateOverwrite: False
+[debug]: Init():installer->init() [l-smash]
+[debug]: x264::check_only_all():
+[debug]: x264::check_set_param():
+[debug]: x264::check_set_param():currentFileFullPath: C:\Users\Owner\aviutl100\exe_files\x264_2901_x64.exe
+[debug]: x264::check_set_param():latestCheckUrlList[1](id = 0, urlIdMapping = 1): https://onedrive.live.com/download?resid=6BDD4375AC8933C6!4484&authkey=!ABJHFkrCepS7euQ&ithint=file%2ctxt
+[debug]: x264::check_set_param():latestCheckUrlList[2](id = 1, urlIdMapping = 2): https://www.dropbox.com/s/430qrgxyiit3s0h/latest_build.txt?dl=1
+[debug]: x264::check_set_param():latestCheckUrlList[3](id = 2, urlIdMapping = 3): https://drive.google.com/uc?export=download&id=0BzA4dIFteM2dWUp0OE10ZXpYREU
+[debug]: x264::check_set_param():nInstall = True
+[debug]: x264::check():urlId: 0
+[debug]: x264::getMesBaseUrl():url[0]:https://onedrive.live.com/download?resid=6BDD4375AC8933C6!4484&authkey=!ABJHFkrCepS7euQ&ithint=file%2ctxt
+[debug]: x264::getMesBaseUrl():downloader.download(): status: RES_FIN
+[debug]: x264::getUrlVer():urlId: 0, urlText: 2988
+[info ]: x264のダウンロードリンクを取得完了
+[debug]: x264::getUrlVer():latestDownloadUrl: https://onedrive.live.com/download?resid=6BDD4375AC8933C6!4486&authkey=!AI0ggzXuP4DGYSQ&ithint=file%2czip
+[debug]: x264::getMesBaseUrl():getUrlVer(urlId = 0): latestVer: r2988
+[debug]: x264::check():bAviutlExists
+[debug]: x264::check_update():currentFileFullPath: "C:\Users\Owner\aviutl100\exe_files\x264_2901_x64.exe"
+[debug]: x264::getExeVer():
+[debug]: x264::getExeVer():currentFileFullPath = C:\Users\Owner\aviutl100\exe_files\x264_2901_x64.exe exists.
+[debug]: x264::getExeVer():get_exe_version_from_cmd(): success: rev 2901
+[info ]: x264を更新します。 r2901 → r2988
+[debug]: check():installer->check_only_all() [x264]: OK
+[debug]: x264 10bit::check_only_all():
+[debug]: x264 10bit::check_set_param():
+[debug]: x264 10bit::check_set_param():currentFileFullPath: C:\Users\Owner\aviutl100\exe_files\x264_2901_x64.exe
+[debug]: x264 10bit::check_set_param():nInstall = False
+[debug]: x264 10bit::check_only_all():ダウンロードは必要ありません。
+[debug]: check():installer->check_only_all() [x264 10bit]: OK
+[debug]: qaac::check_only_all():
+[debug]: qaac::check_set_param():
+[debug]: qaac::check():urlId: 0
+[debug]: qaac::getMesBaseUrl():url[0]:https://sites.google.com/site/qaacpage/cabinet/
+[debug]: qaac::getMesBaseUrl():downloader.download(): status: RES_FIN
+[debug]: qaac::getUrlVer():findUrl: https://sites.google.com/site/qaacpage/cabinet/qaac_%{rev}.zip?attredirects=0&amp;d=1
+[debug]: qaac::getUrlVer():baseUrl: https://sites.google.com/site/qaacpage/cabinet/
+[debug]: qaac::getUrlVer():revString: 2.68
+[debug]: qaac::getUrlVer():revArray: 2.68
+[debug]: qaac::getMesBaseUrl():getUrlVer(urlId = 0): latestVer: 2.68
+[debug]: qaac::check():bAviutlExists
+[debug]: qaac::check_update():currentFileFullPath: "C:\Users\Owner\aviutl100\exe_files\qaac.exe"
+[debug]: qaac::getExeVer():currentFileFullPath = C:\Users\Owner\aviutl100\exe_files\qaac.exe exists.
+[debug]: qaac::getExeVer():get_exe_version_from_cmd(): success.
+[info ]: qaacを更新します。 2.67 → 2.68
+[debug]: check():installer->check_only_all() [qaac]: OK
+[debug]: l-smash::check_only_all():
+[debug]: l-smash::check_set_param():
+[debug]: l-smash::check_set_param():currentFileFullPath: C:\Users\Owner\aviutl100\exe_files\remuxer.exe
+[debug]: l-smash::check_set_param():latestCheckUrlList[1](id = 0): https://onedrive.live.com/download?resid=6BDD4375AC8933C6!4437&authkey=!AMidqXDZOeJtv4g&ithint=file%2ctxt
+[debug]: l-smash::check_set_param():latestCheckUrlList[2](id = 1): https://www.dropbox.com/s/f7knxwnjvispv7i/latest_build.txt?dl=1
+[debug]: l-smash::check_set_param():latestCheckUrlList[3](id = 2): https://drive.google.com/uc?export=download&id=0BzA4dIFteM2dVHJDRk9rSlE1X0E
+[debug]: l-smash::check():urlId: 0
+[debug]: l-smash::getMesBaseUrl():url[0]:https://onedrive.live.com/download?resid=6BDD4375AC8933C6!4437&authkey=!AMidqXDZOeJtv4g&ithint=file%2ctxt
+[debug]: l-smash::getMesBaseUrl():downloader.download(): status: RES_FIN
+[error]: l-smashのバージョン情報が無効です。
+[debug]: l-smash::check():getMesBaseUrl(urlId = 0): false
+[info ]: l-smashのダウンロードを再試行しています(2/3)...
+[debug]: l-smash::check():urlId: 1
+[debug]: l-smash::getMesBaseUrl():url[1]:https://www.dropbox.com/s/f7knxwnjvispv7i/latest_build.txt?dl=1
+[info ]: インストールを中止しています。
+[info ]: しばらくお待ちください...
+[debug]: x264::cancel():
+[debug]: cancel():installer->cancel() [x264]
+[debug]: x264 10bit::cancel():
+[debug]: cancel():installer->cancel() [x264 10bit]
+[debug]: qaac::cancel():
+[debug]: cancel():installer->cancel() [qaac]
+[debug]: l-smash::cancel():
+[debug]: cancel():installer->cancel() [l-smash]
+[error]: l-smashバージョン取得のダウンロードでエラーが発生しました。
+[error]: アドレス: https://www.dropbox.com/s/f7knxwnjvispv7i/latest_build.txt?dl=1
+[error]: Operation was aborted by an application callback
+[error]: ダウンロードできません。
+[debug]: l-smash::getMesBaseUrl():downloader.download(): status: RES_ABORT
+[debug]: l-smash::check():getMesBaseUrl(urlId = 1): false
+[info ]: l-smashのダウンロードを再試行しています(3/3)...
+[debug]: check():installer->check_only_all() [l-smash]: OK
+[debug]: check():installer->check_only_all() [overall]: OK
+[info ]: インストールを中止しています.
+[debug]: abortRequired():yes

@@ -1,0 +1,554 @@
+@óÃàÊòg
+--track0:âÊê¸ïù,0,5000,10
+--track1:í«â¡ïù,-5000,5000,0
+--track2:í«â¡çÇÇ≥,-5000,5000,0
+--track3:îwåiîZìx,0,100,20
+--dialog:ògêF/col,local col1=0xffffff;îwåiêF/col,local col2=0xccccff;äÓèÄ,local base={0,0};
+
+  obj.copybuffer("cache:cache1","obj")
+  local w,h=obj.getpixel()
+  local lw=obj.track0
+  local pw=obj.track1
+  local ph=obj.track2
+  local backC=obj.track3*0.01
+  local w,h=pw+w+2*lw,ph+h+2*lw
+  w=((w>1) and w) or 1
+  h=((h>1) and h) or 1
+  base=base or {0,0}
+  obj.setoption("drawtarget","tempbuffer",w,h)
+  local wh=math.max(w,h)
+  obj.load("figure","éläpå`",col2,wh) 
+  obj.draw(0,0,0,1,backC)
+  obj.copybuffer("obj","cache:cache1")
+  obj.draw()
+  obj.load("figure","éläpå`",col1,wh)
+  if lw>0 then
+    local w1=w*0.5
+    local h1=h*0.5
+    local w0=w1-lw
+    local h0=h1-lw
+  w0=((w0>0) and w0) or 0
+  h0=((h0>0) and h0) or 0
+    obj.drawpoly(-w1,-h1,0, w1,-h1,0, w1,-h0,0,-w1,-h0,0  )
+    obj.drawpoly(-w1, h0,0, w1, h0,0, w1, h1,0,-w1, h1,0  )
+    obj.drawpoly( w0,-h1,0, w1,-h1,0, w1, h1,0, w0, h1,0  )
+    obj.drawpoly(-w1,-h1,0,-w0,-h1,0,-w0, h1,0,-w1, h1,0  )
+  end
+  obj.load("tempbuffer")
+  obj.cx=obj.cx+w*base[1]*0.01
+  obj.cy=obj.cy+h*base[2]*0.01
+
+@óÃàÊòg(ë»â~)
+--track0:âÊê¸ïù,0,5000,10
+--track1:í«â¡ïù,-5000,5000,0
+--track2:í«â¡çÇÇ≥,-5000,5000,0
+--track3:îwåiîZìx,0,100,20
+--dialog:ògêF/col,local col1=0xffffff;îwåiêF/col,local col2=0xccccff;äÓèÄ,local base={0,0};
+
+  local w,h=obj.getpixel()
+  local lw=obj.track0
+  local pw=obj.track1
+  local ph=obj.track2
+  local backC=obj.track3*0.01
+  local w,h=pw+w+2*lw,ph+h+2*lw
+  base=base or {0,0}
+  w=((w>1) and w) or 1
+  h=((h>1) and h) or 1
+  local w1=w*0.5
+  local h1=h*0.5
+  local w0=w1-lw
+  local h0=h1-lw
+  w0=((w0>0) and w0) or 0
+  h0=((h0>0) and h0) or 0
+  local wh=math.max(w,h)
+
+  obj.copybuffer("cache:cache-ori","obj")--ÉIÉäÉWÉiÉãï€ë∂
+
+  obj.setoption("drawtarget","tempbuffer",w+10,h+10)
+  obj.load("figure","â~",0xffffff,2*wh) 
+  obj.drawpoly(-w0,-h0,0, w0,-h0,0, w0,h0,0,-w0,h0,0)
+  obj.copybuffer("cache:cache-Itiji","tmp")
+  obj.load("figure","éläpå`",col1,wh)
+  obj.draw()
+  obj.copybuffer("obj","cache:cache-Itiji")
+  obj.setoption("blend","alpha_sub")
+  obj.draw()
+  obj.setoption("blend",0)
+  obj.copybuffer("cache:cache-waku","tmp")--ògï€ë∂
+
+  obj.setoption("drawtarget","tempbuffer",w+10,h+10)
+  obj.load("figure","â~",0xffffff,2*wh) 
+  obj.drawpoly(-w1,-h1,0, w1,-h1,0, w1,h1,0,-w1,h1,0)
+  obj.copybuffer("cache:cache-Itiji","tmp")
+  obj.load("figure","éläpå`",0xffffff,wh)
+  obj.draw()
+  obj.copybuffer("obj","cache:cache-Itiji")
+  obj.setoption("blend","alpha_sub")
+  obj.draw()
+  obj.setoption("blend",0)
+  obj.copybuffer("cache:cache-del","tmp")--îwåiï€ë∂
+
+--ï`âÊ
+  obj.setoption("drawtarget","tempbuffer",w,h)
+  obj.load("figure","éläpå`",col2,wh)
+  obj.draw(0,0,0,1,backC)
+
+  obj.copybuffer("obj","cache:cache-ori")
+  obj.draw()
+
+  obj.copybuffer("obj","cache:cache-waku")
+  obj.draw()
+
+  obj.copybuffer("obj","cache:cache-del")
+  obj.setoption("blend","alpha_sub")
+  obj.draw()
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+  obj.cx=obj.cx+w*base[1]*0.01
+  obj.cy=obj.cy+h*base[2]*0.01
+
+@óÃàÊòg(ÉTÉCÉYï‚èï)
+--track0:í«â¡ïù,-5000,5000,0
+--track1:í«â¡çÇÇ≥,-5000,5000,0
+  T_ryouikiwaku_w=obj.track0
+  T_ryouikiwaku_h=obj.track1
+
+@óÃàÊòg(äpóéÇø)
+--track0:âÊê¸ïù,0,5000,10
+--track1:å`èÛ,1,4,1,1
+--track2:êÿçûó ,0,5000,20
+--track3:îwåiîZìx,0,100,20
+--dialog:ògêF/col,local col1=0xffffff;îwåiêF/col,local col2=0xccccff;í«â¡ïù,local pw=0;í«â¡çÇÇ≥,local ph=0;äÓèÄ,local base={0,0};
+--check0:ë»â~
+
+  local function make_edge_del(wh,w1,h1,s,lw,fig,basefig)
+      obj.load("figure",basefig,0xffffff,1.5*wh)
+      local wb=w1-lw
+      local hb=h1-lw
+      wb=((wb>0) and wb) or 0
+      hb=((hb>0) and hb) or 0
+      obj.drawpoly(-wb,-hb,0, wb,-hb,0, wb,hb,0,-wb,hb,0 )
+      obj.load("figure",fig,0xffffff,s)
+      obj.setoption("blend","alpha_sub")
+      obj.draw( w1, h1,0,0.5,1,0,0,0)
+      obj.draw(-w1, h1,0,0.5,1,0,0,0)
+      obj.draw( w1,-h1,0,0.5,1,0,0,0)
+      obj.draw(-w1,-h1,0,0.5,1,0,0,0)
+      obj.setoption("blend",0)
+  end
+
+  local drawWaku={}
+  drawWaku={
+
+    function(wh,w1,h1,s,lw,basefig)
+      obj.load("figure",basefig,0xffffff,1.5*wh)
+      local wb=w1-lw
+      local hb=h1-lw
+      wb=((wb>0) and wb) or 0
+      hb=((hb>0) and hb) or 0
+      obj.drawpoly(-wb,-hb,0, wb,-hb,0, wb,hb,0,-wb,hb,0 )
+      obj.copybuffer("obj","tmp")
+      local wh0=w1+h1-s-lw*2^0.5
+      obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSX",-wh0,"Ç⁄Ç©Çµ",0,"äpìx", 135)
+      obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSX",-wh0,"Ç⁄Ç©Çµ",0,"äpìx",  45)
+      obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSX", wh0,"Ç⁄Ç©Çµ",0,"äpìx",-135)
+      obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSX", wh0,"Ç⁄Ç©Çµ",0,"äpìx", -45)
+      obj.copybuffer("tmp","obj")
+    end
+    ,
+    function(wh,w1,h1,s,lw,basefig)
+      make_edge_del(wh,w1,h1,4*(s+lw),lw,"â~",basefig)
+    end
+    ,
+    function(wh,w1,h1,s,lw,basefig)
+      make_edge_del(wh,w1,h1,4*(s+lw),lw,"éläpå`",basefig)
+    end
+    ,
+    function(wh,w1,h1,s,lw,basefig)
+      obj.load("figure",basefig,0xffffff,1.5*wh)
+      local wb=w1-s+math.min(0,s-lw)
+      local hb=h1-lw
+      wb=((wb>0) and wb) or 0
+      hb=((hb>0) and hb) or 0
+      obj.drawpoly(-wb,-hb,0, wb,-hb,0, wb,hb,0,-wb,hb,0 )
+      local wb=w1-lw
+      local hb=h1-s+math.min(0,s-lw)
+      wb=((wb>0) and wb) or 0
+      hb=((hb>0) and hb) or 0
+      obj.drawpoly(-wb,-hb,0, wb,-hb,0, wb,hb,0,-wb,hb,0 )
+      obj.load("figure","â~",0xffffff,8*(s-lw))
+      local wb=w1-s
+      local hb=h1-s
+      wb=((wb>0) and wb) or 0
+      hb=((hb>0) and hb) or 0
+      obj.draw( wb, hb,0,0.25,1)
+      obj.draw( wb,-hb,0,0.25,1)
+      obj.draw(-wb, hb,0,0.25,1)
+      obj.draw(-wb,-hb,0,0.25,1)
+    end
+
+  }
+
+  local function atoshori(wh,col1)
+    obj.copybuffer("cache:cache-Itiji","tmp")
+    obj.load("figure","éläpå`",col1,wh+10)
+    obj.draw()
+    obj.copybuffer("obj","cache:cache-Itiji")
+    obj.setoption("blend","alpha_sub")
+    obj.draw()
+    obj.setoption("blend",0)
+  end
+
+
+  local w,h=obj.getpixel()
+  local lw=obj.track0
+  local pt=obj.track1
+  local s=obj.track2
+  local backC=obj.track3*0.01
+  base=base or {0,0}
+  if T_ryouikiwaku_w==nil then
+    w,h=pw+w+2*lw,ph+h+2*lw
+  else
+    w,h=T_ryouikiwaku_w+w+2*lw,T_ryouikiwaku_h+h+2*lw
+  end
+
+  w=((w>0) and w) or 0
+  h=((h>0) and h) or 0
+
+  local wh=math.max(w,h)
+  local w1=w*0.5
+  local h1=h*0.5
+  
+  if pt==4 then
+    s=((s<h1) and s) or h1
+    s=((s<w1) and s) or w1
+  end
+
+  local basefig
+  if obj.check0 then
+    basefig="â~"
+  else
+    basefig="éläpå`"
+  end
+  
+--ÉIÉäÉWÉiÉãï€ë∂
+  obj.copybuffer("cache:cache-ori","obj")
+
+--ògçÏê¨ï€ë∂
+  obj.setoption("drawtarget","tempbuffer",w+10,h+10)
+  drawWaku[pt](wh,w1,h1,s,lw,basefig)
+  atoshori(wh,col1)
+  obj.copybuffer("cache:cache-waku","tmp")
+
+--çÌèúóÃàÊçÏê¨ï€ë∂
+  obj.setoption("drawtarget","tempbuffer",w+10,h+10)
+  drawWaku[pt](wh,w1,h1,s,0,basefig)
+  atoshori(wh,col1)
+  obj.copybuffer("cache:cache-del","tmp")
+
+
+--ï`âÊ
+  obj.setoption("drawtarget","tempbuffer",w,h)
+  obj.load("figure","éläpå`",col2,wh)
+  obj.draw(0,0,0,1,backC)
+
+  obj.copybuffer("obj","cache:cache-ori")
+  obj.draw()
+
+  obj.copybuffer("obj","cache:cache-waku")
+  obj.draw()
+
+  obj.copybuffer("obj","cache:cache-del")
+  obj.setoption("blend","alpha_sub")
+  obj.draw()
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+  obj.cx=obj.cx+w*base[1]*0.01
+  obj.cy=obj.cy+h*base[2]*0.01
+  T_ryouikiwaku_w=nil
+  T_ryouikiwaku_h=nil
+
+
+@óÃàÊòg(â_å`)
+--track0:âÊê¸ïùÅì,0,100,10
+--track1:ñßìx,1,200,7,1
+--track2:å`èÛïœâª,1,5000,1,0.01
+--track3:îwåiîZìx,0,100,20
+--dialog:ògêF/col,local col1=0xffffff;îwåiêF/col,local col2=0xccccff;í«â¡ïù,local pw=0;í«â¡çÇÇ≥,local ph=0;ïΩääìx[%],local par=20;â_â°à íu[%],local wpar={50,100};â_â°èdÇ»ÇË[%],local xpar={10,40};â_çÇÇ≥[%],local hpar={70,90};âÒì],local crot=35;ïœå`[1-5],local hei=1;ê∏ìx,local bai=1;äÓèÄ,local base={0,0};
+
+local function make_waku(wh,w,h,col1,lw)
+  obj.setoption("drawtarget","tempbuffer",w+10,h+10)
+  obj.load("figure","éläpå`",col1,wh+10)
+  obj.draw()
+  obj.copybuffer("obj","cache:cache-Itiji")
+  obj.setoption("blend","alpha_sub")
+  obj.draw(0,0,0,1-lw)
+  obj.setoption("blend",0)
+end
+
+  local w,h=obj.getpixel()
+  local lw=obj.track0*0.01
+  local cou=math.floor(obj.track1)
+  local pt=obj.track2
+  local pt1=math.floor(pt)
+  local pt2=pt1+1
+  pt=pt-pt1
+
+
+  hei=math.min(math.max(hei,1),5)
+
+  pt=2*pt
+  if pt<1 then
+    pt=pt^hei
+  else
+    pt=2-(2-pt)^hei
+  end
+  pt=pt*0.5
+
+  local backC=obj.track3*0.01
+
+  if T_ryouikiwaku_w==nil then
+    w,h=pw+w+2*lw,ph+h+2*lw
+  else
+    w,h=T_ryouikiwaku_w+w+2*lw,T_ryouikiwaku_h+h+2*lw
+  end
+
+  w=((w>0) and w) or 0
+  h=((h>0) and h) or 0
+  local wh=math.max(w,h)
+  local w1=w*0.5
+  local h1=h*0.5
+
+  local sw1=bai*w
+  local sh1=bai*h
+  local bw=2*sw1
+  local bh=2*sh1
+  local swh=math.max(sw1,sh1)
+  local posy=sh1*par*0.01
+  base=base or {0,0}
+--ÉIÉäÉWÉiÉãï€ë∂
+  obj.copybuffer("cache:cache-ori","obj")
+
+--ògçÏê¨ï€ë∂
+  obj.setoption("drawtarget","tempbuffer",bw,bh)
+  obj.load("figure","éläpå`",0xffffff,swh)
+  obj.drawpoly(-sw1,-sh1,0, sw1,-sh1,0, sw1,posy,0,-sw1,posy,0)
+
+  local posx1={}
+  local posx2={}
+  posx1[0]=0
+  posx2[0]=0
+  for i=1,cou do
+    posx1[i]=obj.rand(wpar[1],wpar[2],i,pt1+1000)+posx1[i-1]
+    posx2[i]=obj.rand(wpar[1],wpar[2],i,pt2+1000)+posx2[i-1]
+  end
+
+  for i=0,cou do
+    posx1[i]=posx1[i]/posx1[cou]*bw-sw1
+    posx2[i]=posx2[i]/posx2[cou]*bw-sw1
+  end
+
+  obj.load("figure","â~",0xffffff,math.min(sw1,sh1))
+  for i=1,cou-1 do
+    local ox11=posx1[i-1]
+    local ox12=posx2[i-1]
+    local ox21=posx1[i]+(posx1[i+1]-posx1[i])*obj.rand(xpar[1],xpar[2],i,pt1+2000)*0.01
+    local ox22=posx2[i]+(posx2[i+1]-posx2[i])*obj.rand(xpar[1],xpar[2],i,pt2+2000)*0.01
+    local oy1=(sh1-posy)*obj.rand(hpar[1],hpar[2],i,pt1+3000)*0.01
+    local oy2=(sh1-posy)*obj.rand(hpar[1],hpar[2],i,pt2+3000)*0.01
+    local ox1=(1-pt)*ox11+pt*ox12
+    local ox2=(1-pt)*ox21+pt*ox22
+    local oy=(1-pt)*oy1+pt*oy2
+    obj.drawpoly(ox1,-oy+posy,0, ox2,-oy+posy,0, ox2,oy+posy,0, ox1,oy+posy,0)
+  end
+  local ox11=posx1[cou-1]
+  local ox12=posx2[cou-1]
+  local ox21=posx1[cou]+(posx1[1]-posx1[0])*obj.rand(xpar[1],xpar[2],cou,pt1+2000)*0.01
+  local ox22=posx2[cou]+(posx2[1]-posx2[0])*obj.rand(xpar[1],xpar[2],cou,pt2+2000)*0.01
+  local oy1=(sh1-posy)*obj.rand(hpar[1],hpar[2],cou,pt1+3000)*0.01
+  local oy2=(sh1-posy)*obj.rand(hpar[1],hpar[2],cou,pt2+3000)*0.01
+
+  local ox1=(1-pt)*ox11+pt*ox12
+  local ox2=(1-pt)*ox21+pt*ox22
+  local oy=(1-pt)*oy1+pt*oy2
+  obj.drawpoly(ox1,-oy+posy,0, ox2,-oy+posy,0, ox2,oy+posy,0, ox1,oy+posy,0)
+  obj.drawpoly(ox1-bw,-oy+posy,0, ox2-bw,-oy+posy,0, ox2-bw,oy+posy,0, ox1-bw,oy+posy,0)
+
+  obj.copybuffer("obj","tmp")
+  obj.effect("ã…ç¿ïWïœä∑","âÒì]",crot)
+  obj.setoption("drawtarget","tempbuffer",w,h)
+  obj.drawpoly(-w1,-h1,0, w1,-h1,0, w1,h1,0,-w1,h1,0)
+  obj.copybuffer("cache:cache-Itiji","tmp")
+
+--ògçÏê¨ï€ë∂
+  make_waku(wh,w,h,col1,lw)
+  obj.copybuffer("cache:cache-waku","tmp")
+
+--çÌèúóÃàÊçÏê¨ï€ë∂
+  make_waku(wh,w,h,col1,0)
+  obj.copybuffer("cache:cache-del","tmp")
+
+--ï`âÊ
+  obj.setoption("drawtarget","tempbuffer",w,h)
+  obj.load("figure","éläpå`",col2,wh)
+  obj.draw(0,0,0,1,backC)
+
+  obj.copybuffer("obj","cache:cache-ori")
+  obj.draw()
+
+  obj.copybuffer("obj","cache:cache-waku")
+  obj.draw()
+
+  obj.copybuffer("obj","cache:cache-del")
+  obj.setoption("blend","alpha_sub")
+  obj.draw()
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+  obj.cx=obj.cx+w*base[1]*0.01
+  obj.cy=obj.cy+h*base[2]*0.01
+  T_ryouikiwaku_w=nil
+  T_ryouikiwaku_h=nil
+
+
+@óÃàÊòg(ûôå`)
+--track0:âÊê¸ïùÅì,0,100,10
+--track1:ñßìx,1,200,10,1
+--track2:å`èÛïœâª,1,5000,1,0.01
+--track3:îwåiîZìx,0,100,20
+--dialog:ògêF/col,local col1=0xffffff;îwåiêF/col,local col2=0xccccff;í«â¡ïù,local pw=0;í«â¡çÇÇ≥,local ph=0;ûôïùÉâÉìÉ_ÉÄê´[%],local wpar=50;ûôçÇÇ≥[%],local hpar={20,30};âÒì],local crot=35;ïœå`[1-5],local hei=1;äÓèÄ,local base={0,0};
+
+  local w,h=obj.getpixel()
+  local lw=obj.track0*0.01
+  local cou=math.floor(obj.track1)
+  local pt=obj.track2
+  local pt1=math.floor(pt)
+  local pt2=pt1+1
+  pt=pt-pt1
+  wpar=wpar*0.5
+  crot=math.rad(crot)
+  base=base or {0,0}
+  hei=math.min(math.max(hei,1),5)
+
+  pt=2*pt
+  if pt<1 then
+    pt=pt^hei
+  else
+    pt=2-(2-pt)^hei
+  end
+  pt=pt*0.5
+
+  local backC=obj.track3*0.01
+
+  if T_ryouikiwaku_w==nil then
+    w,h=pw+w+2*lw,ph+h+2*lw
+  else
+    w,h=T_ryouikiwaku_w+w+2*lw,T_ryouikiwaku_h+h+2*lw
+  end
+
+  w=((w>0) and w) or 0
+  h=((h>0) and h) or 0
+  local w1=w*0.5
+  local h1=h*0.5
+  local swh=math.max(w,h)
+
+
+--ÉIÉäÉWÉiÉãï€ë∂
+  obj.copybuffer("cache:cache-ori","obj")
+
+--ç¿ïWåvéZ
+  local radi1={}
+  local radi2={}
+  radi1[0]=0
+  radi2[0]=0
+  for i=1,cou do
+    radi1[i]=obj.rand(100-wpar,100+wpar,i,pt1+1000)+radi1[i-1]
+    radi2[i]=obj.rand(100-wpar,100+wpar,i,pt2+1000)+radi2[i-1]
+  end
+
+  for i=0,cou do
+    radi1[i]=radi1[i]/radi1[cou]*2*math.pi-crot
+    radi2[i]=radi2[i]/radi2[cou]*2*math.pi-crot
+  end
+
+  local posx1={}
+  local posx2={}
+  local posy1={}
+  local posy2={}
+
+  for i=0,cou do
+    posx1[i],posy1[i]=w1*math.cos(radi1[i]),h1*math.sin(radi1[i])
+    posx2[i],posy2[i]=w1*math.cos(radi2[i]),h1*math.sin(radi2[i])
+  end
+
+  for i=0,cou do
+    posx1[i]=(1-pt)*posx1[i]+pt*posx2[i]
+    posy1[i]=(1-pt)*posy1[i]+pt*posy2[i]
+  end
+
+  local dswh=2*swh*math.max(hpar[1],hpar[2])*0.01
+  w=w+dswh
+  h=h+dswh
+  local wh=math.max(w,h)
+  local toghx={}
+  local toghy={}
+  local toghx1={}
+  local toghy1={}
+  local toghx2={}
+  local toghy2={}
+  for i=0,cou-1 do
+    local x=posx1[i+1]-posx1[i]
+    local y=posy1[i+1]-posy1[i]
+    local r=math.sqrt(x*x+y*y)
+    local togh=((1-pt)*obj.rand(hpar[1],hpar[2],i,pt1+3000)+pt*obj.rand(hpar[1],hpar[2],i,pt2+3000))*0.01*swh
+    toghx[i]  = togh*y/r
+    toghy[i]  =-togh*x/r
+    toghx1[i] =(posx1[i+1]+posx1[i])*0.5+toghx[i]
+    toghy1[i] =(posy1[i+1]+posy1[i])*0.5+toghy[i]
+    toghx2[i] =(posx1[i+1]+posx1[i])*0.5+toghx[i]*(1-lw)
+    toghy2[i] =(posy1[i+1]+posy1[i])*0.5+toghy[i]*(1-lw)
+  end
+
+  for i=1,cou-1 do
+    posx2[i]=posx1[i]-(toghx[i-1]+toghx[i])*0.5*lw
+    posy2[i]=posy1[i]-(toghy[i-1]+toghy[i])*0.5*lw
+  end
+  posx2[0]=posx1[0]-(toghx[cou-1]+toghx[0])*0.5*lw
+  posy2[0]=posy1[0]-(toghy[cou-1]+toghy[0])*0.5*lw
+  posx2[cou]=posx1[cou]-(toghx[cou-1]+toghx[0])*0.5*lw
+  posy2[cou]=posy1[cou]-(toghy[cou-1]+toghy[0])*0.5*lw
+
+
+--ï`âÊ
+  obj.setoption("drawtarget","tempbuffer",w,h)
+
+  obj.load("figure","éläpå`",col2,swh)
+  obj.setoption("blend","alpha_add")
+  for i=0,cou-1 do
+    obj.drawpoly(0,0,0, posx2[i],posy2[i],0, toghx2[i],toghy2[i],0, posx2[i+1],posy2[i+1],0)
+  end
+
+  obj.load("figure","éläpå`",0xffffff,wh)
+  obj.setoption("blend","alpha_sub")
+  obj.draw(0,0,0,1,1-backC)
+
+  obj.copybuffer("obj","cache:cache-ori")
+  obj.setoption("blend",0)
+  obj.draw()
+
+  obj.load("figure","éläpå`",col1,swh)
+  obj.setoption("blend","alpha_add")
+  for i=0,cou-1 do
+    obj.drawpoly(posx1[i],posy1[i],0, toghx1[i],toghy1[i],0, toghx2[i],toghy2[i],0, posx2[i],posy2[i],0)
+    obj.drawpoly(posx2[i+1],posy2[i+1],0, toghx2[i],toghy2[i],0, toghx1[i],toghy1[i],0, posx1[i+1],posy1[i+1],0)
+  end
+
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+  obj.cx=obj.cx+w*base[1]*0.01
+  obj.cy=obj.cy+h*base[2]*0.01
+  T_ryouikiwaku_w=nil
+  T_ryouikiwaku_h=nil

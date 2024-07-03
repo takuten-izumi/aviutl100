@@ -1,0 +1,19 @@
+function particle_anm(objtrack0,objcheck0,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack0 == 0 ) then
+	return
+elseif( objtrack0 < 0 ) then
+	t = (objtrack0-objtime+objtotaltime)/objtrack0
+else
+	t = (objtrack0-objtime)/objtrack0
+end
+if( t > 0 ) then
+	t = t*t
+	if( objcheck0 ) then
+		obj.aspect = -t
+	else
+		obj.aspect = t
+	end
+end
+
+
+end

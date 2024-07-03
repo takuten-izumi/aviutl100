@@ -1,0 +1,252 @@
+@文字輪郭追跡拡張機能
+--track0:振動X,0,2000,0,1
+--track1:振動Y,0,2000,0,1
+--track2:振動区間,0,1000,0,1
+--track3:開始ズレ,0,100,0,0.01
+--dialog:振動形状/fig,local shake_fig="四角形";振動線幅,local shake_lw=3;振動線色/col,local shake_col=0xffffff;アンチエイリアス/chk,local antialias=1;メソッド[0-4],local method_threshold=0;最大閾値[0-255],local max_value=255;二値画像で表示/chk,local view_threshold=0;
+--振動固定点,local shake_fiexed_points = {{-1,-1},{-1,-1}};
+
+if( g_uf_rinkaku==nil ) then
+  g_uf_rinkaku = {}
+end
+g_uf_rinkaku[obj.layer] = {}
+g_uf_rinkaku[obj.layer].shakes = {obj.track0,obj.track1}
+g_uf_rinkaku[obj.layer].shake_len = math.floor(obj.track2)
+g_uf_rinkaku[obj.layer].zure_line_value = obj.track3*0.01
+g_uf_rinkaku[obj.layer].shake_fig = shake_fig
+g_uf_rinkaku[obj.layer].shake_lw = shake_lw
+g_uf_rinkaku[obj.layer].shake_col = shake_col
+--g_uf_rinkaku[obj.layer].shake_fiexed_points = shake_fiexed_points
+g_uf_rinkaku[obj.layer].antialias = antialias
+g_uf_rinkaku[obj.layer].method_threshold = method_threshold
+g_uf_rinkaku[obj.layer].max_value = max_value
+g_uf_rinkaku[obj.layer].view_threshold = view_threshold
+
+@文字輪郭追跡(表示)
+--track0:描画始点,0,100,0,0.01
+--track1:描画終点,0,100,0,0.01
+--track2:開始点,0,100,0,1
+--track3:閾値,-1,255,-1,1
+--dialog:形状/fig,local fig="円";線幅,local lw=10;色/col,local col=0xffffff;逆回転/chk,local rev=0;輪郭のみ/chk,local rin=0;輪郭を下に/chk,local Rover=0;インターバル(ミリ秒),local interval=0;
+
+local function calc_shake_value(idx_per,var,chain,shakes,seed)
+  -- 描画位置の勢いを反映させたい場合はmath.minをなくす
+  local vx,vy = shakes[1]*math.min(var,1),shakes[2]*math.min(var,1)
+  local x,y = idx_per*vx,idx_per*vy
+  
+  local xh,yh = x*0.5,y*0.5
+  local ax = { xh, xh,  0,-xh,-xh,-xh,  0, xh}
+  local ay = {  0,-yh,-yh,-yh,  0, yh, yh, yh}
+  
+  local rx = obj.rand(-x,x,seed+1)
+  local ry = obj.rand(-y,y,seed+2)
+  if( chain ~= -1 ) then
+    rx = rx - ax[chain+1]
+    ry = ry - ay[chain+1]
+  end
+  return rx,ry
+end
+------------------------------
+--開始
+------------------------------
+require("uf").init({"array","draw","opencv"})
+
+local seed = 1
+local shake_read_coeff = 0.05 -- 振動先読み 0～1 1に近いほど先を読む
+local mode_contour = 2        -- 0:RETR_EXTERNAL 1:RETR_LIST 2:RETR_CCOMP 3:RETR_TREE
+local method_contour = 1      -- 0:CHAIN_CODE 1:CHAIN_APPROX_NONE 2:CHAIN_APPROX_SIMPLE 3:CHAIN_APPROX_TC89_L1 4:CHAIN_APPROX_TC89_KCOS 5:LINK_RUNS
+local padding = 2
+
+local shakes = {0,0}
+local shake_len = 0
+local zure_line_value = 0
+local shake_fig = "四角形"
+local shake_lw = 3
+local shake_col = 0xffffff
+--local shake_fiexed_points = {{-1,-1},{-1,-1}}
+local antialias = 1
+local method_threshold = 0
+local max_value = 255
+local view_threshold = 0
+--自分より上に設定されているスクリプトを見る
+if( uf.core.is_upward_script(g_uf_rinkaku,"文字輪郭追跡拡張機能@文字輪郭追跡") ) then
+  shakes = g_uf_rinkaku[obj.layer].shakes
+  shake_len = g_uf_rinkaku[obj.layer].shake_len
+  zure_line_value = g_uf_rinkaku[obj.layer].zure_line_value
+  shake_fig = g_uf_rinkaku[obj.layer].shake_fig
+  shake_lw = g_uf_rinkaku[obj.layer].shake_lw
+  shake_col = g_uf_rinkaku[obj.layer].shake_col
+  --shake_fiexed_points = g_uf_rinkaku[obj.layer].shake_fiexed_points
+  antialias = g_uf_rinkaku[obj.layer].antialias
+  method_threshold = g_uf_rinkaku[obj.layer].method_threshold
+  max_value = g_uf_rinkaku[obj.layer].max_value
+  view_threshold = g_uf_rinkaku[obj.layer].view_threshold
+else
+  -- 拡張機能が見つからなければグローバル変数初期化
+  if( g_uf_rinkaku~=nil ) then
+    g_uf_rinkaku[obj.layer] = nil
+  end
+end
+
+------------------------------
+--準備
+------------------------------
+local delay = (interval*obj.index)*0.001
+local track0 = obj.getvalue(0,math.min(math.max(obj.time-delay,0),obj.totaltime))
+local track1 = obj.getvalue(1,math.min(math.max(obj.time-delay,0),obj.totaltime))
+local track2 = obj.getvalue(2,math.min(math.max(obj.time-delay,0),obj.totaltime))
+local track3 = obj.getvalue(3,math.min(math.max(obj.time-delay,0),obj.totaltime))
+
+local draw_start,draw_end = track0*0.01,track1*0.01
+local zure_start = track2*0.01
+local threshold = track3
+local userdata,w,h=obj.getpixeldata()
+local wh,hh = w*0.5,h*0.5
+local pw,ph = obj.getpixel()
+local ox,oy,oz = obj.ox,obj.oy,obj.oz -- obj.loadで文字の位置情報がなくなるようなのでその前に保存しておく
+local cx,cy,cz = obj.cx,obj.cy,obj.cz -- obj.loadで文字の位置情報がなくなるようなのでその前に保存しておく
+local cache_name = string.format("cache:L%dI%d",obj.layer,obj.index)
+--debug_print(string.format("(%d,%d,%d) o(%d,%d,%d) c(%d,%d,%d)",obj.x,obj.y,obj.z,ox,oy,oz,cx,cy,cz))
+
+local shake_read_time = obj.totaltime*shake_read_coeff
+local _track0 = obj.getvalue(0,math.min(math.max(obj.time-delay+shake_read_time,0),obj.totaltime))
+local _track1 = obj.getvalue(1,math.min(math.max(obj.time-delay+shake_read_time,0),obj.totaltime))
+local _draw_start,_draw_end = _track0*0.01,_track1*0.01
+
+--DLLから解析座標を取得
+local j,i,k
+local ret_str,ret = uf.opencv.contour(userdata,w,h,threshold,max_value,method_threshold,mode_contour,method_contour,padding)
+local lines = {}
+for j = 1, #ret do
+  lines[j] = {}
+  local num_point = #ret[j]
+  local temp,zure2_start  = math.modf((#ret-j)/#ret*zure_line_value)
+  -- 開始点、開始ズレ分ずらして設定
+  for i = 1, num_point do
+    k = uf.array.idx_shift(i,num_point,zure_start)
+    k = uf.array.idx_shift(k,num_point,zure2_start)
+    lines[j][k] = ret[j][i]
+  end
+end
+
+--逆回転
+if( rev == 1 ) then
+  local temp = 1-draw_start
+  draw_start = 1-draw_end
+  draw_end = temp
+
+  temp = 1-_draw_start
+  _draw_start = 1-_draw_end
+  _draw_end = temp
+end
+
+--二値画像を描画する場合は反映
+if( view_threshold==1 ) then
+  obj.putpixeldata(userdata)
+end
+
+--仮想バッファの大きさ
+local size_max_w,size_max_h = w+lw,h+lw
+if( shake_len > 0 ) then
+  size_max_w = size_max_w+shakes[1]*2+shake_lw
+  size_max_h = size_max_h+shakes[2]*2+shake_lw
+end
+
+------------------------------
+--描画開始
+------------------------------
+obj.setoption("drawtarget","tempbuffer",size_max_w,size_max_h)
+obj.setoption("antialias",antialias)
+
+--文字画像を保管
+obj.copybuffer(cache_name,"obj")
+--輪郭のみでなく、輪郭を下にチェックもなければここで一回描画
+if rin==0 and Rover~=1 then  
+  obj.draw()
+end
+
+--通常描画
+local shake_starts = {}
+local shake_ends = {}
+obj.load("figure",fig,col,lw)
+--各線のループ
+for j = 1,#lines do
+  shake_starts[j] = {}
+  shake_ends[j] = {}
+  
+  local num_point = #lines[j]
+  local idx_zure = 0
+  local idx_start = math.min(math.max( math.floor( num_point*draw_start ), 1 ), num_point)
+  local idx_end   = math.min(math.max( math.floor( num_point*draw_end ), 1 ), num_point)
+  local _idx_start = math.min(math.max( math.floor( num_point*_draw_start ), 1 ), num_point)
+  local _idx_end   = math.min(math.max( math.floor( num_point*_draw_end ), 1 ), num_point)
+  
+  local chain_start_prev = uf.draw.get_chain_code(lines[j][_idx_start].x,lines[j][_idx_start].y,lines[j][idx_start].x,lines[j][idx_start].y)
+  local chain_end_prev = uf.draw.get_chain_code(lines[j][_idx_end].x,lines[j][_idx_end].y,lines[j][idx_end].x,lines[j][idx_end].y)
+  
+  -- これらの値が1でノルマ達成（細かい破片がたくさんあると、どうしても終了直前に集中してしまうのが難点……）
+  local shake_border = num_point * shake_read_coeff --この1区間で、num_pointのshake_read_coeff倍率分を稼ぐのがノルマ
+  local variation_start = math.abs(_idx_start-idx_start)/shake_border
+  local variation_end = math.abs(_idx_end-idx_end)/shake_border
+  --debug_print(string.format("j=%d idx_start=(%d->%d) idx_end=(%d->%d) angle=(%d,%d) var=(%f,%f)",j,idx_start,_idx_start,idx_end,_idx_end,chain_start_prev,chain_end_prev,variation_start,variation_end))
+  
+  --線の座標ループ
+  for i = idx_start-shake_len, idx_end+shake_len do
+    local ii = uf.array.idx_shift(i,num_point,idx_zure)
+    local ii_prev = uf.array.idx_shift(i-1,num_point,idx_zure)
+    local x,y = lines[j][ii].x-wh,lines[j][ii].y-hh
+    local notshake_flag = 0
+    --debug_print(string.format("i=%d(%d) idxs=%d(%d) idxe=%d(%d) (%d,%d)-(%d,%d)",ii,ii_prev,idx_start,idx_start_prev,idx_end,idx_end_next,lines[j][ii].x,lines[j][ii].y,lines[j][ii_prev].x,lines[j][ii_prev].y))
+    
+    --振動(範囲外のポイントで、かつ、描画点が動いている場合)
+    if( i == idx_end ) then
+      table.insert(shake_ends[j],{x,y})
+    end
+    if( (i<idx_start) and (variation_start>0) ) then
+      local idx_per = (idx_start-i)/shake_len
+      local shake_x,shake_y = calc_shake_value(idx_per,variation_start,chain_start_prev,shakes,seed)
+      table.insert(shake_starts[j],{x+shake_x,y+shake_y})
+    end
+    if( (i>idx_end) and (variation_end>0)) then
+      local idx_per = (i-idx_end)/shake_len
+      local shake_x,shake_y = calc_shake_value(idx_per,variation_end,chain_end_prev,shakes,seed+1)
+      table.insert(shake_ends[j],{x+shake_x,y+shake_y})
+    end
+    if( i == idx_start ) then
+      table.insert(shake_starts[j],{x,y})
+    end
+    --通常描画(範囲内のポイント)
+    if( (i>=idx_start) and (i<=idx_end) and (idx_start~=idx_end)) then
+      obj.draw(x,y)
+    end
+    seed = seed + 2
+  end
+end
+--振動描画
+obj.load("figure",shake_fig,shake_col,shake_lw)
+for j = 1,#lines do
+  for i = 1,#shake_starts[j]-1 do
+    uf.draw.draw_figure(shake_starts[j][i][1],shake_starts[j][i][2],shake_starts[j][i+1][1],shake_starts[j][i+1][2],shake_lw)
+  end
+  for i = 1,#shake_ends[j]-1 do
+    uf.draw.draw_figure(shake_ends[j][i][1],shake_ends[j][i][2],shake_ends[j][i+1][1],shake_ends[j][i+1][2],shake_lw)
+  end
+end
+--輪郭を下に、の場合は後から文字を描画
+if rin==0 and Rover==1 then
+  obj.copybuffer("obj",cache_name)
+  obj.draw()
+end
+
+--tempbufferから描画
+obj.setoption("drawtarget","framebuffer")
+obj.load("tempbuffer")
+obj.effect() -- obj.load～obj.drawの間に必要
+if( obj.getoption("multi_object") ) then
+  obj.draw(ox-cx,oy-cy,oz-cz)
+else
+  obj.cx=cx
+  obj.cy=cy
+  obj.cz=cz
+end
+

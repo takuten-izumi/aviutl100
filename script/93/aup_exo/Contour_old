@@ -1,0 +1,90 @@
+--track0:輝度シフト,-4000,4000,0
+--track1:下限値,0,4096,100
+--track2:上限値,1,4096,4096
+--track3:Z,-5000,5000,10
+--check0:輪郭抽出,0
+--dialog:数,local num=8;ﾓｻﾞｲｸ[強/変化],local mz={1,100};色/col,local col=0xffffff;色強度,local amount=100;ぼかし,local blur=0;Zずれタイプ/chk,local ztype=0;alphaboost,local boost=0;
+
+num = num or 10
+mz = mz or {0,100}
+mosaic = mz[1]
+mos_am = mz[2]*.1
+ 
+local shift = obj.track0   --輝度基準
+local threshold_floor = obj.track1  --輝度低値
+local threshold_ceil  = obj.track2  --輝度上限値
+
+threshold_ceil  = math.max(threshold_ceil,threshold_floor)
+threshold_floor = math.min(threshold_ceil,threshold_floor)
+local range = (threshold_ceil - threshold_floor)
+
+
+local Z = obj.track3
+
+blur = blur or 0
+blur = blur*.1
+boost = boost or 0
+boost = math.min(7,boost*.1)
+local h,s,v
+ 
+
+if col==nil then
+  col = {0xd3f7e9,0xfcf3d2,0xfbcf86,0xfa7f46,0xdd4538} 
+
+elseif not string.find(tostring(col),"table:") then
+
+  if col<0 then
+     col = {obj.getpixel(0,0)}
+  else
+
+     local t={}
+     h,s,v = HSV(col)
+	for i=0,num-1 do
+ 	t[i+1] = HSV(h - 30 + 60/num * i , s,  v )
+	end
+    col = t
+ end
+
+end
+ 
+ 
+
+obj.effect()
+obj.copybuffer("cache:org","obj")
+
+LUM={}
+
+for i=0,num-1 do
+local lum =  (range * i/num)   + shift + threshold_floor
+
+LUM[i+1] = string.format("%.2f",lum)
+RANGE = range
+TRE = threshold_ceil-range
+
+ 
+if lum<threshold_ceil and lum>threshold_floor then
+
+	obj.copybuffer("obj","cache:org")
+ 
+	obj.effect("モザイク","サイズ",math.floor( (i*mos_am) / num * mosaic) )
+	obj.effect("ルミナンスキー","基準輝度",lum,"ぼかし",0,"type",0)
+
+
+ 	local color_t = col[ i%#col + 1]
+
+ 	obj.effect("グラデーション","中心Y",2000,"color",color_t,"blend",0,"強さ",amount)
+
+	if obj.check0 then
+ 	obj.effect("エッジ抽出","強さ",300,"しきい値",17,"透明度エッジを抽出",1,"color",color_t ) 
+		end
+
+	-- HSV(h+DT.C/num*i,s,v)
+	 obj.effect("ぼかし","範囲",(num-i)/num * blur,"サイズ固定",1)
+ 
+	local z_ = { (num*.5 - i)/num*Z, i/num * Z}
+ 	     z = z_[ztype + 1]
+
+	obj.draw(0,0,z ,1,1 + boost)
+end
+ 
+end

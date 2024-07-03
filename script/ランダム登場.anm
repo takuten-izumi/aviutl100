@@ -1,0 +1,60 @@
+--track0:時間,-15,15,3,0.01
+--track1:ディレイ,-15,15,0,0.01
+--track2:個数,1,100,1,1
+--track3:加減速,1,5,1,1
+--dialog:X最小値,ix=-400;X最大値,ax=400;Y最小値,iy=-225;Y最大値,ay=225;Z最小値,iz=-500;Z最大値,az=500;X軸回転最小値,irx=-180;X軸回転最大値,arx=180;Y軸回転最小値,iry=-180;Y軸回転最大値,ary=180;Z軸回転最小値,irz=-180;Z軸回転最大値,arz=180;
+
+obj.effect()
+
+t = obj.track0
+d = obj.track1
+n = obj.track2
+k = obj.track3
+
+--移動時間の処理
+if( t<0 ) then
+	r = (t-obj.time+d+obj.totaltime)/t
+else
+	r = (t-obj.time+d)/t
+end
+
+--ディレイ時間の処理
+if( d<0 ) then
+	l = (d-obj.time+obj.totaltime)/d
+else
+	l = (d-obj.time)/d
+end
+
+
+--乱数発生
+for i=0,n-1 do
+	x = obj.rand(ix,ax,i,0)
+	y = obj.rand(iy,ay,i,0)
+	z = obj.rand(iz,az,i,0)
+	rx = obj.rand(irx,arx,i,0)
+	ry = obj.rand(iry,ary,i,0)
+	rz = obj.rand(irz,arz,i,0)
+
+	--ディレイ時間
+	if( l>0 ) then
+		obj.ox = obj.ox + x
+		obj.oy = obj.oy + y
+		obj.oz = obj.oz + z
+		obj.rx = obj.rx + rx
+		obj.ry = obj.ry + ry
+		obj.rz = obj.rz + rz
+		obj.draw()
+	else
+		--移動時間
+		if( r>0 ) then
+			r=r^k
+			obj.ox = obj.ox + x*r
+			obj.oy = obj.oy + y*r
+			obj.oz = obj.oz + z*r
+			obj.rx = obj.rx + rx*r
+			obj.ry = obj.ry + ry*r
+			obj.rz = obj.rz + rz*r
+			obj.draw()
+		end
+	end
+end

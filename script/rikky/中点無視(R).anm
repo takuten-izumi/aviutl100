@@ -1,0 +1,173 @@
+--track0:無視設定1,0,1,0,1
+--track1:無視設定2,0,1,0,1
+--track2:無視設定3,0,1,0,1
+--track3:無視設定4,0,1,0,1
+--dialog:設定1ID,t0=1;設定1種類,s0=1;設定1数値,v0=1;設定1全体化/chk,c0=0;設定2ID,t1=nil;設定2種類,s1=1;設定2数値,v1=1;設定2全体化/chk,c1=0;設定3ID,t2=nil;設定3種類,s2=1;設定3数値,v2=1;設定3全体化/chk,c2=0;設定4ID,t3=nil;設定4種類,s3=1;設定4数値,v3=1; 設定4全体化/chk,c3=0;
+--各設定をIDごとに保存させるための変数を用意する
+if not tostring(Ignore_Point):find("table:") then
+Ignore_Point={}
+end
+--この関数を使って区間の数(中点の数+1)を取得する
+local n=obj.getoption("section_num")
+--設定IDが入力されたところだけを処理して無駄を省く
+if t0~=nil then
+	--t0は整数のみ
+	t0=math.floor(t0)
+	--Ignore_Pointのt0番目をテーブル宣言と同時に0番目の要素とn番目の要素の値を0にして初期化
+	Ignore_Point[t0]={[0]=0,[n]=0}
+	--設定種類がテーブルだったら、区間ごとに設定種類の番号でループさせる
+	if tostring(s0):find("table:") then
+		local n0=#s0
+		local k=1
+		if n0==0 then
+			s0=1
+		else
+			--pairs関数でテーブルのキーと値を取得して、予想外の数値の入力を防ぐ
+			for i,j in pairs(s0) do
+				if j<=0 or 10<=j then
+					s0[i]=1
+				else
+					s0[i]=math.floor(j) 
+				end
+			end
+			local v
+			--無視設定のトラックバーが0か1かをgetvalue関数で調べる
+			--0かつその中点の時間が現時刻以下ならば設定種類の要素を指すインデックスの値を1つ上げる
+			for i=1,n-1 do
+				v=math.floor(obj.getvalue(0,0,i))
+				Ignore_Point[t0][i]=v
+				if v==0 and obj.getvalue("time",0,i)<=obj.time then k=(k%n0)+1 end
+			end
+			s0=s0[k]
+
+		end
+		--設定数値もテーブルかを調べて、v0を直接その値に変える
+		if tostring(v0):find("table:") then
+			v0=v0[k]
+			if v0==nil then v0=1 end
+		end
+	else
+		if s0==nil or s0<=0 or 10<=s0 then s0=1 else s0=math.floor(s0) end
+		for i=1,n-1 do
+			Ignore_Point[t0][i]=math.floor(obj.getvalue(0,0,i))
+		end
+	end
+	--求めたs,v,cを代入する
+	Ignore_Point[t0].s=s0
+	Ignore_Point[t0].v=v0
+	Ignore_Point[t0].c=c0
+end
+if t1~=nil then
+	t1=math.floor(t1)
+	Ignore_Point[t1]={[0]=0,[n]=0}
+	if tostring(s1):find("table:") then
+		local n0=#s1
+		local k=1
+		if n0==0 then
+			s1=1
+		else
+			for i,j in pairs(s1) do
+				if j<=0 or 10<=j then
+					s1[i]=1
+				else
+					s1[i]=math.floor(j) 
+				end
+			end
+			local v
+			for i=1,n-1 do
+				v=math.floor(obj.getvalue(1,0,i))
+				Ignore_Point[t1][i]=v
+				if v==0 and obj.getvalue("time",0,i)<=obj.time then k=(k%n0)+1 end
+			end
+			s1=s1[k]
+		end
+		if tostring(v1):find("table:") then
+			v1=v1[k]
+			if v1==nil then v1=1 end
+		end
+	else
+		if s1==nil or s1<=0 or 10<=s1 then s1=1 else s1=math.floor(s1) end
+		for i=1,n-1 do
+			Ignore_Point[t1][i]=math.floor(obj.getvalue(1,0,i))
+		end
+	end
+	Ignore_Point[t1].s=s1
+	Ignore_Point[t1].v=v1
+	Ignore_Point[t1].c=c1
+end
+if t2~=nil then
+	t2=math.floor(t2)
+	Ignore_Point[t2]={[0]=0,[n]=0}
+	if tostring(s2):find("table:") then
+		local n0=#s2
+		local k=1
+		if n0==0 then
+			s2=1
+		else
+			for i,j in pairs(s2) do
+				if j<=0 or 10<=j then
+					s2[i]=1
+				else
+					s2[i]=math.floor(j) 
+				end
+			end
+			local v
+			for i=1,n-1 do
+				v=math.floor(obj.getvalue(2,0,i))
+				Ignore_Point[t2][i]=v
+				if v==0 and obj.getvalue("time",0,i)<=obj.time then k=(k%n0)+1 end
+			end
+			s2=s2[k]
+		end
+		if tostring(v2):find("table:") then
+			v2=v2[k]
+			if v2==nil then v2=1 end
+		end
+	else
+		if s2==nil or s2<=0 or 10<=s2 then s2=1 else s2=math.floor(s2) end
+		for i=1,n-1 do
+			Ignore_Point[t2][i]=math.floor(obj.getvalue(2,0,i))
+		end
+	end
+	Ignore_Point[t2].s=s2
+	Ignore_Point[t2].v=v2
+	Ignore_Point[t2].c=c2
+end
+if t3~=nil then
+	t3=math.floor(t3)
+	Ignore_Point[t3]={[0]=0,[n]=0}
+	if tostring(s3):find("table:") then
+		local n0=#s3
+		local k=1
+		if n0==0 then
+			s3=1
+		else
+			for i,j in pairs(s3) do
+				if j<=0 or 10<=j then
+					s3[i]=1
+				else
+					s3[i]=math.floor(j) 
+				end
+			end
+			local v
+			for i=1,n-1 do
+				v=math.floor(obj.getvalue(3,0,i))
+				Ignore_Point[t3][i]=v
+				if v==0 and obj.getvalue("time",0,i)<=obj.time then k=(k%n0)+1 end
+			end
+			s3=s3[k]
+		end
+		if tostring(v3):find("table:") then
+			v3=v3[k]
+			if v3==nil then v3=1 end
+		end
+	else
+		if s3==nil or s3<=0 or 10<=s3 then s3=1 else s3=math.floor(s3) end
+		for i=1,n-1 do
+			Ignore_Point[t3][i]=math.floor(obj.getvalue(3,0,i))
+		end
+	end
+	Ignore_Point[t3].s=s3
+	Ignore_Point[t3].v=v3
+	Ignore_Point[t3].c=c3
+end

@@ -1,0 +1,337 @@
+@•¡”SinCurve kerokero9696
+--track0:ŒÂ”,1,100,8,1
+--track1:‚‚³,1,4096,100,1
+--track2:‘¾‚³,1,1000,10,1
+--track3:•`‰æ–§“x,1,200,10,1
+--check0:‚‚³×İÀŞÑ,0
+--dialog:}Œ`‘I‘ğ/fig,fig="‰~";ü•,fgs2=1000;Color/col,col=0xffffff;seed,sd=100;••â³ŒW”c,hh=1.00;••â³ŒW”‰¡,ww=1.00;ƒYƒŒiŠp“xj,ang=45;‘¬“x[}],spd0=50;‘¬“x×İÀŞÑ/chk,chk1=0;‚¸‚ê×İÀŞÑ1/chk,chk2=0;‚¸‚ê×İÀŞÑ2/chk,chk3=0;
+------------------------------------set
+t0=math.floor(obj.track0)
+t1=math.floor(obj.track1)
+t2=math.floor(obj.track2)
+t3=math.floor(obj.track3)
+sw=obj.screen_w*ww
+sh=obj.screen_h*hh
+------------------------------------fig
+fgs1=t2
+h=t1
+ik=t3
+------------------------------------script
+obj.setoption("drawtarget","tempbuffer",sw,sh)
+obj.setoption("drawtarget","tempbuffer")
+
+obj.load("figure",fig,col,fgs1,fgs2)
+
+for j=1,t0 do
+ if(chk1==0)then
+  spd=obj.time*spd0
+ else
+  spd=obj.time*obj.rand(-spd0,spd0,sd,j*2)
+ end
+ 
+ for i=0,sw,ik do
+  if(chk2==1)then
+   ang=obj.rand(0,360,sd,j)
+  end
+  if(chk3==1)then
+   ang=obj.rand(0,360,sd,i*j)
+  end
+
+  if(obj.check0)then
+   h=obj.rand(t1/10,t1,sd,j)
+  end
+
+  r=math.rad(i+spd+j*ang)
+  sn=math.sin(r)
+  dx=i-sw/2
+  dy=sn*h
+  obj.setoption("blend","alpha_add")
+  obj.draw(dx,dy)
+ end
+end
+------------------------------------
+obj.load("tempbuffer")
+
+@•¡”SinCurve—†ùi¶Ò×§Œä&Scenej kerokero9696
+--track0:ŒÂ”,1,100,8,1
+--track1:‚‚³,1,4096,100,1
+--track2:‘¾‚³,1,1000,10,1
+--track3:•`‰æ–§“x,1,200,10,1
+--check0:‚‚³×İÀŞÑ,0
+--dialog:}Œ`‘I‘ğ/fig,fig="‰~";ü•,fgs2=1000;Color/col,col=0xffffff;seed,sd=100;••â³ŒW”c,hh=1.00;••â³ŒW”‰¡,ww=2.00;ƒYƒŒiŠp“xj,ang=45;‘¬“x[}],spd0=50;‘¬“x×İÀŞÑ/chk,chk1=0;‚¸‚ê×İÀŞÑ1/chk,chk2=0;‚¸‚ê×İÀŞÑ2/chk,chk3=0;
+------------------------------------set
+t0=math.floor(obj.track0)
+t1=math.floor(obj.track1)
+t2=math.floor(obj.track2)
+t3=math.floor(obj.track3)
+sw=obj.screen_w*ww
+sh=obj.screen_h*hh
+------------------------------------fig
+fgs1=t2
+h=t1
+ik=t3
+------------------------------------script
+obj.load("figure",fig,col,fgs1,fgs2)
+
+for j=1,t0 do
+ if(chk1==0)then
+  spd=obj.time*spd0
+ else
+  spd=obj.time*obj.rand(-spd0,spd0,sd,j*2)
+ end
+ 
+ for i=0,sw,ik do
+  if(chk2==1)then
+   ang=obj.rand(0,360,sd,j)
+  end
+  if(chk3==1)then
+   ang=obj.rand(0,360,sd,i*j)
+  end
+
+  if(obj.check0)then
+   h=obj.rand(t1/10,t1,sd,j)
+  end
+
+  r=math.rad(i+spd+j*ang)
+  sn=math.sin(r)
+  cs=math.cos(r)
+  dx=i-sw/2
+  dy=sn*h
+  dz=cs*h
+  obj.draw(dx,dy,dz)
+ end
+end
+------------------------------------
+
+
+@Sin(Cos) Curve kerokero9696
+--track0:‘¾‚³,0,9999,5,1
+--track1:‚‚³,0,9999,100,1
+--track2:’·‚³,0,7200,720,1
+--track3:Šp“x,-360,360,0,0.01
+--dialog:figure/fig,fig="‰~";F/col,col1=0xffffff;aspect,as=0;Sin or Cos/chk,chk=0;Move/chk,chk1=1;speed,sp=0.5;LR/chk,chk2=0;x–§“x,xx=2;
+
+t0=obj.track0
+t1=obj.track1
+t2=obj.track2
+t3=obj.track3
+osw,osh=obj.screen_w,obj.screen_h
+obj.load("figure",fig,col1,t0,t0)
+obj.aspect=as
+if(chk1==1)then
+ if(chk2==0)then
+  mv=-obj.frame*sp
+ else
+  mv=obj.frame*sp
+ end
+else
+ mv=0
+end
+for i=0,t2 do
+ dx=-osw/2+i*xx
+ if(chk==0)then
+  dy=t1*math.sin(math.pi/180*(i+t3)+mv)
+ else
+  dy=t1*math.cos(math.pi/180*(i+t3)+mv)
+ end 
+ obj.draw(dx,dy)
+end
+
+@Sin(Cos) Curve2iƒJƒƒ‰§Œäj kerokero9696
+--track0:‰œs‚«,0,9999,100,1
+--track1:‚‚³,0,9999,100,1
+--track2:’·‚³,0,7200,360,1
+--track3:Šp“x,-360,360,0,0.01
+--dialog:figure/fig,fig="‰~";size,sz=5;aspect,as=0;F/col,col1=0xffffff;Sin or Cos/chk,chk=0;Move/chk,chk1=0;speed,sp=0.5;LR/chk,chk2=0;x–§“x,xx=2;z–§“x,zz=5;z mode,mode=0;z•ÏˆÊ/chk,chk3=0;
+
+t0=obj.track0
+t1=obj.track1
+t2=obj.track2
+t3=obj.track3
+osw,osh=obj.screen_w,obj.screen_h
+obj.load("figure",fig,col1,sz,sz)
+obj.aspect=as
+if(chk1==1)then
+ if(chk2==0)then
+  mv=-obj.frame*sp
+ else
+  mv=obj.frame*sp
+ end
+else
+ mv=0
+end
+
+for j=-t0/2,t0/2 do
+ for i=0,t2 do
+  dx=-osw/2+i*xx
+  if(chk==0)then
+   if(chk3==0)then
+    dy=t1*math.sin(math.pi/180*(i+t3)+mv)
+   else
+    dy=t1*math.sin(math.pi/180*(i+j+t3)+mv)
+   end
+  else
+   if(chk3==0)then
+    dy=t1*math.cos(math.pi/180*(i+t3)+mv)
+   else
+    dy=t1*math.cos(math.pi/180*(i+j+t3)+mv)
+   end
+  end
+  if(mode==0)then
+   dz=j*zz
+  elseif(mode==1)then
+   dz=j*zz*math.sin(math.pi/180*(i+t3)+mv)
+  elseif(mode==2)then
+   dz=j*zz*math.cos(math.pi/180*(i+t3)+mv)
+  elseif(mode==3)then
+   dz=j*zz*math.tan(math.pi/180*(i+t3)+mv)
+  elseif(mode==4)then
+   dz=j*zz*math.asin(math.pi/180*(i+t3)+mv)
+  elseif(mode==5)then
+   dz=j*zz*math.acos(math.pi/180*(i+t3)+mv)
+  elseif(mode==6)then
+   dz=j*zz*math.atan(math.pi/180*(i+t3)+mv)
+  elseif(mode==7)then
+   dz=j*zz*math.atan2(math.pi/180*(i+t3)+mv)
+  elseif(mode==8)then
+   dz=j*zz*math.sinh(math.pi/180*(i+t3)+mv)
+  elseif(mode==9)then
+   dz=j*zz*math.cosh(math.pi/180*(i+t3)+mv)
+  elseif(mode==10)then
+   dz=j*zz*math.tanh(math.pi/180*(i+t3)+mv)
+  elseif(mode==11)then
+   dz=t1*zz*math.sin(math.pi/180*(i+j+t3)+mv)
+  elseif(mode==12)then
+   dz=t1*zz*math.cos(math.pi/180*(i+j+t3)+mv)
+  elseif(mode==13)then
+   dz=t1*zz*math.tan(math.pi/180*(i+j+t3)+mv)
+  end
+  obj.draw(dx,dy,dz)
+ end
+end
+--[[
+obj.setoption("drawtarget","tempbuffer",osw,osh)
+
+obj.setoption("drawtarget","tempbuffer")
+obj.setoption("blend","alpha_add")
+
+obj.load("tempbuffer")
+obj.effect()
+obj.draw()
+]]--
+@Sin(Cos) Curve3 kerokero9696
+--track0:‘å‚«‚³,0,4096,50,1
+--track1:‚‚³,0,9999,100,1
+--track2:’·‚³,0,9999,360,1
+--track3:Šp“x,-360,360,0,0.01
+--dialog:figure/fig,fig="lŠpŒ`";aspect,as=0.98;F/col,col1=0xffffff;Sin or Cos/chk,chk=0;Move/chk,chk1=1;speed,sp=0.5;LR/chk,chk2=0;x–§“x,xx=1.00;random/chk,chk3=1;seed,sd=os.time();
+
+t0=obj.track0
+t1=obj.track1
+t2=obj.track2
+t3=obj.track3
+osw,osh=obj.screen_w,obj.screen_h
+obj.load("figure",fig,col1,t0,t0)
+obj.aspect=as
+math.randomseed(sd)
+seed=math.random(0,10000)
+if(chk1==1)then
+ if(chk2==0)then
+  mv=-obj.frame*sp
+ else
+  mv=obj.frame*sp
+ end
+else
+ mv=0
+end
+
+for i=0,t2 do
+ if(chk3==1)then
+  rnd=obj.rand(1,100,seed,i)/100
+ else
+  rnd=1
+ end
+ dx=-osw/2+i*xx
+ if(chk==0)then
+  dy=t1*math.sin(math.pi/180*(i+t3)+mv)*rnd
+ else
+  dy=t1*math.cos(math.pi/180*(i+t3)+mv)*rnd
+ end 
+ obj.draw(dx,dy)
+end
+
+@sin(cos) curve1 ver2 kerokero9696
+--track0:‘¬‚³,0,10000,1000,1
+--track1:Šp“x,-3600,3600,0,0.01
+--track2:•,0,10000,50,1
+--track3:‚‚³,0,4096,100,0.01
+--dialog:figure/fig,fig="‰~";color/col,col=0xffffff;size,sz=5;move/chk,chk1=1;sin/cos/chk,chk2=1;plus/minus/chk,chk3=0;
+
+t0=obj.track0/100
+t1=obj.track1
+t2=obj.track2/100
+t3=obj.track3
+osw,osh=obj.screen_w,obj.screen_h
+
+if(chk1==0)then
+ of=0
+else
+ if(chk3==0)then
+  pm=1
+ else
+  pm=-1
+ end
+ of=obj.frame*pm
+end
+
+obj.load("figure",fig,col,sz,sz)
+for i=0,osw*t2 do
+ r=math.pi/180*(t1+i+of*t0)
+ if(chk2==0)then
+  sankaku=math.cos(r)
+ else
+  sankaku=math.sin(r)
+ end
+ dx=-osw/2+i/t2
+ dy=t3*sankaku
+ obj.draw(dx,dy)
+end
+
+@sin(cos) curve2 ver2 kerokero9696
+--track0:‘¬‚³,0,10000,1000,1
+--track1:Šp“x,-3600,3600,0,0.01
+--track2:•,0,10000,50,1
+--track3:‚‚³,0,4096,100,0.01
+--dialog:figure/fig,fig="‰~";color/col,col=0xffffff;size,sz=5;move/chk,chk1=1;sin/cos/chk,chk2=1;plus/minus/chk,chk3=0;sin(cos)næ,nn=1;
+
+t0=obj.track0/100
+t1=obj.track1
+t2=obj.track2/100
+t3=obj.track3
+osw,osh=obj.screen_w,obj.screen_h
+
+if(chk1==0)then
+ of=0
+else
+ if(chk3==0)then
+  pm=1
+ else
+  pm=-1
+ end
+ of=obj.frame*pm
+end
+
+obj.load("figure",fig,col,sz,sz)
+for i=0,osw*t2 do
+ r=math.pi/180*(t1+i+of*t0)
+ if(chk2==0)then
+  sankaku=math.cos(r)
+ else
+  sankaku=math.sin(r)
+ end
+ dx=-osw/2+i/t2
+ dy=t3*sankaku^nn
+ obj.draw(dx,dy)
+end
+
+--[[http://madeinpc.blog50.fc2.com/]]--

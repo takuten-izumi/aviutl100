@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=100.00
+track1=0.00
+track2=0.00
+track3=0.00
+check0=0
+type=0
+filter=0
+name=メッシュ@particle_ri_ver3
+param=local mcol=0xff0000;local mfig="円";local mwide=10;local mdis=1;local msync=0;local stom=0;local mfade=nil;local mtime=nil;local mtcol={};local malpha=0;

@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=1.00
+track1=0.00
+track2=0.00
+track3=0.00
+check0=100
+type=0
+filter=0
+name=音@particle_ri_ver3
+param=local fn="particle001";local rawd=0;local subtime=0;local fmag=100;local fcal=1;local vmag=100;local vcal=0;local another=0;local roton=0;

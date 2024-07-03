@@ -1,0 +1,84 @@
+function particle_obj(t,t0,life,pi,pj,seed,track1,track2,track3,v1,col1,chk1)
+local type=function(v)
+local v=v
+local s=tostring(v)
+if s==v then return "string" end
+if s=="nil" then return "nil" end
+if s=="true" or s=="false" then return "boolean" end
+if string.find(s,"table:") then return "table" end
+if string.find(s,"function:") then return "function" end
+if string.find(s,"userdata:") then return "userdata" end
+return "number"
+end
+local track1=track1
+if type(track1)~="number" then track1=200 end
+if track1<0 then track1=0 end
+local track2=track2
+if type(track2)~="number" then track2=100 end
+if track2<0 then track2=0 end
+local track3=track3
+if type(track3)~="number" then track3=10 end
+if track3<0 then track3=0 end
+local v1=v1
+if type(v1)~="number" then v1=0 end
+if v1<0 then v1=0 end
+local col1=col1
+if type(col1)~="number" then col1=0xff0000 end
+local chk1=chk1
+if type(chk1)~="number" then chk1=0 end
+obj.setoption("drawtarget","tempbuffer",track1,track1)
+local halft=track1*0.5
+local ran=10*pi+55*pj+seed
+local num=math.floor(track3)+obj.rand(0,v1,ran,0);
+obj.load("figure","四角形",col1)
+local deg=obj.rand(0,359,ran,1)*math.pi/180
+local degv=2*math.pi/num
+local per=t/life
+for i=1,num do
+	local m=i
+	if chk1==1 then m=1 end
+	local high=obj.rand(math.ceil(halft*0.5),math.ceil(halft*0.8),ran,m*2+5)
+	local dis=obj.rand(math.ceil(halft*0.1),math.ceil(halft*0.2),ran,m*3+1)
+	local temp=obj.rand(math.ceil(track2*0.1),math.ceil(track2*0.2),ran,m*7+4)
+	local dist=obj.rand(0,359,ran,m*11+7)*math.pi/180
+	local radius=high+dis*math.sin(dist+temp*per)
+	local theta=deg+degv*i
+	local tcos=math.cos(theta)
+	local tsin=math.sin(theta)
+	local x1=radius*tcos
+	local y1=radius*tsin
+	local x2=-halft*0.15*tsin
+	local y2=halft*0.15*tcos
+	local x3=halft*0.15*tsin
+	local y3=-halft*0.15*tcos
+	obj.drawpoly(
+	x1,y1,0,
+	x1,y1,0,
+	x2,y2,0,
+	x3,y3,0
+	)
+end
+obj.load("figure","円",col1,track1*0.3)
+obj.draw()
+obj.load("tempbuffer")
+end
+
+function particle_disp()
+obj.setfont("",40,1,0xffffff,0)
+obj.load("使用引数以下のようにしてください")
+obj.draw(0,-120)
+obj.load("{1,1,1,1,0,0,0,0,0,0,0,1,0,0,0,1,0}")
+obj.draw(0,-80)
+obj.load("値1はサイズです")
+obj.draw(0,-40)
+obj.load("値2は伸縮の速さです")
+obj.draw(0,0)
+obj.load("値3はとげの数です")
+obj.draw(0,40)
+obj.load("設定1は値3で設定したとげの数に上乗せするランダムの数です")
+obj.draw(0,80)
+obj.load("色1はとげの色です")
+obj.draw(0,120)
+obj.load("チェックボックス1でとげの伸縮を揃えることができます")
+obj.draw(0,160)
+end

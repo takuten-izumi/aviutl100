@@ -1,0 +1,125 @@
+--track0:パラ１,0,1000,10
+--track1:パラ２,0,1000,0
+--track2:パラ３,0,1000,0
+--track3:パラ４,0,1000,0
+--dialog:フィルタ種類0～7,fil=0;頂点数3～16,num=3;数字表示/chk,mojiche=0;数字サイズ,size=50;チェック/chk,che1=0;彩度、透明度エッジ,para1=0;色/col,c="";POS,pos={0,0,100,100,-100,100};
+--０はモザイク、１はぼかし、２は単色化、３は透明度、４は色調補正、５は発光、６はエッジ抽出、７は振動
+as={}
+shin={}
+al=1
+if(obj.getvalue("aspect")>0) then
+as[1]=1/(1-obj.getvalue("aspect"))
+as[2]=1
+elseif(obj.getvalue("aspect")<0) then
+as[1]=1
+as[2]=1/(1+obj.getvalue("aspect"))
+else
+as[1]=1
+as[2]=1
+end
+obj.setoption("dst","tmp")
+obj.copybuffer("tmp","obj")
+obj.draw()
+obj.setanchor("pos",math.floor(num),"loop")
+if(fil==0) then
+obj.effect("モザイク","サイズ",(obj.track0)*2,"タイル風",che1)
+elseif(fil==1) then
+obj.effect("ぼかし","範囲",(obj.track0),"縦横比",(obj.track1-500)/5,"光の強さ",(obj.track2)*3/50,"サイズ固定",che1)
+elseif(fil==2) then
+obj.effect("単色化","color",c,"強さ",(obj.track0)/10,"輝度を保持する",che1)
+elseif(fil==3) then
+al=obj.track0/1000
+elseif(fil==4) then
+obj.effect("色調補正","明るさ",(obj.track0)/5,"ｺﾝﾄﾗｽﾄ",obj.track1/5,"色相",(obj.track2-500)*(3.6)/5,"輝度",obj.track3/5,"彩度",para1)
+elseif(fil==5) then
+obj.effect("発光","強さ",(obj.track0)/5,"拡散",obj.track1*2,"しきい値",obj.track2/5,"拡散速度",(obj.track3)*3/50,"color",c,"サイズ固定",che1)
+elseif(fil==6) then
+--obj.effect("エッジ抽出","強さ",obj.track0,"しきい値",(obj.track1-500)/5,"color",c,"輝度エッジを抽出",che1,"透明度エッジを抽出",para1)
+end
+function chu(g1,g2,g3)
+local heikin
+heikin=(g1+g2+g3)/3
+return heikin
+end
+for i=1,math.floor(num)-2 do
+x1=as[1]*pos[1]
+y1=as[2]*pos[2]
+x2=as[1]*pos[2*(i+1)-1]
+y2=as[2]*pos[2*(i+1)]
+x3=as[1]*pos[2*(i+2)-1]
+y3=as[2]*pos[2*(i+2)]
+w=obj.w/2
+h=obj.h/2
+x4=(as[1]*pos[1]+w)
+y4=(as[2]*pos[2]+h)
+x5=(as[1]*pos[2*(i+1)-1]+w)
+y5=(as[2]*pos[2*(i+1)]+h)
+x6=(as[1]*pos[2*(i+2)-1]+w)
+y6=(as[2]*pos[2*(i+2)]+h)
+if(fil==7) then
+if(obj.track0-500>=0) then
+shin[1]=0
+shin[2]=obj.track0-500
+else
+shin[1]=obj.track0-500
+shin[2]=0
+end
+if(obj.track1-500>=0) then
+shin[3]=0
+shin[4]=obj.track1-500
+else
+shin[3]=obj.track1-500
+shin[4]=0
+end
+if(obj.track2-500>=0) then
+shin[5]=500
+shin[6]=obj.track2
+else
+shin[5]=250+obj.track2/2
+shin[6]=500
+end
+x4=((as[1]*pos[1]+w)+obj.rand(shin[1],shin[2],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10)))))*obj.rand(shin[5],shin[6],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10))))/500
+y4=((as[2]*pos[2]+h)+obj.rand(shin[3],shin[4],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10)))))*obj.rand(shin[5],shin[6],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10))))/500
+x5=((as[1]*pos[2*(i+1)-1]+w)+obj.rand(shin[1],shin[2],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10)))))*obj.rand(shin[5],shin[6],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10))))/500
+y5=((as[2]*pos[2*(i+1)]+h)+obj.rand(shin[3],shin[4],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10)))))*obj.rand(shin[5],shin[6],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10))))/500
+x6=((as[1]*pos[2*(i+2)-1]+w)+obj.rand(shin[1],shin[2],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10)))))*obj.rand(shin[5],shin[6],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10))))/500
+y6=((as[2]*pos[2*(i+2)]+h)+obj.rand(shin[3],shin[4],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10)))))*obj.rand(shin[5],shin[6],0,math.floor(obj.frame/(1+math.floor((obj.track3)/10))))/500
+end
+if(fil==3 or fil==6) then
+obj.setoption("blend","alpha_sub")
+end
+obj.drawpoly(x1,y1,0,x1,y1,0,x2,y2,0,x3,y3,0, x4,y4,x4,y4,x5,y5,x6,y6,al)
+end
+if(fil==6) then
+obj.setoption("blend","alpha_add")
+if(para1 ~=1) then
+para1=0
+end
+obj.effect("エッジ抽出","強さ",obj.track0,"しきい値",(obj.track1-500)/5,"color",c,"輝度エッジを抽出",che1,"透明度エッジを抽出",para1)
+for i=1,math.floor(num)-2 do
+x1=as[1]*pos[1]
+y1=as[2]*pos[2]
+x2=as[1]*pos[2*(i+1)-1]
+y2=as[2]*pos[2*(i+1)]
+x3=as[1]*pos[2*(i+2)-1]
+y3=as[2]*pos[2*(i+2)]
+w=obj.w/2
+h=obj.h/2
+x4=(as[1]*pos[1]+w)
+y4=(as[2]*pos[2]+h)
+x5=(as[1]*pos[2*(i+1)-1]+w)
+y5=(as[2]*pos[2*(i+1)]+h)
+x6=(as[1]*pos[2*(i+2)-1]+w)
+y6=(as[2]*pos[2*(i+2)]+h)
+obj.drawpoly(x1,y1,0,x1,y1,0,x2,y2,0,x3,y3,0, x4,y4,x4,y4,x5,y5,x6,y6,al)
+end
+end
+if(mojiche==1) then
+for i=1,num do
+obj.setfont("",size,4)
+obj.load("text",i)
+obj.setoption("blend",0)
+obj.draw((as[1])*pos[2*i-1],(as[2])*pos[2*i])
+end
+end
+obj.load("tempbuffer")

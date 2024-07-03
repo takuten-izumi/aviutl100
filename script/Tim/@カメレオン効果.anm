@@ -1,0 +1,76 @@
+@ƒJƒƒŒƒIƒ“Œø‰Ê(”wŒi)
+--track0:’†SX,-10000,10000,0,1
+--track1:’†SY,-10000,10000,0,1
+--track2:•,0,10000,5000,1
+--track3:‚‚³,0,10000,5000,1
+--check0:”ÍˆÍ‚ð•\Ž¦,0;
+--dialog:˜gF/col,local col=oxffffff;˜g•,local Lw=2;
+	require("T_Familiar_Module")
+	local userdata,w,h=obj.getpixeldata()
+	T_Familiar_Module.SetColor(userdata ,w, h, obj.track0, obj.track1, obj.track2, obj.track3 ,obj.check0 ,col, Lw)
+	obj.putpixeldata(userdata)
+
+@ƒJƒƒŒƒIƒ“Œø‰Ê(“K‰ž)
+--track0:“K‰ž—¦,0,100,70
+--track1:–¾“x•â³,0,300,100
+--track2:‹tŒõ‹­“x,0,300,0
+--track3:‹tŒõŠgŽU,0,500,15
+--check0:ÌÚ°ÑÊÞ¯Ì§‚ð”wŒi,0;
+--dialog:‹P“x•â³/chk,local CkV=1;Ê“x•â³/chk,local CkS=1;‹tŒõF/col,local col="";‹tŒõŽ©“®’²®/chk,local BLA=0;‹tŒõ‹­“x•â³,local BLL=100;Ž–‘O–³ÊF•â³/chk,local reC=0;„¤‹­“x,local reH=30;
+
+	require("T_Familiar_Module")
+
+	local P=obj.track0/100
+	local L=obj.track1/100
+	local GL=obj.track2
+	local GD=obj.track3
+	
+	BLL=(BLL or 100)/100
+
+	if obj.check0 then
+		local Pr={obj.ox,obj.oy,obj.oz,obj.rx,obj.ry,obj.rz,obj.cx,obj.cy,obj.cz,obj.zoom,obj.alpha,obj.aspect}
+		obj.copybuffer("cache:org","obj")
+		obj.load("framebuffer")
+		local userdata,w,h=obj.getpixeldata()
+		T_Familiar_Module.SetColor(userdata, w, h, 0, 0, w, h, false, 0 ,0)
+		obj.copybuffer("obj","cache:org")
+		obj.ox,obj.oy,obj.oz,obj.rx,obj.ry,obj.rz,obj.cx,obj.cy,obj.cz,obj.zoom,obj.alpha,obj.aspect=unpack(Pr)
+	end
+
+	if reC==1 then
+		reH=(reH or 30)
+		local r,g,b=T_Familiar_Module.GetColor()
+		local col=RGB(r,g,b)
+		obj.effect("’PF‰»","‹­‚³",reH,"color",col)
+	end
+
+	local userdata,w,h=obj.getpixeldata()
+	T_Familiar_Module.Familiar(userdata, w, h, P, L, CkS,CkV)
+	obj.putpixeldata(userdata)
+	
+	if GL>0 and GD>0 then
+		local r,g,b
+		if col=="" then
+			r,g,b=T_Familiar_Module.GetColor()
+			if BLA==1 then
+				local mx=math.max(r,g,b)			
+				if mx==0 then
+					r,g,b=0,0,0
+
+				else
+					r,g,b=255*r/mx,255*g/mx,255*b/mx
+
+				end
+			end
+		else
+			r,g,b=RGB(col)			
+		end
+
+		r,g,b=r*BLL,g*BLL,b*BLL
+		r=math.max(math.min(r,255),0)
+		g=math.max(math.min(g,255),0)
+		b=math.max(math.min(b,255),0)
+
+		obj.effect("ƒ‰ƒCƒg","‹­‚³",obj.track2,"ŠgŽU",obj.track3,"‹tŒõ",1,"color",RGB(r,g,b))
+	end
+

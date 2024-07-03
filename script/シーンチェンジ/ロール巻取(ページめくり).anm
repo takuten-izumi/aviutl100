@@ -1,0 +1,476 @@
+--track0:進行度,0,100,0
+--track1:巻取半径,1,1000,50
+--track2:生地厚,0,100,30
+--track3:角度,-720,720,0
+--check0:ｱﾝﾁｴｲﾘｱｽ解除,0
+--dialog:分割数,local num=50;めくるタイプ/chk,local sheel=0;向き反転/chk,local _z=0;裏面別画像/chk,local BIM=0;$裏面画像ﾌｧｲﾙ/col,local path="$だけを入力";裏面反転/chk,rev=1;超過移動距離,local ext=0
+
+--このスクリプトでは画像の上に円が転がるようすをシミュレートしているものです
+--円周と角度とラジアンの関係がわかっていればすぐに理解できるはずです
+
+--numがnil、つまり分割数の欄が空欄だった場合に備えます
+if num == nil then num = 50 end
+--numが1未満と500より大きい場合に備えます
+if num < 1 then num = 1 elseif 500 < num then num = 500 end
+--細かく描画すると境界にゴミがでてきます
+--アンチエイリアスをオフにすると消えますが、カメラ制御内でも消えるのでカメラ制御のときはアンチエイリアスがかからないようにします
+if obj.check0 and obj.getoption("camera_mode") == 0 then obj.setoption("antialias", 0) end
+--obj.drawpolyを使うのでこのスクリプト以降のフィルタがかからなくなります
+--それを防ぐためにobj.effectを引数なしに呼び出します
+obj.effect()
+--諸設定をローカル変数に変換します
+--Dは360の余剰をとることでつねに0から360の間に収まります
+local D = obj.track3 % 360
+--画像の画面サイズを取得します
+local w = obj.w
+local h = obj.h
+--画像が作る直角三角形の角度を求めます
+local deg = math.atan(w / h)
+local w1, h1, w2, h2, w3, h3, w4, h4
+local cos = math.cos
+local sin = math.sin
+local pi = math.pi
+local zoom = obj.getvalue("zoom") * 0.01
+--裏面用の準備をします
+--bimは変数を保存するテーブル変数です
+local bim = {}
+if BIM == 1 then
+	if string.sub(path, 1, 1) == "$" and rikky_module == nil then
+		--このスクリプトがあるフォルダ階層のパスを取得します
+		local spath = obj.getinfo("script_path")
+		local str = {}
+		local n = #spath
+		local i=1
+		--AviUtlのバージョンによっては得られたパスの後ろに\があったり2つ付いていたりとあるので最後にある\を取り除きます
+		--luaのfor文だとカウンタ変数の融通が利かないのでwhile文を使います
+		while(i<=n)do
+			local b=string.byte(spath, i)
+			if (0 <= b and b <= 127 ) or (161 <= b and b <= 223) then
+				--1バイト文字用
+				str[#str + 1] = string.sub(spath, i, i)
+				i = i + 1
+			else
+				--2バイト文字用
+				str[#str + 1] = string.sub(spath, i, i + 1)
+				i = i + 2
+			end
+		end
+		--文字ごとにstrに保存して、最後にある\を取り除きます
+		--単純に後ろに\があるか調べてもいいですが、フォルダ名の最後が「ソ」など2バイト目が0x5cだった場合おかしくなります
+		--ちなみに\が1バイトで0x5cを表しています
+		n = #str
+		for i = #str, 1, -1 do
+			if str[i] == "\\" then
+				n = n - 1
+			else
+				break
+			end
+		end
+		spath = ""
+		--ここで\を取り除いたパスを得ます
+		for i = 1, n do
+			spath = spath .. str[i]
+		end
+		--rikky_module.dllがあるかを調べます
+		spath = spath .. "\\rikky_module.dll"
+		--ファイルが開ければfにはなにかしらの値が入ります
+		local f = io.open(spath, "r")
+		if f then
+			--目的のdllが存在せずにrequre関数を使うとエラーになりスクリプトが動かなくなります
+			--なのでrikky_moduleがあるか確認する必要がありました
+			require("rikky_module")
+			--ファイルを開いたら必ず閉じます
+			f:close()
+		end
+	end
+	if rikky_module ~= nil then
+		--rikky_module.fileの使い方は該当のスクリプトをご覧ください
+		--リアルタイムでレビューするにチェックが入っているとファイル選択のダイアログが出ます
+		rikky_module.file(5,"裏面画像ﾌｧｲﾙ")
+	end
+	--裏面非表示にするために"culling"を1にします
+	obj.setoption("culling", 1)
+	--元イメージのピクセルサイズをコピーします
+	--のちでリサイズするのでそのとき必要になってきます
+	bim = {obj.getpixel()}
+end
+
+
+--Dの範囲で場合分けします
+--これで求めるのは画像の四点がぴたりと収まる大きな四角形の四点を求めます
+--理屈は円の直径の円周角が常に90度になることを使っています
+--４つある辺をそれぞれに円を作りその円周を沿うように四点を移動させます
+if D < 90 then
+	local p = D / 90 * pi
+	w1 = -w * 0.5 * cos(p)
+	h1 = -w * 0.5 * sin(p) - h * 0.5
+	w2 = h * 0.5 * sin(p) + w * 0.5
+	h2 = -h * 0.5 * cos(p)
+	w3 = -w1
+	h3 = -h1
+	w4 = -w2
+	h4 = -h2
+	w = (w2 - w * 0.5) / zoom
+	h = (h3 - h * 0.5) / zoom
+elseif D < 180 then
+	local p = (D - 90) / 90 * pi
+	w1 = h * 0.5 * sin(p) + w * 0.5
+	h1 = -h * 0.5 * cos(p)
+	w2 = w * 0.5 * cos(p)
+	h2 = w * 0.5 * sin(p) + h * 0.5
+	w3 = -w1
+	h3 = -h1
+	w4 = -w2
+	h4 = -h2
+	w = (w1 - w * 0.5) / zoom
+	h = (h2 - h * 0.5) / zoom
+elseif D < 270 then
+	local p = (D - 180) / 90 * pi
+	w1 = w * 0.5 * cos(p)
+	h1 = w * 0.5 * sin(p) + h*0.5
+	w2 = -h * 0.5 * sin(p) - w * 0.5
+	h2 = h * 0.5 * cos(p)
+	w3 = -w1
+	h3 = -h1
+	w4 = -w2
+	h4 = -h2
+	w = (w4 - w * 0.5) / zoom
+	h = (h1 - h * 0.5) / zoom
+else
+	local p = (D - 270) / 90 * pi
+	w1 = -h * 0.5 * sin(p) - w * 0.5
+	h1 = h * 0.5 * cos(p)
+	w2 = -w * 0.5 * cos(p)
+	h2 = -w * 0.5 * sin(p) - h * 0.5
+	w3 = -w1
+	h3 = -h1
+	w4 = -w2
+	h4 = -h2
+	w = (w3 - w * 0.5) / zoom
+	h = (h4 - h * 0.5) / zoom
+end
+if obj.getvalue("aspect")<0 then
+	h = h / (1 + obj.getvalue("aspect"))
+else
+	w = w / (1 - obj.getvalue("aspect"))
+end
+
+
+--ここから使うDは弧度法なのでpiをかけて180で割ります
+D = D * pi / 180
+--だした大きな四角形のサイズに合わせて元画像の領域を広げます
+obj.effect("領域拡張", "上", h, "下", h, "右", w, "左", w)
+--裏面を使う場合拡張した分の変化量をコピーしておきます
+if BIM ==1 then
+	bim[3] = w
+	bim[4] = h
+end
+--大きな四角形の横と縦のサイズを出します
+local Lw = ((w1 - w2) * (w1 - w2) + (h1 - h2) * (h1 - h2)) ^ 0.5
+local Lh = ((w1 - w4) * (w1 - w4) + (h1 - h4) * (h1 - h4)) ^ 0.5
+--大きくなった画像の縦と横を変数に代入します
+--ここでobj.wとobj.hを使っているのは拡大率の考慮をしなくて済むからです
+w = obj.w
+h = obj.h
+
+--再び諸設定をローカル変数に代入します
+local R = obj.track1 * zoom
+local k = Lh / num
+--このposにobj.drawpolyの20の情報が入ります
+local pos = {}
+for i = 0,num do
+	pos[i] = {}
+end
+--poszには各posのzの平均値が入ります
+local posz = {}
+posz[0] = 0
+--各初期値
+local n = 0
+local mz = 0
+
+--さらに伸ばす距離を計算します
+if ext == nil or ext < 0 then ext=0 end
+ext=ext * zoom
+
+if sheel == 0 then
+	--厚み
+	local B = obj.track2 * zoom / (4 * pi)
+	local M_PHY, PHY
+	--回転できる最大の角度を求めますが、Bの値によって処理を変えます
+	if B ~= 0 then
+		M_PHY = (-R + (R * R + 4 * B * Lh) ^ 0.5) / (2 * B) + 1 + ext / (R * R + 4 * B * Lh)^0.5
+	else
+		M_PHY = Lh / R + 1 + ext / R
+	end
+	--進行度を回転した角度に変換します
+	PHY = M_PHY * obj.track0 * 0.01
+	--画像の上を転がる円の進んだ距離を出します
+	local L = PHY * (R + B * PHY)
+	--画像の上を転がる円の中心の高さを出します
+	local Z = R + 2 * B * PHY
+	if (R * R + 4 * B * Lh)^0.5 < Z then Z = (R * R + 4 * B * Lh)^0.5 end
+	--for文内で使う変数をあらかじめ宣言します
+	local Y, R1, roll, x1, x2, x3, x4, y1, y2, y3, y4, z1, z2, z3, z4, u1, u2, u3, u4, v1, v2, v3, v4, cz
+	for i = 0, num - 1 do
+		--画像の下から上に向かって処理していきます
+		--順番はあとでzの位置によって変えるのでこの段階では気にしません
+		--このYが画像下から距離になります
+		Y = i * k
+		--YがL以下ということは画像の上を転がる円に巻き込まれたことを意味します
+		--obj.drawpolyの左下から計算します
+		if Y <= L then
+			--厚みが0のときだけ処理が変わります
+			if B ~= 0 then
+				--角度によってxとyの距離を入れ替えます
+				--R1はi番目における転がる円の半径です
+				--rollは巻き込まれて進む上下の変化量です
+				--それをcosとsinを使って振り分けます
+				--z方向は角度関係なく処理できます
+				R1 = (R * R + 4 * B * Y)^0.5
+				roll = -L + R1 * sin(PHY - (R1 - R) / B * 0.5)
+				x4 = -roll * sin(D) + w4
+				y4 = roll * cos(D) + h4
+				z4 = -Z + R1 * cos(PHY - (R1 - R) / B * 0.5)
+			else
+				roll = -L + R * sin(PHY - Y / R)
+				x4 = -roll * sin(D) + w4
+				y4 = roll * cos(D) + h4
+				z4 = -Z + R * cos(PHY - Y / R)
+			end
+		else
+			--この場合は巻き込まれていないので通常の位置にx、y、zをします
+			x4 = Y * sin(D) + w4
+			y4 = -Y * cos(D) + h4
+			z4 = 0
+		end
+		--右下は左下とこのような関係があります
+		x3 = x4 - w4 + w3
+		y3 = y4 - h4 + h3
+		z3 = z4
+		u4 = w4 + Y * sin(D) + w * 0.5
+		v4 = h4 - Y * cos(D) + h * 0.5
+		u3 = u4 - w4 + w3
+		v3 = v4 - h4 + h3
+		Y = i * k + k
+		--obj.drawpolyの上の2点も計算します
+		--内容は同じです
+		if Y <= L then
+			if B ~= 0 then
+				R1 = (R * R + 4 * B * Y)^0.5
+				roll = -L + R1 * sin(PHY - (R1 - R) / B * 0.5)
+				x1 = -roll * sin(D) + w4
+				y1 = roll * cos(D) + h4
+				z1 = -Z + R1 * cos(PHY - (R1 - R) / B * 0.5)
+			else
+				roll = -L + R * sin(PHY - Y / R)
+				x1 = -roll * sin(D) + w4
+				y1 = roll * cos(D) + h4
+				z1 = -Z + R * cos(PHY - Y / R)
+			end
+		else
+			x1 = Y * sin(D) + w4
+			y1 = -Y * cos(D) + h4
+			z1 = 0
+		end
+		x2 = x1 - w4 + w3
+		y2 = y1 - h4 + h3
+		z2 = z1
+		u1 = w4 + Y * sin(D) + w * 0.5
+		v1 = h4 - Y * cos(D) + h * 0.5
+		u2 = u1 - w4 + w3
+		v2 = v1 - h4 + h3
+		--zの平均値を出します
+		cz = (z1 + z4) * 0.5
+		--mzはいままで計算したうちの最大値をコピーしています
+		if cz <= mz then
+			--mzよりも小さい場合は順序良くposに代入させます
+			n = n + 1
+			posz[n] = cz
+			pos[n] = {x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, u1, v1, u2, v2, u3, v3, u4, v4}
+			mz = cz
+		else
+			--czがmzよりも小さくない場合はいままでposの中のちょうどいい場所を探します
+			for j = n-1, 0, -1 do
+				--czがあるposzよりも小さいjを見つけます
+				if cz <= posz[j] then
+					--table.insertを使ってもできますが、関数をあまり使いたくないのでforでposテーブル内の順番を入れ替えます
+					for m = n, j + 1, -1 do
+						posz[m + 1] = posz[m]
+						--テーブル変数をテーブル変数に代入すること、pos[m+1]=pos[m]もよさそうに思えますが、不適です
+						--詳しくは延べませんが、要素1つずつを丁寧にコピーしましょう
+						for g = 1, 20 do
+							pos[m + 1][g] = pos[m][g]
+						end
+					end
+					posz[j + 1] = cz
+					pos[j + 1] = {x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, u1, v1, u2, v2, u3, v3, u4, v4}
+					n = n + 1
+					break
+				end
+			end
+		end
+	end
+else
+	--こっちはシールをはがすような感じのものです
+	--厚みの変数をシールをはがす向きに代用します
+	local P = obj.track2 * pi * 0.01
+	local M_PHY = Lh / R + P + ext / R
+	local PHY = M_PHY * obj.track0 * 0.01
+	local L = PHY * R
+	local Y, R1, roll, x1, x2, x3, x4, y1, y2, y3, y4, z1, z2, z3, z4, u1, u2, u3, u4, v1, v2, v3, v4, cz
+	for i = 0, num -1 do
+		Y = i * k
+		if Y <= L then
+			--ここのR1はある地点iの角度を出します
+			R1 = PHY - Y / R
+			if R1 < P then
+				--P未満のとき通常の巻き取るように動かします
+				roll = - L + R * sin(R1)
+				x4 = -roll * sin(D) + w4
+				y4 = roll * cos(D) + h4
+				z4 = R * (cos(R1) - 1)
+			else
+				--はがすような移動をつけ足します
+				--がしている距離はL-Yで、転がる円に張り付ている部分がR*Pなので、これらを引くとはがれて距離が出ます
+				roll = - L + R * sin(P) + (L - Y - R * P) * cos(P)
+				x4 = -roll * sin(D) + w4
+				y4 = roll * cos(D) + h4
+				z4 = R * (cos(P) - 1) - (L - Y - R * P) * sin(P)
+			end
+		else
+			x4 = Y * sin(D) + w4
+			y4 = -Y * cos(D) + h4
+			z4 = 0
+		end
+		x3 = x4 - w4 + w3
+		y3 = y4 - h4 + h3
+		z3 = z4
+		u4 = w4 + Y * sin(D) + w * 0.5
+		v4 = h4 - Y * cos(D) + h * 0.5
+		u3 = u4 - w4 + w3
+		v3 = v4 - h4 + h3
+		Y = i * k + k
+		if Y <= L then
+			R1 = PHY - Y / R
+			if R1 < P then
+				roll = - L + R * sin(R1)
+				x1 = -roll * sin(D) + w4
+				y1 = roll * cos(D) + h4
+				z1 = R * (cos(R1) - 1)
+			else
+				roll = - L + R * sin(P) + (L - Y - R * P) * cos(P)
+				x1 = -roll * sin(D) + w4
+				y1 = roll * cos(D) + h4
+				z1 = R * (cos(P) - 1) - (L - Y - R * P) * sin(P)
+			end
+		else
+			x1 = Y * sin(D) + w4
+			y1 = -Y * cos(D) + h4
+			z1 = 0
+		end
+		x2 = x1 - w4 + w3
+		y2 = y1 - h4 + h3
+		z2 = z1
+		u1 = w4 + Y * sin(D) + w * 0.5
+		v1 = h4 - Y * cos(D) + h * 0.5
+		u2 = u1 - w4 + w3
+		v2 = v1 - h4 + h3
+		cz = (z1 + z4) * 0.5
+		if cz <= mz then
+			n = n + 1
+			posz[n] = cz
+			pos[n] = {x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, u1, v1, u2, v2, u3, v3, u4, v4}
+			mz = cz
+		else
+			for j = n-1, 0, -1 do
+				if cz <= posz[j] then
+					for m = n, j + 1, -1 do
+						posz[m + 1] = posz[m]
+						for g = 1, 20 do
+							pos[m + 1][g] = pos[m][g]
+						end
+					end
+					posz[j + 1] = cz
+					pos[j + 1] = {x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, u1, v1, u2, v2, u3, v3, u4, v4}
+					n = n + 1
+					break
+				end
+			end
+		end
+	end
+end
+if _z == 1 then
+	--zの向きを変えるのでマイナスします
+	for i = 1, num do
+		pos[i][3] = -pos[i][3]
+		pos[i][6] = -pos[i][6]
+		pos[i][9] = -pos[i][9]
+		pos[i][12] = -pos[i][12]
+	end
+	--通常の順番はプラスからマイナスへと描画しているので、それは逆にします
+	for i = num, 1, -1 do
+		obj.drawpoly(unpack(pos[i]))
+	end
+else
+	for i = 1, num do
+		obj.drawpoly(unpack(pos[i]))
+	end
+end
+--裏面を別画像にした場合に実行します
+if BIM == 1 then
+	--新しくイメージを呼び出すのでobj.oxなどのすべての情報がリセットされてしまいます
+	--なので旧情報をコピーします
+	local objinfo = {obj.ox, obj.oy, obj.oz, obj.cx, obj.cy, obj.cz, obj.zoom, obj.aspect, obj.alpha, obj.rx, obj.ry, obj.rz}
+	--裏面画像をレイヤのイメージに指定するかを調べます
+	--string.lowerで処理すれば入力された文字列がLayerでもLAYERでも反応します
+	if string.lower(string.sub(path, 1,5)) == "layer" then
+		obj.load("layer", tonumber(string.sub(path, 6, #path)), true)
+	elseif tonumber(path) and 0<=tonumber(path) then
+		obj.effect("単色化","color",tonumber(path),"輝度を保持する",0)
+	else
+		--"image"を第一引数にしてもいいのですが、動画ファイルだった場合に備えてファイルの判断をAviUtl側に任せます
+		obj.load(path)
+		obj.effect()
+	end
+	--呼び出したイメージと元のイメージと同じ横幅縦幅にします
+	obj.effect("リサイズ", "ドット数でサイズ指定", 1, "X", bim[1], "Y", bim[2])
+	--裏返すので左右反転
+	if rev ~= 1 then
+		obj.effect("反転",  "左右反転", 1)
+	end
+	--領域を同じように拡張します
+	obj.effect("領域拡張", "上", bim[4], "下", bim[4], "右", bim[3], "左", bim[3])
+	--新しいイメージを呼び出したので、旧情報に戻します
+	obj.ox = objinfo[1]
+	obj.oy = objinfo[2]
+	obj.oz = objinfo[3]
+	obj.cx = objinfo[4]
+	obj.cy = objinfo[5]
+	obj.cz = objinfo[6]
+	obj.zoom = objinfo[7]
+	obj.aspect = objinfo[8]
+	obj.alpha = objinfo[9]
+	obj.rx = objinfo[10]
+	obj.ry = objinfo[11]
+	obj.rz = objinfo[12]
+	--左右のxとyの位置情報を入れ替えます
+	--本来は1行で済みますが、見やすさを優先して4行にしました
+	--z方向は裏も表も同じなので入れ替える必要もプラスとマイナスの変更などありません
+	for i = 1, num do
+		pos[i][1], pos[i][2], pos[i][4], pos[i][5] = pos[i][4], pos[i][5], pos[i][1], pos[i][2]
+		pos[i][7], pos[i][8], pos[i][10], pos[i][11] = pos[i][10], pos[i][11], pos[i][7], pos[i][8]
+		pos[i][13], pos[i][14], pos[i][15], pos[i][16] = pos[i][15], pos[i][16], pos[i][13], pos[i][14]
+		pos[i][17], pos[i][18], pos[i][19], pos[i][20] = pos[i][19], pos[i][20], pos[i][17], pos[i][18]
+		--pos[i][1], pos[i][2], pos[i][4], pos[i][5], pos[i][7], pos[i][8], pos[i][10], pos[i][11], pos[i][13], pos[i][14], pos[i][15], pos[i][16], pos[i][17], pos[i][18], pos[i][19], pos[i][20] = pos[i][4], pos[i][5], pos[i][1], pos[i][2], pos[i][10], pos[i][11], pos[i][7], pos[i][8], pos[i][15], pos[i][16], pos[i][13], pos[i][14], pos[i][19], pos[i][20], pos[i][17], pos[i][18]
+		--上のように1行にしたらわかりにくいですよね
+	end
+	if _z ==1 then
+		for i = num, 1, -1 do
+			obj.drawpoly(unpack(pos[i]))
+		end
+	else
+		for i = 1, num do
+			obj.drawpoly(unpack(pos[i]))
+		end
+	end
+end

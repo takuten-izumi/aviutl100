@@ -1,0 +1,33 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objtrack3,objtime,objframe,objtotaltime,objtotalframe,objindex)
+l = math.floor(obj.framerate/objtrack0+0.5)
+l0 = math.floor(l*(100-objtrack1)/100)
+l1 = math.floor(l*objtrack1/100)
+if( l0 < 1 ) then
+	l0 = 1
+end
+if( l1 < 1 ) then
+	l1 = 1
+end
+l0 = l0/obj.framerate
+l1 = l1/obj.framerate
+l = l0+l1
+t = (objtime+0.0001)%l
+if( t < l1 ) then
+	l = l1*(100-objtrack2)/100
+	t = t+1/obj.framerate
+	if( t < l ) then
+		obj.alpha = obj.alpha*t/l
+	end
+else
+	t = t-l1
+	l = l0*(100-objtrack3)/100
+	t = t+1/obj.framerate
+	if( t < l ) then
+		obj.alpha = obj.alpha*(1-t/l)
+	else
+		obj.alpha = 0
+	end
+end
+
+
+end

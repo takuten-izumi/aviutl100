@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=300.00
+track1=100.00
+track2=2.00
+track3=0.00
+check0=100
+type=0
+filter=0
+name=軌跡@particle_ri_ver3
+param=local figu="";local col="0xffffff";local size=10;local tral=30;local trzm=30;local den=5;local jojo=0;local trgv=0;local tgrav={nil,nil,nil};local passp=0;local fral=30;

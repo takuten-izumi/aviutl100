@@ -1,0 +1,161 @@
+@ボーン回転
+--track0:骨番号,1,999,1,1
+--track1:俯角,-3600,3600,0
+--track2:方位角,-3600,3600,0
+--track3:軸回転,-3600,3600,0
+--dialog:ボーン総数,bnum=0;
+local bn=#POLYGON_BONE_R
+rikky_module.setdialogparam("bnum",bn)
+local bi=math.ceil(obj.track0)
+if bn<bi then bi=bn end
+local b1,b2,ox,oy,oz=unpack(POLYGON_BONE_R[bi])
+local nx,ny,nz,ux,uy,uz
+if b2==0 then
+return
+else
+nx=POLYGON_BONE_R[b2][3]-ox
+ny=POLYGON_BONE_R[b2][4]-oy
+nz=POLYGON_BONE_R[b2][5]-oz
+L=(nx*nx+ny*ny+nz*nz)^.5
+if L==0 then
+nx=0
+ny=-1
+nz=0
+else
+nx=nx/L
+ny=ny/L
+nz=nz/L
+end
+ux=ny
+uy=-nx
+uz=0
+L=(ux*ux+uy*uy)^.5
+if L==0 then
+ux=-1
+uy=0
+else
+ux=ux/L
+uy=uy/L
+end
+if ny<0 then
+ux=-ux
+uy=-uy
+end
+end
+local b={bi}
+local bc=1
+local pushc=1
+local t=math.pi/180*obj.track1
+local d=math.pi/180*obj.track2
+local r=math.pi/180*obj.track3
+while(1)do
+	for i=1,bn do
+		if b[bc]==POLYGON_BONE_R[i][1] then
+			pushc=pushc+1
+			POLYGON_BONE_R[i][3],POLYGON_BONE_R[i][4],POLYGON_BONE_R[i][5]=rikky_module.rotation(POLYGON_BONE_R[i][3],POLYGON_BONE_R[i][4],POLYGON_BONE_R[i][5],r,{nx,ny,nz},{ox,oy,oz})
+			POLYGON_BONE_R[i][3],POLYGON_BONE_R[i][4],POLYGON_BONE_R[i][5]=rikky_module.rotation(POLYGON_BONE_R[i][3],POLYGON_BONE_R[i][4],POLYGON_BONE_R[i][5],t,{ux,uy,uz},{ox,oy,oz})
+			POLYGON_BONE_R[i][3],POLYGON_BONE_R[i][4],POLYGON_BONE_R[i][5]=rikky_module.rotation(POLYGON_BONE_R[i][3],POLYGON_BONE_R[i][4],POLYGON_BONE_R[i][5],d,{nx,ny,nz},{ox,oy,oz})
+			b[pushc]=i
+		end
+	end
+	if bc==pushc then
+		break
+	else
+		bc=bc+1
+	end
+end
+for i=1,#POLYGON_POS_R.x do
+	local flag=0
+	for j=1,bc do
+		if POLYGON_POS_R.bone[i]==b[j] then
+			flag=1
+			break
+		end
+	end
+	if flag==1 then
+		POLYGON_POS_R.x[i],POLYGON_POS_R.y[i],POLYGON_POS_R.z[i]=rikky_module.rotation(POLYGON_POS_R.x[i],POLYGON_POS_R.y[i],POLYGON_POS_R.z[i],r,{nx,ny,nz},{ox,oy,oz})
+		POLYGON_POS_R.x[i],POLYGON_POS_R.y[i],POLYGON_POS_R.z[i]=rikky_module.rotation(POLYGON_POS_R.x[i],POLYGON_POS_R.y[i],POLYGON_POS_R.z[i],t,{ux,uy,uz},{ox,oy,oz})
+		POLYGON_POS_R.x[i],POLYGON_POS_R.y[i],POLYGON_POS_R.z[i]=rikky_module.rotation(POLYGON_POS_R.x[i],POLYGON_POS_R.y[i],POLYGON_POS_R.z[i],d,{nx,ny,nz},{ox,oy,oz})
+	end
+end
+
+local flag=1
+for i=1,10 do
+	if obj.getoption("script_name",i,true):find("ポリゴン表示(R)",1,true) then
+		flag=0
+		break
+	end
+end
+
+if flag==1 then
+polygon_MMD()
+end
+
+@点と線
+--track0:種類,1,2,1,1
+--color:0xffffff
+POLY_R_CK=obj.track0
+POLY_R_COL=color
+local flag=1
+for i=1,10 do
+	if obj.getoption("script_name",i,true):find("ポリゴン表示(R)",1,true) then
+		flag=0
+		break
+	end
+end
+if flag==1 then
+polygon_MMD()
+end
+
+@シルエット
+--color:0x000000;
+for i=1,#POLYGON_TEXTURE_R do
+	POLYGON_TEXTURE_R[i][6]=color
+	POLYGON_TEXTURE_R[i][3]=""
+end
+local flag=1
+for i=1,10 do
+	if obj.getoption("script_name",i,true):find("ポリゴン表示(R)",1,true) then
+		flag=0
+		break
+	end
+end
+if flag==1 then
+polygon_MMD()
+end
+
+@不要面
+--dialog:不要面,local cut={};面総数,tnum=0;
+rikky_module.setdialogparam("tnum",#POLYGON_TEXTURE_R)
+for i=1,#cut do
+	POLYGON_TEXTURE_R[cut[i]][1]=0
+end
+local flag=1
+for i=1,10 do
+	if obj.getoption("script_name",i,true):find("ポリゴン表示(R)",1,true) then
+		flag=0
+		break
+	end
+end
+
+if flag==1 then
+polygon_MMD()
+end
+
+@各拡大率
+--track0:X拡大,0,1000,100
+--track1:Y拡大,0,1000,100
+--track2:Z拡大,0,1000,100
+POLYGON_ZOOM_R={x=obj.track0*.01,y=obj.track1*.01,z=obj.track2*.01}
+local flag=1
+for i=1,10 do
+	if obj.getoption("script_name",i,true):find("ポリゴン表示(R)",1,true) then
+		flag=0
+		break
+	end
+end
+
+if flag==1 then
+polygon_MMD()
+end
+

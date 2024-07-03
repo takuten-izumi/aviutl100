@@ -1,0 +1,20 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objcheck0,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack0 == 0 ) then
+	return
+elseif( objtrack0 < 0 ) then
+	t = (objtrack0-objtime+objtotaltime-rand(0,100,objindex,0)*objtrack1/100)/objtrack0
+	v = objtrack2
+else
+	t = (objtrack0-objtime+rand(0,100,objindex,0)*objtrack1/100)/objtrack0
+	v = -objtrack2
+end
+if( t > 0 ) then
+	if( objcheck0 ) then
+		t = t*t
+	end
+	obj.alpha = math.cos(t*math.pi/2)
+	obj.oy = obj.oy+v*t
+end
+
+
+end

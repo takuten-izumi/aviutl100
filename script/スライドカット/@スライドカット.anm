@@ -1,0 +1,2701 @@
+--[[
+IMAGE_SLIDE_EASING関数とIMAGE_SLIDE_TIMING関数とIMAGE_SLIDE_COLOR関数をスクリプト制御で用意していると
+色々複雑にスライドさせることができます
+IMAGE_SLIDE_EASING関数はスライドする加速減を設定することができます
+
+IMAGE_SLIDE_EASING = function(per, index, num)
+	--perは0から1までの進行度です
+	--indexはスライドの0から全体の数までの指標になる変数で、0は最前面にあるイメージなります
+	--numは全体の数です
+	--index、numは使わなくても支障はありません
+	local p = per * per--これは例で、二乗で変化します
+	return p --pは最終的な1つのイメージが動く割合で、0がそのままで、1が動ききった状態になります
+end
+
+IMAGE_SLIDE_TIMING関数はスライドを開始するタイミングとスライドの速度を決める関数です
+
+IMAGE_SLIDE_TIMING = function(index, num)
+	--indexはスライドの0から全体の数までの指標になる変数で、0は最前面にあるイメージなります
+	--numは全体の数です
+	local position = index / (num + 1)--positionはそれぞれのイメージが動き出すタイミングを0から1までの数値で設定します
+	local velocity = 1--基本は1の等倍ですが2にすれば2倍の速度になります、1 - positionの速度にすると各イメージの速度が等しくなります
+	return position, velocity
+end
+IMAGE_SLIDE_COLOR = function(per, index, num)
+	--perは0から1までの進行度です
+	--indexはスライドの0から全体の数までの指標になる変数で、0は最前面にあるイメージなります
+	--numは全体の数です
+	return color--そのindexでの色です
+end
+タイミングは0から5、またはテーブルで具体的な割合を指定できます
+スライドスティックでもIMAGE_SLIDE_EASING関数とIMAGE_SLIDE_TIMING関数は同様に使えます
+ただし、IMAGE_SLIDE_TIMING関数のpositionは中間点の位置、velocityは中間点時の棒の長さを指定するようになります
+スライドスティックの移動イージングは通常は0から3までですが、UndoFishさんのaviutl_easing.luaを導入しているとそれを使うことができるようになり亜mす
+またベジェTと記述して(Tは半角大文字)、Tの横に指定したいベジェ曲線の番号を入れると、ベジェ曲線が使えます
+スティックはIMAGE_SLIDE_STICK関数で少しだけ複雑に動かすことができます
+IMAGE_SLIDE_STICK = function(per, index, num)
+	--perは0から1までの進行度です
+	--indexはスライドの0から全体の数までの指標になる変数で、0は最前面にあるイメージなります
+	--numは全体の数です
+	--IMAGE_SLIDE_STICK関数内ではIMAGE_SLIDEテーブル変数が使えます
+	--IMAGE_SLIDE.perはeasing関数にかかる前の進行度です
+	--IMAGE_SLIDE.hはスティックの高さで、この値を変えると実際に高さも変わります
+	--IMAGE_SLIDE.easingは設定したeasing関数です
+	--IMAGE_SLIDE.funcは設定したfunc関数です
+	return x, y, d, (final_length)--戻り値はx方向のズレ量、y方向のズレ量、回転する角度(度数)の最低3つですが、四つ目に最終的な長さを付けることも可能で、プラスだと、その長さ、マイナスだとそのパーセント分が最終的な長さになります
+end
+]]--
+
+@通常
+--track0:数,0,20,2,1
+--track1:向き,1,8,5,1
+--track2:角度,-60,60,0
+--track3:時間反転,0,1,0,1
+--check0:仮想バッファ描画,1
+--dialog:色,col={0xff0000,0x0000ff};スポイト/col,s=0xff0000;輝度を保持する/chk,lum=1;透明度,alp=100;ベジェT変更/chk,beje=0;イージング番号,e=0;タイミング,timing=1;テクスチャ,tex=""
+local prog = obj.time / obj.totaltime
+if obj.track3 == 1
+then
+	prog = 1 - prog
+end
+local num = obj.track0
+local guid = obj.track1
+local deg = obj.track2
+--local shdw = obj.track3
+--local shdh = shdw * 0.5
+local buf = obj.check0
+local Zero2One = function(p)
+  if 1 < p
+  then
+     return 1
+  elseif p < 0
+  then
+    return 0
+  else
+    return p
+  end
+end
+if rikky_module == nil
+then
+  local CPATH = {}
+  local cpath = package.cpath .. ";"
+  local n
+  while 1
+  do
+    n = cpath:find(";")
+    if n
+    then
+      CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+      cpath = cpath:sub(n + 1, #cpath)
+    else
+      break
+    end
+  end
+  if not CPATH[2]:find("script\\?.dll")
+  then
+    CPATH[3] = CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+    package.cpath = package.cpath .. ";" .. CPATH[3]
+  end
+  for i = 1, #CPATH
+  do
+    local f = io.open(CPATH[i]:gsub("?", "rikky_module"), "rb")
+    if f
+    then
+      require("rikky_module")
+      f:close()
+      break
+    end
+  end
+end
+local easing = nil
+local image_arg0, image_arg1, image_arg2, image_arg3, image_func, typefunc
+if rikky_module
+then
+  image_arg0 = "w"
+  image_arg1 = "r"
+  image_arg2 = rikky_module.image("g")
+  image_arg3 = image_arg2
+  image_func = rikky_module.image
+  typefunc = rikky_module.type
+else
+  image_arg0 = "cache:image_slide"
+  image_arg1 = "obj"
+  image_arg2 = "obj"
+  image_arg3 = image_arg0
+  image_func = obj.copybuffer
+  typefunc = function(v)
+    local s = tostring(v)
+    if(s == v)then return "string" end
+    if(s == "nil")then return "nil" end
+    if(s == "true" or s == "false")then return "boolean" end
+    if(string.find(s, "table:"))then return "table" end
+    if(string.find(s, "function:"))then return "function" end
+    if(string.find(s, "userdata:"))then return "userdata" end
+    return "number"
+  end
+end
+if typefunc(IMAGE_SLIDE_EASING) ~= "function"
+then
+  if typefunc(e) ~= "number"
+  then
+    e = 0
+  end
+  if beje == 0
+  then
+    if 0 < e
+    then
+      local PATH = {}
+      local path = package.path .. ";"
+      while 1
+      do
+        local n = path:find(";")
+        if n
+        then
+          PATH[#PATH + 1] = path:sub(1, n - 1)
+          path = path:sub(n + 1, #path)
+        else
+          break
+        end
+      end
+      if not PATH[2]:find("script\\?.lua")
+      then
+        PATH[3] = PATH[2]:sub(1, PATH[2]:find("\\script\\")) .. "script\\?.lua"
+        package.path = package.path .. ";" .. PATH[3]
+      end
+      for i = 1, #PATH do
+        local f = io.open(PATH[i]:gsub("?", "easing_aviutl"), "r")
+        if f
+        then
+          local EASING = require("easing_aviutl").easing
+          easing = function(P)
+            return EASING(e, P, 0, 1, 1)
+          end
+          f:close()
+          break
+        end
+      end
+    end
+  else
+    if typefunc(OrbitNumber) == "table" and OrbitNumber[e]
+    then
+      local Orbit = function(t, x1, y1, x2, y2)
+        local s = 1 - t
+        x1 = (3 * s * s * x1 + (3 * s * x2 + t) * t) * t
+        y1 = (3 * s * s * y1 + (3 * s * y2 + t) * t) * t
+        return x1, y1
+      end
+      local q1x = OrbitNumber[e][1]
+      local q1y = OrbitNumber[e][2]
+      local q2x = OrbitNumber[e][3]
+      local q2y = OrbitNumber[e][4]
+      easing = function(P)
+        local t1=0
+        local t2=1
+        for i = 1, 10
+        do
+          local tm = (t1 + t2) * 0.5
+          local xm, y = Orbit(tm, q1x, q1y, q2x, q2y)
+          if P < xm
+          then
+            t2 = tm
+          else
+            t1 = tm
+          end 
+        end
+        x1, P = Orbit((t1 + t2) * 0.5, q1x, q1y, q2x, q2y)
+        return P
+      end
+    end
+  end
+  if not easing
+  then
+    if e == 1
+    then
+      local PI = math.pi * 0.5
+      easing = function(P)
+        return math.sin(PI * P)
+      end
+    elseif e == 2
+    then
+      local PI0 = math.pi * 0.5
+      local PI1 = PI0 * 3
+      easing = function(P)
+        return math.sin(PI0 * P + PI1) + 1
+      end
+    elseif e == 3
+    then
+      easing = function(P)
+        return 0.5 * (1 - math.cos(math.pi * P))
+      end
+    elseif e < 0
+    then
+      e = - e
+      easing = function(P)
+        return P ^ e
+      end
+    else
+      easing = function(P)
+        return P
+      end
+    end
+  end
+else
+  easing = IMAGE_SLIDE_EASING
+  IMAGE_SLIDE_EASING = nil
+end
+local color = typefunc(IMAGE_SLIDE_COLOR)
+if color ~= "function"
+then
+  color = typefunc(col)
+  if color == "number"
+  then
+    if col == 1
+    then
+      color = function(p, i ,n)
+        return ({0xF39800, 0xFFF100, 0x009944, 0x0068B7, 0x1D2088, 0x920783, [0] = 0xE60012})[(i - 1) % 7]
+      end
+    elseif col == 2
+    then
+      color = function(p, i ,n)
+        return ({0xFF1010, 0xFF5050, 0xFF8080, 0xFFA0A0, 0xFFC0C0, 0xFFE0E0, [0] = 0xFF0000})[(i - 1) % 7]
+      end
+    elseif col == 3
+    then
+      color = function(p, i ,n)
+        return ({0x10FF10, 0x50FF50, 0x80FF80, 0xA0FFA0, 0xC0FFC0, 0xE0FFE0, [0] = 0x00FF00})[(i - 1) % 7]
+      end
+    elseif col == 4
+    then
+      color = function(p, i ,n)
+        return ({0x1010FF, 0x5050FF, 0x8080FF, 0xA0A0FF, 0xC0C0FF, 0xE0E0FF, [0] = 0x0000FF})[(i - 1) % 7]
+      end
+    elseif col == 5
+    then
+      color = function(p, i ,n)
+        local c = (obj.rand(0, 100, obj.layer, i * 13) - 50) * 0.01
+        if c < 0
+        then
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * - c) * 255)
+        else
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * c) * 255) * 65536
+        end
+      end
+    elseif col == 6
+    then
+      color = function(p, i ,n)
+        return obj.rand(0, 0xFFFFFF, obj.layer, i * 11)
+      end
+    elseif col == 7
+    then
+      color = function(p, i ,n)
+        local r, g, b = RGB(({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6])
+        return RGB(r * (1 - p) + 255 * p, g * (1 - p) + 255 * p, b * (1 - p) + 255 * p)
+      end
+    else
+      color = function(p, i, n)
+        return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+      end
+    end
+    col = {}
+  elseif color == "table"
+  then
+    color = function(p, i, n)
+      return col[((i - 1) % #col) + 1]
+    end
+  else
+    color = function(p, i, n)
+      return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+    end
+  end
+else
+  color = IMAGE_SLIDE_COLOR
+  IMAGE_SLIDE_COLOR = nil
+end
+local alpha = typefunc(alp)
+if alpha == "number"
+then
+  alp = Zero2One(alp * .01)
+  alpha= {}
+  for i = 0, num
+  do
+    alpha[i] = alp
+  end
+elseif alpha == "table"
+then
+  alpha = {}
+  for i = 1, #alp
+  do
+    if typefunc(alp[i]) ~= "number"
+    then
+      alp[i] = 100
+    end
+    alpha[i - 1] = Zero2One(alp[i] * .01)
+  end
+  for i = #alp, num
+  do
+    alpha[i] = 1
+  end
+else
+  alpha = {}
+  for i = 0, num
+  do
+    alpha[i] = 1
+  end  
+end
+local wof = typefunc(IMAGE_SLIDE_TIMING)
+if wof ~= "function"
+then
+  wof = typefunc(timing)
+  if wof == "number"
+  then
+    if timing == 1
+    then
+      wof = function(i , num)
+        return 0, 1 + (num - i)
+      end
+    elseif timing == 2
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 1
+      end
+    elseif timing == 3
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 2
+      end
+    elseif timing == 4
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 1
+      end
+    elseif timing == 5
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 2
+      end
+    elseif timing == 6
+    then
+      wof = function(i , num)
+        return (1 - (.5 ^ i)) * .75, 1
+      end
+    else
+      wof = function(i , num)
+        return i / (num + 1), 1
+      end
+    end
+  elseif wof == "table"
+  then
+    local tmg = {}
+    for i = 1, #timing
+    do
+      tmg[i - 1] = timing[i]
+    end
+    for i = #timing, num
+    do
+     tmg[i] = timing[#timing]
+    end
+    wof = function(i , num)
+      return Zero2One(tmg[i]), 1
+    end
+  else
+    wof = function(i , num)
+      return i / (num + 1), 1
+    end
+  end
+else
+  wof = IMAGE_SLIDE_TIMING
+  IMAGE_SLIDE_TIMING = nil
+end
+local w, h, p0, p1, p2
+if buf
+then
+  image_func(image_arg0, image_arg2)
+  w, h = obj.getpixel()
+  obj.setoption("drawtarget", "tempbuffer", w, h)
+else
+  obj.effect()
+  image_func(image_arg0, image_arg2)
+  if 4 < guid
+  then
+    w, h = obj.getpixel()
+  else
+    w, h = obj.w, obj.h
+  end
+end
+if 4 < guid
+then
+  if guid == 5
+  then
+    w = w + h * math.tan(math.abs(deg * math.pi / 180)) + 2
+    deg = deg - 90
+  elseif guid == 6
+  then
+    h = h + w * math.tan(math.abs(deg * math.pi / 180)) + 2
+  elseif guid == 7
+  then
+    w = w + h * math.tan(math.abs(deg * math.pi / 180)) + 2
+    deg = deg + 90
+  elseif guid == 8
+  then
+    h = h + w * math.tan(math.abs(deg * math.pi / 180)) + 2
+    deg = deg + 180
+  end
+end
+local ImageDraw
+if guid == 1
+then
+  ImageDraw = function(index, per)
+    obj.draw(per * - w, 0, 0, 1, alpha[index])
+  end
+elseif guid == 2
+then
+  ImageDraw = function(index, per)
+    obj.draw(0, per * - h, 0, 1, alpha[index])
+  end
+elseif guid == 3
+then
+  ImageDraw = function(index, per)
+    obj.draw(per * w, 0, 0, 1, alpha[index])
+  end
+elseif guid == 4
+then
+  ImageDraw = function(index, per)
+    obj.draw(0, per * h, 0, 1, alpha[index])
+  end
+elseif guid == 5
+then
+  ImageDraw = function(index, per)
+    obj.effect("斜めクリッピング", "ぼかし", 0, "角度", deg , "中心X", w * (0.5 - per))
+    obj.draw(0, 0, 0, 1, alpha[index])
+  end
+elseif guid == 6
+then
+  ImageDraw = function(index, per)
+    obj.effect("斜めクリッピング", "ぼかし", 0, "角度", deg, "中心Y", h * (0.5 - per))
+    obj.draw(0, 0, 0, 1, alpha[index])
+  end
+elseif guid == 7
+then
+  ImageDraw = function(index, per)
+    obj.effect("斜めクリッピング", "ぼかし", 0, "角度", deg, "中心X", - w * (0.5 - per))
+    obj.draw(0, 0, 0, 1, alpha[index])
+  end
+elseif guid == 8
+then
+  ImageDraw = function(index, per)
+    obj.effect("斜めクリッピング", "ぼかし", 0, "角度", deg, "中心Y", - h * (0.5 - per))
+    obj.draw(0, 0, 0, 1, alpha[index])
+  end
+end
+local texture=nil
+if tex ~= ""
+then
+	require("slide_cut_texture")
+	local path=obj.getinfo("script_path")..tex.."\\"
+	texture=function(p, i)
+		if slide_cut_texture_func(path, i, color(p, i, num), image_arg1, image_arg3, image_func, buf) == 0
+		then
+			obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+		end
+	end
+else
+	texture=function(p,i)
+		obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+	end
+end
+for i = num, 1, -1
+do
+  image_func(image_arg1, image_arg3)
+  p0, p1 = wof(i, num)
+  p2 = easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num)
+  texture(p2, i)
+  ImageDraw(i, p2)
+end
+image_func(image_arg1, image_arg3)
+alp = 1
+if buf
+then
+  p0, p1 = wof(0, num)
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+  obj.load("tempbuffer")
+else
+  obj.setoption("blend", 0, "force")
+  p0, p1 = wof(0, num)
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+end
+if image_arg0 == "w"
+then
+  image_func("c", image_arg2)
+end
+
+@円形
+--track0:数,0,20,2,1
+--track1:中心X,-1000,1000,0
+--track2:中心Y,-1000,1000,0
+--track3:角度,-720,720,0
+--check0:仮想バッファ描画,1
+--dialog:時間逆転/chk,tr=0;図形[1-6],fig=1;色,col={0xff0000,0x0000ff};スポイト/col,s=0xff0000;輝度を保持する/chk,lum=1;透明度,alp=100;ずれ角度,dd=0;入り逆転/chk,rev=0;ベジェT変更/chk,beje=0;イージング番号,e=0;タイミング,timing=1;テクスチャ,tex=""
+local prog = obj.time / obj.totaltime
+if tr == 1
+then
+	prog = 1 - prog
+end
+local num = obj.track0
+local center_x = obj.track1
+local center_y = obj.track2
+local buf = obj.check0
+local Zero2One = function(p)
+  if 1 < p
+  then
+     return 1
+  elseif p < 0
+  then
+    return 0
+  else
+    return p
+  end
+end
+if rikky_module == nil
+then
+  local CPATH = {}
+  local cpath = package.cpath .. ";"
+  local n
+  while 1
+  do
+    n = cpath:find(";")
+    if n
+    then
+      CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+      cpath = cpath:sub(n + 1, #cpath)
+    else
+      break
+    end
+  end
+  if not CPATH[2]:find("script\\?.dll")
+  then
+    CPATH[3] = CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+    package.cpath = package.cpath .. ";" .. CPATH[3]
+  end
+  for i = 1, #CPATH
+  do
+    local f = io.open(CPATH[i]:gsub("?", "rikky_module"), "rb")
+    if f
+    then
+      require("rikky_module")
+      f:close()
+      break
+    end
+  end
+end
+local easing = nil
+local image_arg0, image_arg1, image_arg2, image_arg3, image_func, typefunc
+if rikky_module
+then
+  image_arg0 = "w"
+  image_arg1 = "r"
+  image_arg2 = rikky_module.image("g")
+  image_arg3 = image_arg2
+  image_func = rikky_module.image
+  typefunc = rikky_module.type
+else
+  image_arg0 = "cache:image_slide"
+  image_arg1 = "obj"
+  image_arg2 = "obj"
+  image_arg3 = image_arg0
+  image_func = obj.copybuffer
+  typefunc = function(v)
+    local s = tostring(v)
+    if(s == v)then return "string" end
+    if(s == "nil")then return "nil" end
+    if(s == "true" or s == "false")then return "boolean" end
+    if(string.find(s, "table:"))then return "table" end
+    if(string.find(s, "function:"))then return "function" end
+    if(string.find(s, "userdata:"))then return "userdata" end
+    return "number"
+  end
+end
+if typefunc(IMAGE_SLIDE_EASING) ~= "function"
+then
+  if typefunc(e) ~= "number"
+  then
+    e = 0
+  end
+  if beje == 0
+  then
+    if 0 < e
+    then
+      local PATH = {}
+      local path = package.path .. ";"
+      while 1
+      do
+        local n = path:find(";")
+        if n
+        then
+          PATH[#PATH + 1] = path:sub(1, n - 1)
+          path = path:sub(n + 1, #path)
+        else
+          break
+        end
+      end
+      if not PATH[2]:find("script\\?.lua")
+      then
+        PATH[3] = PATH[2]:sub(1, PATH[2]:find("\\script\\")) .. "script\\?.lua"
+        package.path = package.path .. ";" .. PATH[3]
+      end
+      for i = 1, #PATH do
+        local f = io.open(PATH[i]:gsub("?", "easing_aviutl"), "r")
+        if f
+        then
+          local EASING = require("easing_aviutl").easing
+          easing = function(P)
+            return EASING(e, P, 0, 1, 1)
+          end
+          f:close()
+          break
+        end
+      end
+    end
+  else
+    if typefunc(OrbitNumber) == "table" and OrbitNumber[e]
+    then
+      local Orbit = function(t, x1, y1, x2, y2)
+        local s = 1 - t
+        x1 = (3 * s * s * x1 + (3 * s * x2 + t) * t) * t
+        y1 = (3 * s * s * y1 + (3 * s * y2 + t) * t) * t
+        return x1, y1
+      end
+      local q1x = OrbitNumber[e][1]
+      local q1y = OrbitNumber[e][2]
+      local q2x = OrbitNumber[e][3]
+      local q2y = OrbitNumber[e][4]
+      easing = function(P)
+        local t1=0
+        local t2=1
+        for i = 1, 10
+        do
+          local tm = (t1 + t2) * 0.5
+          local xm, y = Orbit(tm, q1x, q1y, q2x, q2y)
+          if P < xm
+          then
+            t2 = tm
+          else
+            t1 = tm
+          end 
+        end
+        x1, P = Orbit((t1 + t2) * 0.5, q1x, q1y, q2x, q2y)
+        return P
+      end
+    end
+  end
+  if not easing
+  then
+    if e == 1
+    then
+      local PI = math.pi * 0.5
+      easing = function(P)
+        return math.sin(PI * P)
+      end
+    elseif e == 2
+    then
+      local PI0 = math.pi * 0.5
+      local PI1 = PI0 * 3
+      easing = function(P)
+        return math.sin(PI0 * P + PI1) + 1
+      end
+    elseif e == 3
+    then
+      easing = function(P)
+        return 0.5 * (1 - math.cos(math.pi * P))
+      end
+    elseif e < 0
+    then
+      e = - e
+      easing = function(P)
+        return P ^ e
+      end
+    else
+      easing = function(P)
+        return P
+      end
+    end
+  end
+else
+  easing = IMAGE_SLIDE_EASING
+  IMAGE_SLIDE_EASING = nil
+end
+local color = typefunc(IMAGE_SLIDE_COLOR)
+if color ~= "function"
+then
+  color = typefunc(col)
+  if color == "number"
+  then
+    if col == 1
+    then
+      color = function(p, i ,n)
+        return ({0xF39800, 0xFFF100, 0x009944, 0x0068B7, 0x1D2088, 0x920783, [0] = 0xE60012})[(i - 1) % 7]
+      end
+    elseif col == 2
+    then
+      color = function(p, i ,n)
+        return ({0xFF1010, 0xFF5050, 0xFF8080, 0xFFA0A0, 0xFFC0C0, 0xFFE0E0, [0] = 0xFF0000})[(i - 1) % 7]
+      end
+    elseif col == 3
+    then
+      color = function(p, i ,n)
+        return ({0x10FF10, 0x50FF50, 0x80FF80, 0xA0FFA0, 0xC0FFC0, 0xE0FFE0, [0] = 0x00FF00})[(i - 1) % 7]
+      end
+    elseif col == 4
+    then
+      color = function(p, i ,n)
+        return ({0x1010FF, 0x5050FF, 0x8080FF, 0xA0A0FF, 0xC0C0FF, 0xE0E0FF, [0] = 0x0000FF})[(i - 1) % 7]
+      end
+    elseif col == 5
+    then
+      color = function(p, i ,n)
+        local c = (obj.rand(0, 100, obj.layer, i * 13) - 50) * 0.01
+        if c < 0
+        then
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * - c) * 255)
+        else
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * c) * 255) * 65536
+        end
+      end
+    elseif col == 6
+    then
+      color = function(p, i ,n)
+        return obj.rand(0, 0xFFFFFF, obj.layer, i * 11)
+      end
+    elseif col == 7
+    then
+      color = function(p, i ,n)
+        local r, g, b = RGB(({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6])
+        return RGB(r * (1 - p) + 255 * p, g * (1 - p) + 255 * p, b * (1 - p) + 255 * p)
+      end
+    else
+      color = function(p, i, n)
+        return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+      end
+    end
+    col = {}
+  elseif color == "table"
+  then
+    color = function(p, i, n)
+      return col[((i - 1) % #col) + 1]
+    end
+  else
+    color = function(p, i, n)
+      return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+    end
+  end
+else
+  color = IMAGE_SLIDE_COLOR
+  IMAGE_SLIDE_COLOR = nil
+end
+local alpha = typefunc(alp)
+if alpha == "number"
+then
+  alp = Zero2One(alp * .01)
+  alpha= {}
+  for i = 0, num
+  do
+    alpha[i] = alp
+  end
+elseif alpha == "table"
+then
+  alpha = {}
+  for i = 1, #alp
+  do
+    if typefunc(alp[i]) ~= "number"
+    then
+      alp[i] = 100
+    end
+    alpha[i - 1] = Zero2One(alp[i] * .01)
+  end
+  for i = #alp, num
+  do
+    alpha[i] = 1
+  end
+else
+  alpha = {}
+  for i = 0, num
+  do
+    alpha[i] = 1
+  end  
+end
+local wof = typefunc(IMAGE_SLIDE_TIMING)
+if wof ~= "function"
+then
+  wof = typefunc(timing)
+  if wof == "number"
+  then
+    if timing == 1
+    then
+      wof = function(i , num)
+        return 0, 1 + (num - i)
+      end
+    elseif timing == 2
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 1
+      end
+    elseif timing == 3
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 2
+      end
+    elseif timing == 4
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 1
+      end
+    elseif timing == 5
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 2
+      end
+    elseif timing == 6
+    then
+      wof = function(i , num)
+        return (1 - (.5 ^ i)) * .75, 1
+      end
+    else
+      wof = function(i , num)
+        return i / (num + 1), 1
+      end
+    end
+  elseif wof == "table"
+  then
+    local tmg = {}
+    for i = 1, #timing
+    do
+      tmg[i - 1] = timing[i]
+    end
+    for i = #timing, num
+    do
+     tmg[i] = timing[#timing]
+    end
+    wof = function(i , num)
+      return Zero2One(tmg[i]), 1
+    end
+  else
+    wof = function(i , num)
+      return i / (num + 1), 1
+    end
+  end
+else
+  wof = IMAGE_SLIDE_TIMING
+  IMAGE_SLIDE_TIMING = nil
+end
+local w, h, p0, p1, p2
+if buf
+then
+  image_func(image_arg0, image_arg2)
+  w, h = obj.getpixel()
+  obj.setoption("drawtarget", "tempbuffer", w, h)
+else
+  obj.effect()
+  image_func(image_arg0, image_arg2)
+  w, h = obj.getpixel()
+end
+if typefunc(fig) ~= "number"
+then
+  fig = 1
+end
+local sub_w1 = -w * 0.5 - center_x
+local sub_w2 = w * 0.5 - center_x
+local sub_h1 = -h * 0.5 - center_y
+local sub_h2 = h * 0.5 - center_y
+local dgr = obj.track3
+local PI = math.pi / 180
+local length = nil
+if fig == 2
+then
+  length = function(deg)
+    local pi = deg * PI
+    local ux, uy = math.sin(pi), -math.cos(pi)
+    local ex, ey = -uy, ux
+    return math.max(math.abs(sub_w1 * ux + sub_h1 * uy), math.abs(sub_w2 * ux + sub_h1 * uy), math.abs(sub_w2 * ux + sub_h2 * uy), math.abs(sub_w1 * ux + sub_h2 * uy),
+                    math.abs(sub_w1 * ex + sub_h1 * ey), math.abs(sub_w2 * ex + sub_h1 * ey), math.abs(sub_w2 * ex + sub_h2 * ey), math.abs(sub_w1 * ex + sub_h2 * ey)) * 2 + 2
+  end
+elseif fig == 3
+then
+  local cr3 = math.cos(math.pi / 3)
+  local sr3 = math.sin(math.pi / 3)
+  length = function(deg)
+    local pi = deg * PI
+    local tx0, ty0 = math.sin(pi), math.cos(pi)
+    local tx1, ty1 = tx0 * cr3 - ty0 * sr3, tx0 * sr3 + tx0 * cr3
+    local tx2, ty2 = tx1 * cr3 - ty1 * sr3, tx1 * sr3 + tx1 * cr3
+    return math.max(sub_w1 * tx0 + sub_h1 * ty0, sub_w2 * tx0 + sub_h1 * ty0, sub_w2 * tx0 + sub_h2 * ty0, sub_w1 * tx0 + sub_h2 * ty0,
+                    sub_w1 * tx1 + sub_h1 * ty1, sub_w2 * tx1 + sub_h1 * ty1, sub_w2 * tx1 + sub_h2 * ty1, sub_w1 * tx1 + sub_h2 * ty1,
+                    sub_w1 * tx2 + sub_h1 * ty2, sub_w2 * tx2 + sub_h1 * ty2, sub_w2 * tx2 + sub_h2 * ty2, sub_w1 * tx2 + sub_h2 * ty2) * 4 + 2
+  end
+elseif fig == 4
+then
+  local cos36 = 2 / math.cos(math.pi * 0.2)
+  local PI72 = math.pi * 0.4
+  length = function(deg)
+    local pi = deg * PI
+    local tx0, ty0 = -math.sin(pi), math.cos(pi)
+    local cos, sin = math.cos(PI72), math.sin(PI72)
+    local tx1, ty1 = tx0 * cos - ty0 * sin, tx0 * sin + ty0 * cos
+    local tx2, ty2 = tx1 * cos - ty1 * sin, tx1 * sin + ty1 * cos
+    local tx3, ty3 = tx2 * cos - ty2 * sin, tx2 * sin + ty2 * cos
+    local tx4, ty4 = tx3 * cos - ty3 * sin, tx3 * sin + ty3 * cos
+    return math.max(sub_w1 * tx0 + sub_h1 * ty0, sub_w2 * tx0 + sub_h1 * ty0, sub_w2 * tx0 + sub_h2 * ty0, sub_w1 * tx0 + sub_h2 * ty0,
+                    sub_w1 * tx1 + sub_h1 * ty1, sub_w2 * tx1 + sub_h1 * ty1, sub_w2 * tx1 + sub_h2 * ty1, sub_w1 * tx1 + sub_h2 * ty1,
+                    sub_w1 * tx2 + sub_h1 * ty2, sub_w2 * tx2 + sub_h1 * ty2, sub_w2 * tx2 + sub_h2 * ty2, sub_w1 * tx2 + sub_h2 * ty2,
+                    sub_w1 * tx3 + sub_h1 * ty3, sub_w2 * tx3 + sub_h1 * ty3, sub_w2 * tx3 + sub_h2 * ty3, sub_w1 * tx3 + sub_h2 * ty3,
+                    sub_w1 * tx4 + sub_h1 * ty4, sub_w2 * tx4 + sub_h1 * ty4, sub_w2 * tx4 + sub_h2 * ty4, sub_w1 * tx4 + sub_h2 * ty4) * cos36 + 2
+  end
+elseif fig == 5
+then
+  local r3 = 4 / math.sqrt(3)
+  local PI60 =  math.pi / 3
+  length = function(deg)
+    local pi = deg * PI
+    local tx0, ty0 = math.cos(pi), math.sin(pi)
+    local cos, sin = math.cos(PI60), math.sin(PI60)
+    local tx1, ty1 = tx0 * cos - ty0 * sin, tx0 * sin + ty0 * cos
+    local tx2, ty2 = tx1 * cos - ty1 * sin, tx1 * sin + ty1 * cos
+    return math.max(math.abs(sub_w1 * tx0 + sub_h1 * ty0), math.abs(sub_w2 * tx0 + sub_h1 * ty0), math.abs(sub_w2 * tx0 + sub_h2 * ty0, sub_w1 * tx0 + sub_h2 * ty0),
+                    math.abs(sub_w1 * tx1 + sub_h1 * ty1), math.abs(sub_w2 * tx1 + sub_h1 * ty1), math.abs(sub_w2 * tx1 + sub_h2 * ty1, sub_w1 * tx1 + sub_h2 * ty1),
+                    math.abs(sub_w1 * tx2 + sub_h1 * ty2), math.abs(sub_w2 * tx2 + sub_h1 * ty2), math.abs(sub_w2 * tx2 + sub_h2 * ty2, sub_w1 * tx2 + sub_h2 * ty2)) * r3 + 2
+  end
+elseif fig == 6
+then
+  local sk = (1 + math.tan(math.pi /5) * math.tan(math.pi * 2 / 5)) * 2
+  local PI72 = math.pi * 0.4
+  length = function(deg)
+    local pi = deg * PI
+    local tx0, ty0 = math.sin(pi), -math.cos(pi)
+    local cos, sin = math.cos(PI72), math.sin(PI72)
+    local tx1, ty1 = tx0 * cos - ty0 * sin, tx0 * sin + ty0 * cos
+    local tx2, ty2 = tx1 * cos - ty1 * sin, tx1 * sin + ty1 * cos
+    local tx3, ty3 = tx2 * cos - ty2 * sin, tx2 * sin + ty2 * cos
+    local tx4, ty4 = tx3 * cos - ty3 * sin, tx3 * sin + ty3 * cos
+    return math.max(sub_w1 * tx0 + sub_h1 * ty0, sub_w2 * tx0 + sub_h1 * ty0, sub_w2 * tx0 + sub_h2 * ty0, sub_w1 * tx0 + sub_h2 * ty0,
+                    sub_w1 * tx1 + sub_h1 * ty1, sub_w2 * tx1 + sub_h1 * ty1, sub_w2 * tx1 + sub_h2 * ty1, sub_w1 * tx1 + sub_h2 * ty1,
+                    sub_w1 * tx2 + sub_h1 * ty2, sub_w2 * tx2 + sub_h1 * ty2, sub_w2 * tx2 + sub_h2 * ty2, sub_w1 * tx2 + sub_h2 * ty2,
+                    sub_w1 * tx3 + sub_h1 * ty3, sub_w2 * tx3 + sub_h1 * ty3, sub_w2 * tx3 + sub_h2 * ty3, sub_w1 * tx3 + sub_h2 * ty3,
+                    sub_w1 * tx4 + sub_h1 * ty4, sub_w2 * tx4 + sub_h1 * ty4, sub_w2 * tx4 + sub_h2 * ty4, sub_w1 * tx4 + sub_h2 * ty4) * sk + 2
+  end
+else
+  fig = 1
+  length = function(deg)
+    return math.sqrt(math.max(sub_w1 * sub_w1 + sub_h1 * sub_h1, sub_w2 * sub_w2 + sub_h1 * sub_h1, sub_w2 * sub_w2 + sub_h2 * sub_h2, sub_w1 * sub_w1 + sub_h2 * sub_h2)) * 2 + 2
+  end
+end
+if typefunc(dd) ~= "number"
+then
+  dd = 0
+end
+local ImageDraw = nil
+if rev == 0
+then
+  ImageDraw = function(index, per)
+    obj.effect("マスク", "type", 1, "サイズ", per * length(dgr + dd * index), "X", center_x, "Y", center_y, "回転", dgr + dd * index, "マスクの反転", 1, "type", fig)
+    obj.draw(0, 0, 0, 1, alpha[index])
+  end
+else
+  ImageDraw = function(index, per)
+    obj.effect("マスク", "type", 1, "サイズ", (1 - per) * length(dgr + dd * index), "X", center_x, "Y", center_y, "回転", dgr + dd * index, "マスクの反転", 0, "type", fig)
+    obj.draw(0, 0, 0, 1, alpha[index])
+  end
+end
+local texture=nil
+if tex ~= ""
+then
+	require("slide_cut_texture")
+	local path=obj.getinfo("script_path")..tex.."\\"
+	texture=function(p, i)
+		if slide_cut_texture_func(path, i, color(p, i, num), image_arg1, image_arg3, image_func, buf) == 0
+		then
+			obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+		end
+	end
+else
+	texture=function(p,i)
+		obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+	end
+end
+for i = num, 1, -1
+do
+  image_func(image_arg1, image_arg3)
+  p0, p1 = wof(i, num)
+  p2 = easing(Zero2One((prog - p0) / (1 - p0) * p1), i, num)
+  texture(p2, i)
+  ImageDraw(i, p2)
+end
+image_func(image_arg1, image_arg3)
+alp = 1
+if buf
+then
+  p0, p1 = wof(0, num)
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+  obj.load("tempbuffer")
+else
+  obj.setoption("blend", 0, "force")
+  p0, p1 = wof(0, num)
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+end
+if image_arg0 == "w"
+then
+  image_func("c", image_arg2)
+end
+
+@扇型
+--track0:数,0,20,2,1
+--track1:角度,-360,360,0
+--track2:方向,0,1,0,1
+--track3:時間反転,0,1,0,1
+--check0:仮想バッファ描画,1
+--dialog:色,col={0xff0000,0x0000ff};スポイト/col,s=0xff0000;扇中心X,cx=0;扇中心Y,cy=0;広がり方/chk,ex=0;幕型/chk,sln=0;輝度を保持する/chk,lum=1;透明度,alp=100;ベジェT変更/chk,beje=0;イージング番号,e=0;タイミング,timing=1;テクスチャ,tex=""
+local prog = obj.time / obj.totaltime
+if obj.track3 == 1
+then
+	prog = 1 - prog
+end
+local num = obj.track0
+local deg = obj.track1
+local buf = obj.check0
+local Zero2One = function(p)
+  if 1 < p
+  then
+     return 1
+  elseif p < 0
+  then
+    return 0
+  else
+    return p
+  end
+end
+if rikky_module == nil
+then
+  local CPATH = {}
+  local cpath = package.cpath .. ";"
+  local n
+  while 1
+  do
+    n = cpath:find(";")
+    if n
+    then
+      CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+      cpath = cpath:sub(n + 1, #cpath)
+    else
+      break
+    end
+  end
+  if not CPATH[2]:find("script\\?.dll")
+  then
+    CPATH[3] = CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+    package.cpath = package.cpath .. ";" .. CPATH[3]
+  end
+  for i = 1, #CPATH
+  do
+    local f = io.open(CPATH[i]:gsub("?", "rikky_module"), "rb")
+    if f
+    then
+      require("rikky_module")
+      f:close()
+      break
+    end
+  end
+end
+local easing = nil
+local image_arg0, image_arg1, image_arg2, image_arg3, image_func, typefunc
+if rikky_module
+then
+  image_arg0 = "w"
+  image_arg1 = "r"
+  image_arg2 = rikky_module.image("g")
+  image_arg3 = image_arg2
+  image_func = rikky_module.image
+  typefunc = rikky_module.type
+else
+  image_arg0 = "cache:image_slide"
+  image_arg1 = "obj"
+  image_arg2 = "obj"
+  image_arg3 = image_arg0
+  image_func = obj.copybuffer
+  typefunc = function(v)
+    local s = tostring(v)
+    if(s == v)then return "string" end
+    if(s == "nil")then return "nil" end
+    if(s == "true" or s == "false")then return "boolean" end
+    if(string.find(s, "table:"))then return "table" end
+    if(string.find(s, "function:"))then return "function" end
+    if(string.find(s, "userdata:"))then return "userdata" end
+    return "number"
+  end
+end
+local PATH = {}
+local path = package.path .. ";"
+while 1
+do
+  local n = path:find(";")
+  if n
+  then
+    PATH[#PATH + 1] = path:sub(1, n - 1)
+    path = path:sub(n + 1, #path)
+  else
+    break
+  end
+end
+if not PATH[2]:find("script\\?.lua")
+then
+  PATH[3] = PATH[2]:sub(1, PATH[2]:find("\\script\\")) .. "script\\?.lua"
+  package.path = package.path .. ";" .. PATH[3]
+end
+if fan_clipping == nil
+then
+  for i = 1, #PATH
+  do
+    local f = io.open(PATH[i]:gsub("?", "fan_clipping"), "r")
+    if f
+    then
+      f:close()
+      require("fan_clipping")
+      break
+    end
+  end
+end
+if typefunc(IMAGE_SLIDE_EASING) ~= "function"
+then
+  if typefunc(e) ~= "number"
+  then
+    e = 0
+  end
+  if beje == 0
+  then
+    if 0 < e
+    then
+      for i = 1, #PATH do
+        local f = io.open(PATH[i]:gsub("?", "easing_aviutl"), "r")
+        if f
+        then
+          local EASING = require("easing_aviutl").easing
+          easing = function(P)
+            return EASING(e, P, 0, 1, 1)
+          end
+          f:close()
+          break
+        end
+      end
+    end
+  else
+    if typefunc(OrbitNumber) == "table" and OrbitNumber[e]
+    then
+      local Orbit = function(t, x1, y1, x2, y2)
+        local s = 1 - t
+        x1 = (3 * s * s * x1 + (3 * s * x2 + t) * t) * t
+        y1 = (3 * s * s * y1 + (3 * s * y2 + t) * t) * t
+        return x1, y1
+      end
+      local q1x = OrbitNumber[e][1]
+      local q1y = OrbitNumber[e][2]
+      local q2x = OrbitNumber[e][3]
+      local q2y = OrbitNumber[e][4]
+      easing = function(P)
+        local t1=0
+        local t2=1
+        for i = 1, 10
+        do
+          local tm = (t1 + t2) * 0.5
+          local xm, y = Orbit(tm, q1x, q1y, q2x, q2y)
+          if P < xm
+          then
+            t2 = tm
+          else
+            t1 = tm
+          end 
+        end
+        x1, P = Orbit((t1 + t2) * 0.5, q1x, q1y, q2x, q2y)
+        return P
+      end
+    end
+  end
+  if not easing
+  then
+    if e == 1
+    then
+      local PI = math.pi * 0.5
+      easing = function(P)
+        return math.sin(PI * P)
+      end
+    elseif e == 2
+    then
+      local PI0 = math.pi * 0.5
+      local PI1 = PI0 * 3
+      easing = function(P)
+        return math.sin(PI0 * P + PI1) + 1
+      end
+    elseif e == 3
+    then
+      easing = function(P)
+        return 0.5 * (1 - math.cos(math.pi * P))
+      end
+    elseif e < 0
+    then
+      e = - e
+      easing = function(P)
+        return P ^ e
+      end
+    else
+      easing = function(P)
+        return P
+      end
+    end
+  end
+else
+  easing = IMAGE_SLIDE_EASING
+  IMAGE_SLIDE_EASING = nil
+end
+local color = typefunc(IMAGE_SLIDE_COLOR)
+if color ~= "function"
+then
+  color = typefunc(col)
+  if color == "number"
+  then
+    if col == 1
+    then
+      color = function(p, i ,n)
+        return ({0xF39800, 0xFFF100, 0x009944, 0x0068B7, 0x1D2088, 0x920783, [0] = 0xE60012})[(i - 1) % 7]
+      end
+    elseif col == 2
+    then
+      color = function(p, i ,n)
+        return ({0xFF1010, 0xFF5050, 0xFF8080, 0xFFA0A0, 0xFFC0C0, 0xFFE0E0, [0] = 0xFF0000})[(i - 1) % 7]
+      end
+    elseif col == 3
+    then
+      color = function(p, i ,n)
+        return ({0x10FF10, 0x50FF50, 0x80FF80, 0xA0FFA0, 0xC0FFC0, 0xE0FFE0, [0] = 0x00FF00})[(i - 1) % 7]
+      end
+    elseif col == 4
+    then
+      color = function(p, i ,n)
+        return ({0x1010FF, 0x5050FF, 0x8080FF, 0xA0A0FF, 0xC0C0FF, 0xE0E0FF, [0] = 0x0000FF})[(i - 1) % 7]
+      end
+    elseif col == 5
+    then
+      color = function(p, i ,n)
+        local c = (obj.rand(0, 100, obj.layer, i * 13) - 50) * 0.01
+        if c < 0
+        then
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * - c) * 255)
+        else
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * c) * 255) * 65536
+        end
+      end
+    elseif col == 6
+    then
+      color = function(p, i ,n)
+        return obj.rand(0, 0xFFFFFF, obj.layer, i * 11)
+      end
+    elseif col == 7
+    then
+      color = function(p, i ,n)
+        local r, g, b = RGB(({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6])
+        return RGB(r * (1 - p) + 255 * p, g * (1 - p) + 255 * p, b * (1 - p) + 255 * p)
+      end
+    else
+      color = function(p, i, n)
+        return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+      end
+    end
+    col = {}
+  elseif color == "table"
+  then
+    color = function(p, i, n)
+      return col[((i - 1) % #col) + 1]
+    end
+  else
+    color = function(p, i, n)
+      return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+    end
+  end
+else
+  color = IMAGE_SLIDE_COLOR
+  IMAGE_SLIDE_COLOR = nil
+end
+local alpha = typefunc(alp)
+if alpha == "number"
+then
+  alp = Zero2One(alp * .01)
+  alpha= {}
+  for i = 0, num
+  do
+    alpha[i] = alp
+  end
+elseif alpha == "table"
+then
+  alpha = {}
+  for i = 1, #alp
+  do
+    if typefunc(alp[i]) ~= "number"
+    then
+      alp[i] = 100
+    end
+    alpha[i - 1] = Zero2One(alp[i] * .01)
+  end
+  for i = #alp, num
+  do
+    alpha[i] = 1
+  end
+else
+  alpha = {}
+  for i = 0, num
+  do
+    alpha[i] = 1
+  end  
+end
+local wof = typefunc(IMAGE_SLIDE_TIMING)
+if wof ~= "function"
+then
+  wof = typefunc(timing)
+  if wof == "number"
+  then
+    if timing == 1
+    then
+      wof = function(i , num)
+        return 0, 1 + (num - i)
+      end
+    elseif timing == 2
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 1
+      end
+    elseif timing == 3
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 2
+      end
+    elseif timing == 4
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 1
+      end
+    elseif timing == 5
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 2
+      end
+    elseif timing == 6
+    then
+      wof = function(i , num)
+        return (1 - (.5 ^ i)) * .75, 1
+      end
+    else
+      wof = function(i , num)
+        return i / (num + 1), 1
+      end
+    end
+  elseif wof == "table"
+  then
+    local tmg = {}
+    for i = 1, #timing
+    do
+      tmg[i - 1] = timing[i]
+    end
+    for i = #timing, num
+    do
+     tmg[i] = timing[#timing]
+    end
+    wof = function(i , num)
+      return Zero2One(tmg[i]), 1
+    end
+  else
+    wof = function(i , num)
+      return i / (num + 1), 1
+    end
+  end
+else
+  wof = IMAGE_SLIDE_TIMING
+  IMAGE_SLIDE_TIMING = nil
+end
+if typefunc(cx) ~= "number"
+then
+  cx = 0
+end
+if typefunc(cy) ~= "number"
+then
+  cy = 0
+end
+local w, h, p0, p1, buffer
+if buf
+then
+  image_func(image_arg0, image_arg2)
+  w, h = obj.getpixel()
+  obj.setoption("drawtarget", "tempbuffer", w, h)
+  buffer = 1
+else
+  obj.effect()
+  image_func(image_arg0, image_arg2)
+  w, h = obj.getpixel()
+  buffer = 0
+end
+local cfunc = nil
+local vec
+if fan_clipping ~= nil
+then
+  if sln == 0
+  then
+    if obj.track2 == 1
+    then
+      vec = -360
+    else
+      vec = 360
+    end
+    cfunc = function(p)
+      fan_clipping(buffer, deg, p, cx, cy, ex)
+      obj.setoption("blend",0)
+    end
+  end
+end
+if not cfunc
+then
+  vec = 1
+  local sub_w1 = -w * 0.5 - cx
+  local sub_w2 = w * 0.5 - cx
+  local sub_h1 = -h * 0.5 - cy
+  local sub_h2 = h * 0.5 - cy
+  local nx = math.sin(deg * math.pi / 180)
+  local ny = -math.cos(deg * math.pi / 180)
+  local length = (math.max(math.abs(sub_w1 * nx + sub_h1 * ny), math.abs(sub_w2 * nx + sub_h1 * ny), math.abs(sub_w2 * nx + sub_h2 * ny), math.abs(sub_w1 * nx + sub_h2 * ny)) + 1) * 2
+  if ex == 0
+  then
+    cfunc = function(p)
+      if 0.5 < p * length
+      then
+        obj.effect("斜めクリッピング", "角度", deg, "中心X", cx, "中心Y", cy, "幅", -p * length, "ぼかし" , 0)
+      end
+    end
+  else
+    cfunc = function(p)
+      if 0.5 < (1 - p) * length
+      then
+        obj.effect("斜めクリッピング", "角度", deg, "中心X", cx, "中心Y", cy, "幅", (1 - p) * length, "ぼかし" , 0)
+      else
+        obj.effect("斜めクリッピング", "角度", deg, "中心X", cx, "中心Y", cy, "幅", -p * length, "ぼかし" , 0)        
+      end
+    end
+  end
+end
+local ImageDraw = function(index, per)
+    cfunc(per * vec)
+    obj.draw(0, 0, 0, 1, alpha[index])
+end
+local texture=nil
+if tex ~= ""
+then
+	require("slide_cut_texture")
+	local path=obj.getinfo("script_path")..tex.."\\"
+	texture=function(p, i)
+		if slide_cut_texture_func(path, i, color(p, i, num), image_arg1, image_arg3, image_func, buf) == 0
+		then
+			obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+		end
+	end
+else
+	texture=function(p,i)
+		obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+	end
+end
+for i = num, 1, -1
+do
+  image_func(image_arg1, image_arg3)
+  p0, p1 = wof(i, num)
+  p2 = easing(Zero2One((prog - p0) / (1 - p0) * p1), i, num)
+  texture(p2, i)
+  ImageDraw(i, p2)
+end
+image_func(image_arg1, image_arg3)
+p0, p1 = wof(0, num)
+if buf
+then
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+  obj.load("tempbuffer")
+else
+  obj.setoption("blend", 0, "force")
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+end
+if image_arg0 == "w"
+then
+  image_func("c", image_arg2)
+end
+
+@斜めイン
+--track0:右角度,0,90,45
+--track1:左角度,0,90,45
+--track2:開始地点,0,1000,0,0.01
+--track3:終了地点,0,1000,500,0.01
+--check0:仮想バッファ描画,1
+--dialog:数,N=2;時間逆転/chk,tr=0;色,col={0xff0000,0x0000ff};スポイト/col,s=0xff0000;輝度を保持する/chk,lum=1;透明度,alp=100;ベジェT変更/chk,beje=0;イージング番号,e=0;タイミング,timing=1;テクスチャ,tex=""
+require("slide_cut_texture")
+local prog = obj.time / obj.totaltime
+if tr == 1
+then
+	prog = 1 - prog
+end
+local buf = obj.check0
+local Zero2One = function(p)
+  if 1 < p
+  then
+     return 1
+  elseif p < 0
+  then
+    return 0
+  else
+    return p
+  end
+end
+if rikky_module == nil
+then
+  local CPATH = {}
+  local cpath = package.cpath .. ";"
+  local n
+  while 1
+  do
+    n = cpath:find(";")
+    if n
+    then
+      CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+      cpath = cpath:sub(n + 1, #cpath)
+    else
+      break
+    end
+  end
+  if not CPATH[2]:find("script\\?.dll")
+  then
+    CPATH[3] = CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+    package.cpath = package.cpath .. ";" .. CPATH[3]
+  end
+  for i = 1, #CPATH
+  do
+    local f = io.open(CPATH[i]:gsub("?", "rikky_module"), "rb")
+    if f
+    then
+      require("rikky_module")
+      f:close()
+      break
+    end
+  end
+end
+local easing = nil
+local image_arg0, image_arg1, image_arg2, image_arg3, image_func, typefunc
+if rikky_module
+then
+  image_arg0 = "w"
+  image_arg1 = "r"
+  image_arg2 = rikky_module.image("g")
+  image_arg3 = image_arg2
+  image_func = rikky_module.image
+  typefunc = rikky_module.type
+else
+  image_arg0 = "cache:image_slide"
+  image_arg1 = "obj"
+  image_arg2 = "obj"
+  image_arg3 = image_arg0
+  image_func = obj.copybuffer
+  typefunc = function(v)
+    local s = tostring(v)
+    if(s == v)then return "string" end
+    if(s == "nil")then return "nil" end
+    if(s == "true" or s == "false")then return "boolean" end
+    if(string.find(s, "table:"))then return "table" end
+    if(string.find(s, "function:"))then return "function" end
+    if(string.find(s, "userdata:"))then return "userdata" end
+    return "number"
+  end
+end
+local num
+if typefunc(N) ~= "number"
+then
+  num = 0
+else
+  num = N
+  if num < 0
+  then
+    num = 0
+  elseif 20 < num
+  then
+    num = 20
+  end
+end
+if typefunc(IMAGE_SLIDE_EASING) ~= "function"
+then
+  if typefunc(e) ~= "number"
+  then
+    e = 0
+  end
+  if beje == 0
+  then
+    if 0 < e
+    then
+      for i = 1, #PATH do
+        local f = io.open(PATH[i]:gsub("?", "easing_aviutl"), "r")
+        if f
+        then
+          local EASING = require("easing_aviutl").easing
+          easing = function(P)
+            return EASING(e, P, 0, 1, 1)
+          end
+          f:close()
+          break
+        end
+      end
+    end
+  else
+    if typefunc(OrbitNumber) == "table" and OrbitNumber[e]
+    then
+      local Orbit = function(t, x1, y1, x2, y2)
+        local s = 1 - t
+        x1 = (3 * s * s * x1 + (3 * s * x2 + t) * t) * t
+        y1 = (3 * s * s * y1 + (3 * s * y2 + t) * t) * t
+        return x1, y1
+      end
+      local q1x = OrbitNumber[e][1]
+      local q1y = OrbitNumber[e][2]
+      local q2x = OrbitNumber[e][3]
+      local q2y = OrbitNumber[e][4]
+      easing = function(P)
+        local t1=0
+        local t2=1
+        for i = 1, 10
+        do
+          local tm = (t1 + t2) * 0.5
+          local xm, y = Orbit(tm, q1x, q1y, q2x, q2y)
+          if P < xm
+          then
+            t2 = tm
+          else
+            t1 = tm
+          end 
+        end
+        x1, P = Orbit((t1 + t2) * 0.5, q1x, q1y, q2x, q2y)
+        return P
+      end
+    end
+  end
+  if not easing
+  then
+    if e == 1
+    then
+      local PI = math.pi * 0.5
+      easing = function(P)
+        return math.sin(PI * P)
+      end
+    elseif e == 2
+    then
+      local PI0 = math.pi * 0.5
+      local PI1 = PI0 * 3
+      easing = function(P)
+        return math.sin(PI0 * P + PI1) + 1
+      end
+    elseif e == 3
+    then
+      easing = function(P)
+        return 0.5 * (1 - math.cos(math.pi * P))
+      end
+    elseif e < 0
+    then
+      e = - e
+      easing = function(P)
+        return P ^ e
+      end
+    else
+      easing = function(P)
+        return P
+      end
+    end
+  end
+else
+  easing = IMAGE_SLIDE_EASING
+  IMAGE_SLIDE_EASING = nil
+end
+local color = typefunc(IMAGE_SLIDE_COLOR)
+if color ~= "function"
+then
+  color = typefunc(col)
+  if color == "number"
+  then
+    if col == 1
+    then
+      color = function(p, i ,n)
+        return ({0xF39800, 0xFFF100, 0x009944, 0x0068B7, 0x1D2088, 0x920783, [0] = 0xE60012})[(i - 1) % 7]
+      end
+    elseif col == 2
+    then
+      color = function(p, i ,n)
+        return ({0xFF1010, 0xFF5050, 0xFF8080, 0xFFA0A0, 0xFFC0C0, 0xFFE0E0, [0] = 0xFF0000})[(i - 1) % 7]
+      end
+    elseif col == 3
+    then
+      color = function(p, i ,n)
+        return ({0x10FF10, 0x50FF50, 0x80FF80, 0xA0FFA0, 0xC0FFC0, 0xE0FFE0, [0] = 0x00FF00})[(i - 1) % 7]
+      end
+    elseif col == 4
+    then
+      color = function(p, i ,n)
+        return ({0x1010FF, 0x5050FF, 0x8080FF, 0xA0A0FF, 0xC0C0FF, 0xE0E0FF, [0] = 0x0000FF})[(i - 1) % 7]
+      end
+    elseif col == 5
+    then
+      color = function(p, i ,n)
+        local c = (obj.rand(0, 100, obj.layer, i * 13) - 50) * 0.01
+        if c < 0
+        then
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * - c) * 255)
+        else
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * c) * 255) * 65536
+        end
+      end
+    elseif col == 6
+    then
+      color = function(p, i ,n)
+        return obj.rand(0, 0xFFFFFF, obj.layer, i * 11)
+      end
+    elseif col == 7
+    then
+      color = function(p, i ,n)
+        local r, g, b = RGB(({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6])
+        return RGB(r * (1 - p) + 255 * p, g * (1 - p) + 255 * p, b * (1 - p) + 255 * p)
+      end
+    else
+      color = function(p, i, n)
+        return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+      end
+    end
+    col = {}
+  elseif color == "table"
+  then
+    color = function(p, i, n)
+      return col[((i - 1) % #col) + 1]
+    end
+  else
+    color = function(p, i, n)
+      return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6]
+    end
+  end
+else
+  color = IMAGE_SLIDE_COLOR
+  IMAGE_SLIDE_COLOR = nil
+end
+local alpha = typefunc(alp)
+if alpha == "number"
+then
+  alp = Zero2One(alp * .01)
+  alpha= {}
+  for i = 0, num
+  do
+    alpha[i] = alp
+  end
+elseif alpha == "table"
+then
+  alpha = {}
+  for i = 1, #alp
+  do
+    if typefunc(alp[i]) ~= "number"
+    then
+      alp[i] = 100
+    end
+    alpha[i - 1] = Zero2One(alp[i] * .01)
+  end
+  for i = #alp, num
+  do
+    alpha[i] = 1
+  end
+else
+  alpha = {}
+  for i = 0, num
+  do
+    alpha[i] = 1
+  end  
+end
+local wof = typefunc(IMAGE_SLIDE_TIMING)
+if wof ~= "function"
+then
+  wof = typefunc(timing)
+  if wof == "number"
+  then
+    if timing == 1
+    then
+      wof = function(i , num)
+        return 0, 1 + (num - i)
+      end
+    elseif timing == 2
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 1
+      end
+    elseif timing == 3
+    then
+      wof = function(i , num)
+        return 2 / (num + 1) * (1 - 0.5 ^ i), 2
+      end
+    elseif timing == 4
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 1
+      end
+    elseif timing == 5
+    then
+      wof = function(i , num)
+        return i / (num + 1) * .75, 2
+      end
+    elseif timing == 6
+    then
+      wof = function(i , num)
+        return (1 - (.5 ^ i)) * .75, 1
+      end
+    else
+      wof = function(i , num)
+        return i / (num + 1), 1
+      end
+    end
+  elseif wof == "table"
+  then
+    local tmg = {}
+    for i = 1, #timing
+    do
+      tmg[i - 1] = timing[i]
+    end
+    for i = #timing, num
+    do
+     tmg[i] = timing[#timing]
+    end
+    wof = function(i , num)
+      return Zero2One(tmg[i]), 1
+    end
+  else
+    wof = function(i , num)
+      return i / (num + 1), 1
+    end
+  end
+else
+  wof = IMAGE_SLIDE_TIMING
+  IMAGE_SLIDE_TIMING = nil
+end
+local w, h, p0, p1, p2
+if buf
+then
+  image_func(image_arg0, image_arg2)
+  w, h = obj.getpixel()
+  obj.setoption("drawtarget", "tempbuffer", w, h)
+else
+  obj.effect()
+  image_func(image_arg0, image_arg2)
+  w, h = obj.getpixel()
+end
+local wh = w + h
+local whw = wh + w
+local hw = w * .5
+local hh = h * .5
+local L = whw + h
+local Ls = L * (obj.track2 % 1000) * .001
+local Le = L * (obj.track3 % 1000) * .001
+local sx, sy, ex, ey
+local Lcorn = {}
+local Rcorn = {}
+if Ls < w
+then
+  if Ls == Le
+  then
+    sx = -hw
+    Le = w
+  else
+    sx = -hw + Ls
+  end
+  sy = -hh
+elseif Ls < wh
+then
+  if Ls == Le
+  then
+    sy = -hh
+    Le = wh
+  else
+    sy = -hh + Ls - w
+  end
+  sx = hw
+elseif Ls < whw
+then
+  if Ls == Le
+  then
+    sx = hw
+    Le = whw
+  else
+    sx = hw - Ls + wh
+  end
+  sy = hh
+else
+  if Ls == Le
+  then
+    sy = hh
+    Le = 0
+  else
+    sy = hh - Ls + whw
+  end
+  sx = -hw
+end
+local vx, vy
+if Le < w
+then
+  ex = -hw + Le
+  ey = -hh
+  vx = 1
+  vy = 0
+elseif Le < wh
+then
+  ex = hw
+  ey = -hh + Le - w
+  vx = 0
+  vy = 1
+elseif Le < whw
+then
+  ex = hw - Le + wh
+  ey = hh
+  vx = -1
+  vy = 0
+else
+  ex = -hw
+  ey = hh - Le + whw
+  vx = 0
+  vy = -1
+end
+local nx = ex - sx
+local ny = ey - sy
+L = nx * nx + ny * ny
+if L~= 0
+then
+  L = math.sqrt(L)
+  nx = nx / L
+  ny = ny / L
+else
+  nx = vx
+  ny = vy
+end
+local corn = {-hw - sx, -hh - sy, hw - sx, -hh - sy, hw - sx, hh - sy, -hw - sx, hh - sy}
+for i = 1, 8, 2
+do
+  local z = nx * corn[i + 1] - ny * corn[i]
+  if 0 < z
+  then
+    Lcorn[#Lcorn + 1] = corn[i]
+    Lcorn[#Lcorn + 1] = corn[i + 1]
+  elseif z < 0
+  then
+    Rcorn[#Rcorn + 1] = corn[i]
+    Rcorn[#Rcorn + 1] = corn[i + 1]
+  end
+end
+local x, y
+Ls = 0
+Le = L
+local pi0 = obj.track0 * math.pi / 180
+x = math.cos(pi0)
+y = math.sin(pi0)
+vx = -nx * x + ny * y
+vy = -nx * y - ny * x
+for i = 1, #Rcorn, 2
+do
+  local z = nx*vy-ny*vx
+  if z~= 0
+  then
+    local len = (Rcorn[i] * vy - Rcorn[i + 1] * vx) / z
+    if len < Ls
+    then
+      Ls = len
+    end
+    if Le < len
+    then
+      Le = len
+    end
+  end
+end
+local pi1 = -obj.track1 * math.pi / 180
+x = math.cos(pi1)
+y = math.sin(pi1)
+vx = -nx * x + ny * y
+vy = -nx * y - ny * x
+for i = 1, #Lcorn, 2
+do
+  local z = nx * vy - ny * vx
+  if z ~= 0
+  then
+    local len = (Lcorn[i] * vy - Lcorn[i + 1] * vx) / z
+    if len < Ls
+    then
+      Ls = len
+    end
+    if Le < len
+    then
+      Le = len
+    end
+  end
+end
+ex = sx + Le * nx
+ey = sy + Le * ny
+sx = sx + Ls * nx
+sy = sy + Ls * ny
+x = sx + (ex - sx) * prog
+y = sy + (ey - sy) * prog
+local pi = math.atan2(ny, nx)
+local ImageDraw = function(index, per)
+    slide_cut_slanting_func(nx, ny, sx + (ex - sx) * per, sy + (ey - sy) * per, pi0, pi1, pi, image_arg1, image_func, buf)
+    obj.draw(0, 0, 0, 1, alpha[index])
+end
+local texture=nil
+if tex ~= ""
+then
+	local path=obj.getinfo("script_path")..tex.."\\"
+	texture=function(p, i)
+		if slide_cut_texture_func(path, i, color(p, i, num), image_arg1, image_arg3, image_func, buf) == 0
+		then
+			obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+		end
+	end
+else
+	texture=function(p,i)
+		obj.effect("単色化", "color", color(p, i, num), "輝度を保持する", lum)
+	end
+end
+for i = num, 1, -1
+do
+  image_func(image_arg1, image_arg3)
+  p0, p1 = wof(i, num)
+  p2 = easing(Zero2One((prog - p0) / (1 - p0) * p1), i, num)
+  texture(p2, i)
+  ImageDraw(i, p2)
+end
+image_func(image_arg1, image_arg3)
+p0, p1 = wof(0, num)
+if buf
+then
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+  obj.load("tempbuffer")
+else
+  obj.setoption("blend", 0, "force")
+  ImageDraw(0, easing(Zero2One((prog - p0) / (1 - p0) * p1), 0, num))
+end
+if image_arg0 == "w"
+then
+  image_func("c", image_arg2)
+end
+
+@スライドスティック
+--track0:枚数,0,20,2,1
+--track1:ずれ量X,-500,500,-10
+--track2:ずれ量Y,-500,500,10
+--track3:長さ,0,2000,300
+--check0:仮想バッファ,0
+--dialog:時間反転/chk,rev=0;幅,high=100;色,col={0xff0000,0x00ff00};スポイト/col,s=0xffffff;各不透明度,alp=100;中心変更,vec=0;移動あり/chk,onm=0;pos,pos={};最終長さ,llen="20%";中間時間,ctm="50%";移動イージング,e="";移動は1回/chk,once=0;時間ずれ量,dtm="0%";図表示/chk,dis=0;図の位置,gp={200,100}
+local num = obj.track0
+local dif_x = obj.track1
+local dif_y = obj.track2
+local length = obj.track3
+local buf = obj.check0
+local wide = math.min(obj.screen_w, obj.screen_h, 600)
+local wide_h = wide * .5
+if rev == 1
+then
+  obj.time = obj.totaltime - obj.time
+end
+if rikky_module == nil
+then
+  local CPATH = {}
+  local cpath = package.cpath .. ";"
+  local n
+  while 1
+  do
+    n = cpath:find(";")
+    if n
+    then
+      CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+      cpath = cpath:sub(n + 1, #cpath)
+    else
+      break
+    end
+  end
+  if not CPATH[2]:find("script\\?.dll")
+  then
+    CPATH[3] = CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+    package.cpath = package.cpath .. ";" .. CPATH[3]
+  end
+  for i = 1, #CPATH
+  do
+    local f = io.open(CPATH[i]:gsub("?", "rikky_module"), "rb")
+    if f
+    then
+      require("rikky_module")
+      f:close()
+      break
+    end
+  end
+end
+local typefunc
+if rikky_module
+then
+  typefunc = rikky_module.type
+else
+  typefunc = function(v)
+    local s = tostring(v)
+    if(s == v)then return "string" end
+    if(s == "nil")then return "nil" end
+    if(s == "true" or s == "false")then return "boolean" end
+    if(string.find(s, "table:"))then return "table" end
+    if(string.find(s, "function:"))then return "function" end
+    if(string.find(s, "userdata:"))then return "userdata" end
+    return "number"
+  end
+end
+if typefunc(high) ~= "number"
+then
+  high = 100
+end
+local a = typefunc(alp)
+local alpha = {}
+if a == "number"
+then
+  a = alp * .01
+  for i = 0, num
+  do
+    alpha[i] = a
+  end
+elseif a == "table"
+then
+  for i = 0, num
+  do
+    a = alp[i + 1]
+    if typefunc(a) ~= "number"
+    then
+      a = 100
+    end
+    alpha[i] = a * .01
+  end
+else
+  for i = 0, num
+  do
+    alpha[i] = 1
+  end
+end
+local easing = nil
+if typefunc(IMAGE_SLIDE_EASING) ~= "function"
+then
+  local n = e:find("ベジェT")
+  if n and n == 1 and tonumber(e:sub(8, #e))
+  then
+    e = tonumber(e:sub(8, #e))
+    if typefunc(OrbitNumber) == "table" and OrbitNumber[e]
+    then
+      local Orbit = function(t, x1, y1, x2, y2)
+        local s = 1 - t
+        x1 = (3 * s * s * x1 + (3 * s * x2 + t) * t) * t
+        y1 = (3 * s * s * y1 + (3 * s * y2 + t) * t) * t
+        return x1, y1
+      end
+      local q1x = OrbitNumber[e][1]
+      local q1y = OrbitNumber[e][2]
+      local q2x = OrbitNumber[e][3]
+      local q2y = OrbitNumber[e][4]
+      easing = function(P)
+        local t1=0
+        local t2=1
+        for i = 1, 10
+        do
+          local tm = (t1 + t2) * 0.5
+          local xm, y = Orbit(tm, q1x, q1y, q2x, q2y)
+          if P < xm
+          then
+            t2 = tm
+          else
+            t1 = tm
+          end 
+        end
+        x1, P = Orbit((t1 + t2) * 0.5, q1x, q1y, q2x, q2y)
+        return P
+      end
+    end
+  else
+    e = tonumber(e)
+    if typefunc(e) ~= "number"
+    then
+      e = 0
+    end
+    if 0 < e
+    then
+      local PATH = {}
+      local path = package.path .. ";"
+      while 1
+      do
+        local n = path:find(";")
+        if n
+        then
+          PATH[#PATH + 1] = path:sub(1, n - 1)
+          path = path:sub(n + 1, #path)
+        else
+          break
+        end
+      end
+      if not PATH[2]:find("script\\?.lua")
+      then
+        PATH[3] = PATH[2]:sub(1, PATH[2]:find("\\script\\")) .. "script\\?.lua"
+        package.path = package.path .. ";" .. PATH[3]
+      end
+      for i = 1, #PATH do
+        local f = io.open(PATH[i]:gsub("?", "easing_aviutl"), "r")
+        if f
+        then
+          easing = function(P)
+            return require("easing_aviutl").easing(e, P, 0, 1, 1)
+          end
+          f:close()
+          break
+        end
+      end
+    end
+  end
+  if not easing
+  then
+    if e == 1
+    then
+      local PI = math.pi * 0.5
+      easing = function(P)
+        return math.sin(PI * P)
+      end
+    elseif e == 2
+    then
+      local PI0 = math.pi * 0.5
+      local PI1 = PI0 * 3
+      easing = function(P)
+        return math.sin(PI0 * P + PI1) + 1
+      end
+    elseif e == 3
+    then
+      easing = function(P)
+        return 0.5 * (1 - math.cos(math.pi * P))
+      end
+    elseif e < 0
+    then
+      e = - e
+      easing = function(P)
+        return P ^ e
+      end
+    else
+      easing = function(P)
+        return P
+      end
+    end
+  end
+else
+  easing = IMAGE_SLIDE_EASING
+  IMAGE_SLIDE_EASING = nil
+end
+local per2per = nil
+if onm == 1
+then
+  if llen:byte(#llen) == 37
+  then
+    llen = tonumber(llen:sub(1, #llen - 1))
+    if llen == nil
+    then
+      llen = 100
+    end
+    llen = length * llen * .01
+  else
+    llen = tonumber(llen)
+    if llen == nil
+    then
+      llen = length
+    end
+  end
+  if typefunc(gp) ~= "table"
+  then
+    gp = {}
+  end
+  if gp[1] ==nil
+  then
+    gp[1] = 0
+  end
+  if gp[2] ==nil
+  then
+    gp[2] = 0
+  end
+  if typefunc(pos) ~= "table"
+  then
+    pos = {}
+  end
+  for i = 0, num
+  do
+    pos[(i + 1) * 2 - 1] = wide_h / 21 *(i - 10) + gp[1]
+    if pos[(i + 1) * 2] == nil
+    then
+      pos[(i + 1) * 2] = gp[2]
+    end
+  end
+  obj.setanchor("pos", num + 1)
+  for i = 0, num
+  do
+    local p = (i + 1) * 2
+    pos[i] = 1 - (pos[p] - gp[2] + wide_h * .5) / wide_h
+    if pos[i] < 0
+    then
+      pos[i] = 0
+    elseif 1 < pos[i]
+    then
+      pos[i] = 1
+    end
+  end
+  if dtm:byte(#dtm) == 37
+  then
+    dtm = tonumber(dtm:sub(1, #dtm - 1))
+    if dtm == nil
+    then
+      dtm = 0
+    end
+    if num ~= 0
+    then
+      dtm = obj.totaltime * dtm * .01
+    else
+      dtm = 0
+    end
+  else
+    dtm = tonumber(dtm)
+    if dtm == nil
+    then
+      dtm = 0
+    end
+  end
+  local dtotal = obj.totaltime * obj.totaltime / (dtm * num + obj.totaltime)
+  dtm = dtm * obj.totaltime / (dtm * num + obj.totaltime)
+  if ctm:byte(#ctm) == 37
+  then
+    ctm = tonumber(ctm:sub(1, #ctm - 1))
+    if ctm == nil
+    then
+      ctm = 50
+    end
+    ctm = ctm * .01
+  else
+    ctm = tonumber(ctm)
+    if ctm == nil
+    then
+      ctm = 0.5
+    else
+      ctm = dtotal / ctm
+    end
+  end
+  per2per = function(index)
+    local per = (obj.time - dtm * index) / dtotal
+    if per < 0
+    then
+      return 0
+    elseif 1 < per
+    then
+      return 1
+    else
+      return per
+    end
+  end
+else
+  local tp = obj.time / obj.totaltime
+  per2per = function(index)
+    return tp
+  end
+end
+
+local color = typefunc(IMAGE_SLIDE_COLOR)
+if color ~= "function"
+then
+  color = typefunc(col)
+  if color == "number"
+  then
+    if col == 1
+    then
+      color = function(p, i ,n)
+        return ({0xF39800, 0xFFF100, 0x009944, 0x0068B7, 0x1D2088, 0x920783, [0] = 0xE60012})[(i % 7)]
+      end
+    elseif col == 2
+    then
+      color = function(p, i ,n)
+        return ({0xFF1010, 0xFF5050, 0xFF8080, 0xFFA0A0, 0xFFC0C0, 0xFFE0E0, [0] = 0xFF0000})[(i % 7)]
+      end
+    elseif col == 3
+    then
+      color = function(p, i ,n)
+        return ({0x10FF10, 0x50FF50, 0x80FF80, 0xA0FFA0, 0xC0FFC0, 0xE0FFE0, [0] = 0x00FF00})[(i % 7)]
+      end
+    elseif col == 4
+    then
+      color = function(p, i ,n)
+        return ({0x1010FF, 0x5050FF, 0x8080FF, 0xA0A0FF, 0xC0C0FF, 0xE0E0FF, [0] = 0x0000FF})[(i % 7)]
+      end
+    elseif col == 5
+    then
+      color = function(p, i ,n)
+        local c = (obj.rand(0, 100, obj.layer, i * 13) - 50) * 0.01
+        if c < 0
+        then
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * - c) * 255)
+        else
+          return math.floor(math.cos(math.pi * c) * 255) * 256 + math.floor(math.sin(math.pi * c) * 255) * 65536
+        end
+      end
+    elseif col == 6
+    then
+      color = function(p, i ,n)
+        return obj.rand(0, 0xFFFFFF, obj.layer, i * 11)
+      end
+    elseif col == 7
+    then
+      color = function(p, i ,n)
+        local r, g, b = RGB(({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i - 1) % 6])
+        return RGB(r * (1 - p) + 255 * p, g * (1 - p) + 255 * p, b * (1 - p) + 255 * p)
+      end
+    else
+      color = function(p, i, n)
+        return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i % 6)]
+      end
+    end
+  elseif color == "table"
+  then
+    color = function(p, i, n)
+      return col[(i % #col) + 1]
+    end
+  else
+    color = function(p, i, n)
+      return ({0xffff00, 0x00ff00, 0x00ffff, 0x0000ff, 0xff00ff, [0] = 0xff0000})[(i % 6)]
+    end
+  end
+else
+  color = IMAGE_SLIDE_COLOR
+  IMAGE_SLIDE_COLOR = nil
+end
+local x, y, dx, dy
+if onm == 1 and dis == 1
+then
+  local scw = wide_h * .5
+  for i = 0, num
+  do
+    x = -scw + wide_h * i / 21 + gp[1]
+    y = (.5 - pos[i]) * wide_h + gp[2]
+    obj.load("figure", "四角形", color(easing(per2per(i)), i, num))
+    obj.drawpoly(x, y, 0, scw + gp[1], y, 0, scw + gp[1], scw + gp[2], 0, x, scw + gp[2], 0)
+    obj.load("figure", "四角形", 0x000000)
+    obj.drawpoly(x, y - 2, 0, scw + gp[1], y - 2, 0, scw + gp[1], y + 2, 0, x, y + 2, 0)
+  end
+  obj.load("figure", "四角形", 0xffffff)
+  obj.drawpoly(-scw - 2 + gp[1], -scw - 2 + gp[2], 0, -scw + gp[1], -scw - 2 + gp[2], 0, -scw + gp[1], scw + 2 + gp[2], 0, -scw - 2 + gp[1], scw + 2 + gp[2], 0)
+  obj.drawpoly(-scw - 2 + gp[1], -scw - 2 + gp[2], 0, scw + 2 + gp[1], -scw - 2 + gp[2], 0, scw + 2 + gp[1], -scw + gp[2], 0, -scw - 2 + gp[1], -scw + gp[2], 0)
+  obj.drawpoly(scw + gp[1], -scw - 2 + gp[2], 0, scw + 2 + gp[1], -scw - 2 + gp[2], 0, scw + 2 + gp[1], scw + 2 + gp[2], 0, scw + gp[1], scw + 2 + gp[2], 0)
+  obj.drawpoly(-scw - 2 + gp[1], scw + gp[2], 0, scw + 2 + gp[1], scw + gp[2], 0, scw + 2 + gp[1], scw + 2 + gp[2], 0, -scw - 2 + gp[1], scw + 2 + gp[2], 0)
+  obj.load("figure", "四角形", 0x000000)
+  obj.alpha = .4
+  obj.drawpoly(-scw + gp[1], -scw + gp[2], 0, scw + gp[1], -scw + gp[2], 0, scw + gp[1], scw + gp[2], 0, -scw + gp[1], scw + gp[2], 0)
+end
+local wof = nil
+if typefunc(IMAGE_SLIDE_TIMING) ~= "function"
+then
+  if onm == 0
+  then
+    wof = function(index, number)
+      return .5, .5
+    end
+  else
+    wof = function(index, number)
+      return ctm, pos[index]
+    end
+  end
+else
+  wof = IMAGE_SLIDE_TIMING
+  IMAGE_SLIDE_TIMING = nil
+end
+local PosRotLeng = nil
+if onm == 0
+then
+  PosRotLeng = function(per, index, num)
+    return
+  end
+else
+  PosRotLeng = function(per, index, num)
+    local c0, p0 = wof(index, num)
+    if per <= c0
+    then
+        local p = per / c0
+      return p * p0 * length + (1 - p) * length
+    else
+      if once == 0
+      then
+        local p = (per - c0) / (1 - c0)
+        return p * llen + (1 - p) * p0 * length
+      else
+        return p0 * length
+      end
+    end
+    return
+  end
+end
+local PosRotLeng_ex = nil
+if typefunc(IMAGE_SLIDE_STICK) == "function"
+then
+  PosRotLeng_ex = IMAGE_SLIDE_STICK
+  IMAGE_SLIDE_STICK = nil
+else
+  PosRotLeng_ex = function(per, index, num)
+    return 0, 0, 0
+  end
+end
+if typefunc(vec) ~= "number"
+then
+  vec = 0
+end
+local vecPI, vecPI1
+if vec == 1
+then
+  vec = 0
+  if buf
+  then
+    vecPI = 0
+    vecPI1 = 1
+  else
+    vecPI = -1
+  end
+elseif vec == 2
+then
+  vec = 1
+  if buf
+  then
+    vecPI = 1
+    vecPI1 = 0
+  else
+    vecPI = 1
+  end
+elseif vec == 3
+then
+  vec = 1
+  if buf
+  then
+    vecPI = 0
+    vecPI1 = 1
+  else
+    vecPI = -1
+  end
+else
+  vec = 0
+  if buf
+  then
+    vecPI = 1
+    vecPI1 = 0
+  else
+    vecPI = 1
+  end
+end
+local p, x0, x1, x2, x3, y0, y1, y2, y3, fx, fy, fd, fl, cos, sin, maxx, minx, maxy, miny, efl
+local PI = math.pi / 180
+if buf
+then
+  local xy = {}
+  for i = 0, num
+  do
+    IMAGE_SLIDE = {per = per2per(i), h = high, length = length, easing = easing, func = wof}
+    p = easing(IMAGE_SLIDE.per)
+    dx = dif_x * i
+    dy = dif_y * i
+    fl = PosRotLeng(p, i, num)
+    fx, fy, fd, efl = PosRotLeng_ex(p, i, num)
+    if fl == nil
+    then
+      fl = IMAGE_SLIDE.length
+    elseif fl < 0
+    then
+      fl = -IMAGE_SLIDE.length * fl * 0.01
+    end
+    if efl == nil
+    then
+      fl = IMAGE_SLIDE.length - fl
+    elseif efl < 0
+    then
+      fl = fl * (1 + efl * 0.01)
+    else
+      fl = fl - efl
+    end
+    fd = fd * PI
+    cos = math.cos(fd)
+    sin = math.sin(fd)
+    x = IMAGE_SLIDE.length * 0.5
+    y = IMAGE_SLIDE.h * 0.5
+    x0, y0 = -x + dx + fx + fl * vecPI, -y + dy + fy
+    x0, y0 = x0 * cos - y0 * sin, x0 * sin + y0 * cos
+    x1, y1 = x + dx + fx - fl * vecPI1, -y + dy + fy
+    x1, y1 = x1 * cos - y1 * sin, x1 * sin + y1 * cos
+    x2, y2 = x + dx + fx - fl * vecPI1, y + dy + fy
+    x2, y2 = x2 * cos - y2 * sin, x2 * sin + y2 * cos
+    x3, y3 = -x + dx + fx  + fl * vecPI, y + dy + fy
+    x3, y3 = x3 * cos - y3 * sin, x3 * sin + y3 * cos
+    xy[i] = {x0, y0, x1, y1, x2, y2, x3, y3}
+    if i == 0
+    then
+      maxx = math.max(x0, x1, x2, x3)
+      minx = math.min(x0, x1, x2, x3)
+      maxy = math.max(y0, y1, y2, y3)
+      miny = math.min(y0, y1, y2, y3)
+    else
+      maxx = math.max(maxx, x0, x1, x2, x3)
+      minx = math.min(minx, x0, x1, x2, x3)
+      maxy = math.max(maxy, y0, y1, y2, y3)
+      miny = math.min(miny, y0, y1, y2, y3)
+    end
+  end
+  obj.setoption("drawtarget", "tempbuffer", math.max(maxx - minx, 1), math.max(maxy - miny, 1))
+  local center_x = (maxx + minx) * 0.5
+  local center_y = (maxy + miny) * 0.5
+  for i = num, 0, -1
+  do
+    obj.load("figure", "四角形", color(easing(per2per(i)), i, num), 2)
+    p = xy[i]
+    obj.drawpoly(p[1] - center_x, p[2] - center_y, 0, p[3] - center_x, p[4] - center_y, 0, p[5] - center_x, p[6] - center_y, 0, p[7] - center_x, p[8] - center_y, 0, 0, 0, 1, 0, 1, 1, 0, 1, alpha[i])
+  end
+  obj.load("tempbuffer")
+  obj.cx = obj.cx - center_x + length * 0.5 * vec
+  obj.cy = obj.cy - center_y
+  if onm == 1 and dis == 1
+  then
+    obj.setoption("drawtarget", "framebuffer")
+    obj.effect()
+    obj.draw()
+  end
+else
+  for i = num, 0, -1
+  do
+    IMAGE_SLIDE = {per = per2per(i), h = high, length = length, easing = easing, func = wof}
+    p = easing(IMAGE_SLIDE.per)
+    obj.load("figure", "四角形", color(p, i, num), 100)
+    dx = dif_x * i -length * .5 * vec
+    dy = dif_y * i
+    fl = PosRotLeng(p, i, num)
+    fx, fy, fd, efl = PosRotLeng_ex(p, i, num)
+    if fl == nil
+    then
+      fl = IMAGE_SLIDE.length
+    elseif fl < 0
+    then
+      fl = -IMAGE_SLIDE.length * fl * 0.01
+    end
+    if efl == nil
+    then
+      fl = IMAGE_SLIDE.length - fl
+    elseif efl < 0
+    then
+      fl = fl * (1 + efl * 0.01)
+    else
+      fl = fl - efl
+    end
+    obj.effect("リサイズ", "X", IMAGE_SLIDE.length, "Y", IMAGE_SLIDE.h)
+    obj.effect()
+    obj.effect("リサイズ", "X", (IMAGE_SLIDE.length - fl) / IMAGE_SLIDE.length * 100)
+    obj.cx = obj.cx - (dx + fl * 0.5 * vecPI + fx)
+    obj.cy = obj.cy - dy - fy
+    obj.draw(0, 0, 0, 1, 1, 0, 0, fd)
+  end
+end
+IMAGE_SLIDE = nil

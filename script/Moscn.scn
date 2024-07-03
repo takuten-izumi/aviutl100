@@ -1,0 +1,20 @@
+--color:0xffffff
+local t=obj.getvalue("scenechange")
+local w=obj.w
+obj.copybuffer("tmp","frm")
+local p_x=(1-t)^3*(-w)  + 3*(1-t)^2*t*w + 3*(1-t)*t^2*(-w) + t^3*w
+local p_y=(1-t)^3*w  + 3*(1-t)^2*t*w + 3*(1-t)*t^2*(-w) + t^3*(-w)
+if (t>0.5)then
+obj.load("tempbuffer")
+end
+
+obj.draw()
+obj.load("figure","背景",color,100)
+if(t<0.5) then
+obj.effect("斜めクリッピング","角度",90,"幅",math.floor(p_x))
+elseif (t>0.5) then
+obj.effect("斜めクリッピング","角度",90,"幅",w-math.floor(p_x))
+else
+obj.load("figure","背景",color,100)
+end
+obj.draw()

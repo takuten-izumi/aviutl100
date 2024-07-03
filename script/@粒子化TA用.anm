@@ -1,0 +1,419 @@
+@ó±éqâª
+--track0:Ç∏ÇÍï‚ê≥,0,17,0,1
+--track1:ägéU,0,1000,50,1
+--track2:ï˚å¸,1,4,1,1
+--track3:ã´äE%,-5000,5000,50
+--dialog:ç◊Ç©Ç≥,N_dia=100;ê}å`/fig,fig="â~";ê}å`ÉTÉCÉY%,size_dia=100;ê}å`Ç⁄Ç©Çµ,bokasi_Z_dia=0;ägëÂïœâªó¶ÅÒ,dzoom_dia=0;ã´äEÇ⁄Ç©Çµ%,bokasi_dia=10;çLÇ™ÇËï˚,JISU_dia=1;ägéUï˚å¸X,KX_dia=0;ägéUï˚å¸Y,KY_dia=0;ägéUï˚å¸Z,KZ_dia=0;àÍólägéU/chk,checkI=0;(àÍólägéU)ë¨ìx,K5_dia=10;
+
+--xé≤é¸ÇËâÒì]ä÷êî
+local function Rot_x(x,y,z,angle)
+ local x2,y2,z2
+ x2=x
+ y2=y*math.cos(angle)-z*math.sin(angle)
+ z2=y*math.sin(angle)+z*math.cos(angle)
+ return x2,y2,z2
+end
+--yé≤é¸ÇËâÒì]ä÷êî
+local function Rot_y(x,y,z,angle)
+ local x2,y2,z2
+ x2=x*math.cos(angle)+z*math.sin(angle)
+ y2=y
+ z2=-x*math.sin(angle)+z*math.cos(angle)
+ return x2,y2,z2
+end
+--zé≤é¸ÇËâÒì]ä÷êî
+local function Rot_z(x,y,z,angle)
+ local x2,y2,z2
+ x2=x*math.cos(angle)-y*math.sin(angle)
+ y2=x*math.sin(angle)+y*math.cos(angle)
+ z2=z
+ return x2,y2,z2
+end
+
+local ASPECT=obj.getvalue("aspect")
+local KW,KH=1,1
+if(ASPECT>0)then
+ KW=1-ASPECT
+else
+ KH=1+ASPECT
+end
+local RX,RY,RZ=obj.getvalue("rx"),obj.getvalue("ry"),obj.getvalue("rz")
+local ZOOM=obj.getvalue("zoom")
+local N=N_dia--ç◊Ç©Ç≥ÅAï™äÑêî
+local w,h=obj.getpixel()
+local Nx,Ny=N,(N*(h/w))
+local W,H=w/Nx,h/Ny--àÍÇ¬ÇÃó éqÇÃëÂÇ´Ç≥
+
+local HOUKOU=obj.track2
+local TATE,ARROW
+local Kyoukai=obj.track3
+
+if(checkI==1)then
+ HOUKOU=5
+end
+
+if(HOUKOU==1 or HOUKOU==2)then
+ TATE=0
+elseif(HOUKOU==3 or HOUKOU==4)then
+ TATE=1
+end
+
+if(HOUKOU==1 or HOUKOU==3)then
+ ARROW=1
+elseif(HOUKOU==2 or HOUKOU==4)then
+ ARROW=-1
+end
+
+if(HOUKOU==5)then
+ TATE=0
+ ARROW=1
+ Kyoukai=-5000
+end
+
+local FIG=fig
+local COL={}
+local A={}
+local WH=math.max(W,H)
+local size=size_dia*WH/100
+local RAND=obj.track1
+local B_X_i=Nx*Kyoukai/100
+local B_Y_i=Ny*Kyoukai/100
+local B_X_pix=w*Kyoukai/100
+local B_Y_pix=h*Kyoukai/100
+local JISU=JISU_dia
+local bokasi_i=N*bokasi_dia/100
+local bokasi_pix_X=w*bokasi_dia/100
+local bokasi_pix_Y=h*bokasi_dia/100
+local bokasi_Z=bokasi_Z_dia
+
+local PX,PY,PZ=0,0,0
+local AL=obj.track0
+
+if(AL==0)then
+ PX,PY=obj.w/2,obj.h/2
+elseif(AL==1)then
+ PX,PY=0,obj.h/2
+elseif(AL==2)then
+ PX,PY=-obj.w/2,obj.h/2
+elseif(AL==3)then
+ PX,PY=obj.w/2,0
+elseif(AL==4)then
+ PX,PY=0,0
+elseif(AL==5)then
+ PX,PY=-obj.w/2,0
+elseif(AL==6)then
+ PX,PY=obj.w/2,-obj.h/2
+elseif(AL==7)then
+ PX,PY=0,-obj.h/2
+elseif(AL==8)then
+ PX,PY=-obj.w/2,-obj.h/2
+elseif(AL==9)then
+ PX,PY=-obj.w/2,obj.h/2
+elseif(AL==10)then
+ PX,PY=-obj.w/2,0
+elseif(AL==11)then
+ PX,PY=-obj.w/2,-obj.h/2
+elseif(AL==12)then
+ PX,PY=0,obj.h/2
+elseif(AL==13)then
+ PX,PY=0,0
+elseif(AL==14)then
+ PX,PY=0,-obj.h/2
+elseif(AL==15)then
+ PX,PY=obj.w/2,obj.h/2
+elseif(AL==16)then
+ PX,PY=obj.w/2,0
+elseif(AL==17)then
+ PX,PY=obj.w/2,-obj.h/2
+end
+
+local KX,KY,KZ=KX_dia,KY_dia,KZ_dia
+local K5=K5_dia
+
+for i=1,Nx do
+ COL[i]={}
+ A[i]={}
+ for j=1,Ny do
+  COL[i][j],A[i][j] = obj.getpixel((i-1)*W+W/2,(j-1)*H+H/2,"col")
+ end 
+end
+
+if(HOUKOU~=5)then
+if(TATE==0)then
+if(ARROW==1)then
+ obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSX", (B_X_pix+bokasi_pix_X/2-w/2),"äpìx",270,"Ç⁄Ç©Çµ",bokasi_pix_X)
+elseif(ARROW==-1)then
+ obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSX", (B_X_pix-bokasi_pix_X/2-w/2),"äpìx",90,"Ç⁄Ç©Çµ",bokasi_pix_X)
+end
+elseif(TATE==1)then
+if(ARROW==1)then
+ obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSY", (B_Y_pix+bokasi_pix_Y/2-h/2),"äpìx",0,"Ç⁄Ç©Çµ",bokasi_pix_Y)
+elseif(ARROW==-1)then
+ obj.effect("éŒÇﬂÉNÉäÉbÉsÉìÉO","íÜêSY", (B_Y_pix-bokasi_pix_Y/2-h/2),"äpìx",180,"Ç⁄Ç©Çµ",bokasi_pix_Y)
+end
+end
+else
+ if(1-RAND/100*K5<0)then
+  obj.alpha=0
+ else
+  obj.alpha=1-RAND/100*K5
+ end 
+end
+obj.effect()
+obj.draw(0,0,0)
+
+local x,y,z
+local Nw,Nh=Nx,Ny
+local K
+local zoom=1
+local dzoom=dzoom_dia/1000
+local K_zoom
+local ALP=1
+
+obj.setoption("billboard",3)
+
+for i=1,Nw do
+ for j=1,Nh do
+  
+  if((TATE==0 and ((ARROW==1 and i>B_X_i) or (ARROW==-1 and B_X_i>i))) or(TATE==1 and ((ARROW==1 and j>B_Y_i) or (ARROW==-1 and B_Y_i>j))))then
+ 
+   if(TATE==0)then
+
+    K=ARROW*(i-B_X_i)^JISU
+
+    if((ARROW==1 and i<B_X_i+bokasi_i) or (ARROW==-1 and i>B_X_i-bokasi_i))then
+     ALP=ARROW*(-B_X_i+i)/bokasi_i
+    else
+     ALP=1
+    end
+
+   elseif(TATE==1)then
+
+    K=ARROW*(j-B_Y_i)^JISU
+
+    if((ARROW==1 and j<B_Y_i+bokasi_i) or (ARROW==-1 and j>B_Y_i-bokasi_i))then
+     ALP=ARROW*(-B_Y_i+j)/bokasi_i
+    else
+     ALP=1
+    end
+
+   end
+
+   K_zoom=K
+
+   if(HOUKOU==5)then
+
+    ALP=RAND/100*K5
+    K=RAND
+    K_zoom=RAND
+
+   end
+
+    if ALP>1 then ALP=1 end
+    if ALP<0 then ALP=0 end
+
+   x=KW*((i*W-W/2-Nw*W/2+obj.rand(-100,100,i+j*1000,1)*RAND/100*K/100)*ZOOM/100+K*KX)+PX
+   y=KH*((j*H-H/2-Nh*H/2+obj.rand(-100,100,i+j*1000,2)*RAND/100*K/100)*ZOOM/100+K*KY)+PY
+   z=(0             +obj.rand(-100,100,i+j*1000,3)*RAND/100*K/100)*ZOOM/100+K*KZ+PZ
+
+   x,y,z=Rot_z(x,y,z,math.rad(RZ))
+   x,y,z=Rot_y(x,y,z,math.rad(RY))
+   x,y,z=Rot_x(x,y,z,math.rad(RX))
+
+   obj.load("figure",FIG,COL[i][j],size)
+
+   zoom=1+dzoom*K_zoom
+   if(zoom<0)then
+    zoom=0
+   end
+   
+   obj.effect()
+   obj.effect("Ç⁄Ç©Çµ","îÕàÕ",bokasi_Z)
+   obj.draw(x,y,z,zoom,A[i][j]*ALP,-RX,-RY,-RZ)
+
+  end
+ end
+end
+
+@ó±éqâª-â~å`
+--track0:Ç∏ÇÍï‚ê≥,0,17,0,1
+--track1:ägéU,0,1000,50,1
+--track2:îΩì],0,1,0,1
+--track3:ã´äE,-5000,5000,100
+--dialog:ç◊Ç©Ç≥,N_dia=100;ê}å`/fig,fig="â~";ê}å`ÉTÉCÉY%,size_dia=100;ê}å`Ç⁄Ç©Çµ,bokasi_Z_dia=0;ägëÂïœâªó¶ÅÒ,dzoom_dia=0;Ç⁄Ç©Çµ,bokasi_dia=30;çLÇ™ÇËï˚,JISU_dia=1;ägéUï˚å¸X,KX_dia=0;ägéUï˚å¸Y,KY_dia=0;ägéUï˚å¸Z,KZ_dia=0;íÜêSç¿ïW,pos={0,0};
+
+obj.setanchor("pos",1)
+
+--xé≤é¸ÇËâÒì]ä÷êî
+local function Rot_x(x,y,z,angle)
+ local x2,y2,z2
+ x2=x
+ y2=y*math.cos(angle)-z*math.sin(angle)
+ z2=y*math.sin(angle)+z*math.cos(angle)
+ return x2,y2,z2
+end
+--yé≤é¸ÇËâÒì]ä÷êî
+local function Rot_y(x,y,z,angle)
+ local x2,y2,z2
+ x2=x*math.cos(angle)+z*math.sin(angle)
+ y2=y
+ z2=-x*math.sin(angle)+z*math.cos(angle)
+ return x2,y2,z2
+end
+--zé≤é¸ÇËâÒì]ä÷êî
+local function Rot_z(x,y,z,angle)
+ local x2,y2,z2
+ x2=x*math.cos(angle)-y*math.sin(angle)
+ y2=x*math.sin(angle)+y*math.cos(angle)
+ z2=z
+ return x2,y2,z2
+end
+
+local ASPECT=obj.getvalue("aspect")
+local KW,KH=1,1
+if(ASPECT>0)then
+ KW=1-ASPECT
+else
+ KH=1+ASPECT
+end
+local RX,RY,RZ=obj.getvalue("rx"),obj.getvalue("ry"),obj.getvalue("rz")
+local ZOOM=obj.getvalue("zoom")
+local N=N_dia--ç◊Ç©Ç≥ÅAï™äÑêî
+local w,h=obj.getpixel()
+local Nx,Ny=N,(N*(h/w))--xï˚å¸ÇÃç◊Ç©Ç≥Ç…çáÇÌÇπÇƒyï˚å¸ÇÃç◊Ç©Ç≥ÇåàÇﬂÇÈ
+local W,H=w/Nx,h/Ny--àÍÇ¬ÇÃó éqÇÃëÂÇ´Ç≥
+
+local HOUKOU=obj.track2
+local ARROW
+local Kyoukai=obj.track3
+local R_Kyoukai=obj.track3/2
+local M_size=obj.track3
+local C_X,C_Y=pos[1],pos[2]
+
+local FIG=fig
+local COL={}
+local A={}
+local WH=math.max(W,H)
+local size=size_dia*WH/100
+local RAND=obj.track1
+local JISU=JISU_dia
+local bokasi_pix=bokasi_dia
+local bokasi_Z=bokasi_Z_dia
+
+local HANTEN=obj.track2
+
+local KX,KY,KZ=KX_dia,KY_dia,KZ_dia
+local PX,PY,PZ=0,0,0
+local AL=obj.track0
+
+if(AL==0)then
+ PX,PY=obj.w/2,obj.h/2
+elseif(AL==1)then
+ PX,PY=0,obj.h/2
+elseif(AL==2)then
+ PX,PY=-obj.w/2,obj.h/2
+elseif(AL==3)then
+ PX,PY=obj.w/2,0
+elseif(AL==4)then
+ PX,PY=0,0
+elseif(AL==5)then
+ PX,PY=-obj.w/2,0
+elseif(AL==6)then
+ PX,PY=obj.w/2,-obj.h/2
+elseif(AL==7)then
+ PX,PY=0,-obj.h/2
+elseif(AL==8)then
+ PX,PY=-obj.w/2,-obj.h/2
+elseif(AL==9)then
+ PX,PY=-obj.w/2,obj.h/2
+elseif(AL==10)then
+ PX,PY=-obj.w/2,0
+elseif(AL==11)then
+ PX,PY=-obj.w/2,-obj.h/2
+elseif(AL==12)then
+ PX,PY=0,obj.h/2
+elseif(AL==13)then
+ PX,PY=0,0
+elseif(AL==14)then
+ PX,PY=0,-obj.h/2
+elseif(AL==15)then
+ PX,PY=obj.w/2,obj.h/2
+elseif(AL==16)then
+ PX,PY=obj.w/2,0
+elseif(AL==17)then
+ PX,PY=obj.w/2,-obj.h/2
+end
+
+for i=1,Nx do
+ COL[i]={}
+ A[i]={}
+ for j=1,Ny do
+  COL[i][j],A[i][j] = obj.getpixel((i-1)*W+W/2,(j-1)*H+H/2,"col")
+ end 
+end
+
+local plus_size=bokasi_pix*2
+if(HANTEN==1)then
+ plus_size=-plus_size
+end
+
+obj.effect()
+obj.effect("É}ÉXÉN","type",1,"ÉTÉCÉY",M_size+plus_size,"X",C_X,"Y",C_Y,"Ç⁄Ç©Çµ",bokasi_pix,"É}ÉXÉNÇÃîΩì]",HANTEN)
+obj.draw(0,0,0)
+
+local x,y,z
+local Nw,Nh=Nx,Ny
+local Nwh=math.max(Nw,Nh)
+local K=100
+local zoom=1
+local dzoom=dzoom_dia/1000
+local K_zoom
+local X_pix,Y_pix,R_pix
+local ALP=1
+
+obj.setoption("billboard",3)
+
+for i=1,Nw do
+ for j=1,Nh do
+  
+   X_pix,Y_pix=i*W-W/2-Nw*W/2,j*H-H/2-Nh*H/2
+   R_pix=math.sqrt((X_pix-C_X)^2+(Y_pix-C_Y)^2)
+
+    K=(R_pix-R_Kyoukai)/WH
+
+   if((HANTEN==0 and K>0) or (HANTEN==1 and K<0))then
+    if(HANTEN==0)then
+     ALP=(R_pix-R_Kyoukai)/bokasi_pix
+  
+    elseif(HANTEN==1)then
+     ALP=(R_Kyoukai-R_pix)/bokasi_pix
+
+    end
+
+    if ALP>1 then ALP=1 end
+    if ALP<0 then ALP=0 end
+
+    K_zoom=math.abs(R_pix-R_Kyoukai)
+
+   x=KW*((X_pix+obj.rand(-100,100,i+j*1000,1)*RAND/100*K^JISU/100)*ZOOM/100+K*KX)+PX
+   y=KH*((Y_pix+obj.rand(-100,100,i+j*1000,2)*RAND/100*K^JISU/100)*ZOOM/100+K*KY)+PY
+   z=(0             +obj.rand(-100,100,i+j*1000,3)*RAND/100*K^JISU/100)*ZOOM/100+K*KZ+PZ
+ 
+   x,y,z=Rot_z(x,y,z,math.rad(RZ))
+   x,y,z=Rot_y(x,y,z,math.rad(RY))
+   x,y,z=Rot_x(x,y,z,math.rad(RX))
+
+   obj.load("figure",FIG,COL[i][j],size)
+
+   zoom=1+dzoom*K_zoom
+   if(zoom<0)then
+    zoom=0
+   end
+
+   obj.effect()
+   obj.effect("Ç⁄Ç©Çµ","îÕàÕ",bokasi_Z)
+   obj.draw(x,y,z,zoom,A[i][j]*ALP,-RX,-RY,-RZ)
+
+   end
+ end
+end

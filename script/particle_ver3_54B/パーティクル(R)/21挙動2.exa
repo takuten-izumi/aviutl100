@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=1000.00
+track1=0.00
+track2=0.00
+track3=0.00
+check0=0
+type=0
+filter=0
+name=挙動2@particle_ri_ver3
+param=eqdeg=0;syncrot=0;syncfil={0,0,0,0,0,0,0,0,0,0,0};bigb=0;resync=0;plat="{0,0}";buvel="";buac="";fillink={0,0,0,0,0,0,0,0,0,0,0};btime={0,0};clear={0,0};bslink=0;bstime=0;bsk=0;

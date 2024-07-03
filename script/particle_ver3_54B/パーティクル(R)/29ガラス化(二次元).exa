@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=100.00
+track1=50.00
+track2=50.00
+track3=45.00
+check0=0
+type=0
+filter=0
+name=ガラス化(二次元)@particle_ri_ver3
+param=local ehigh=1;local ewild=5;local bo=0;local light=10;local tyh=0;local fiturn=0;local ss=20;

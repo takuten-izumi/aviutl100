@@ -1,0 +1,36 @@
+--track0:高さ,0,3000,400,0.1
+--track1:上辺,0,3000,400,0.1
+--track2:下辺,0,3000,700,0.1
+--track3:ずらし,-1000,1000,0,0.1
+--dialog:色/col, local colx=0xffffff;仮想バッファ/chk,Ttra=1,true;
+
+	local He = obj.track0
+	local To = obj.track1
+	local Un = obj.track2
+	local Sh = obj.track3
+
+	local Ax = -To*0.5+Sh
+	local Ay = -He*0.5
+
+	local Bx = To*0.5+Sh
+	local By = -He*0.5
+
+	local Cx = Un*0.5
+	local Cy = He*0.5
+
+	local Dx = -Un*0.5
+	local Dy = He*0.5
+
+	obj.load("figure","四角形",colx,20)
+
+	if Ttra == 1 then
+	obj.setoption("drawtarget","tempbuffer",2048,2048)
+	end
+
+	obj.drawpoly(Ax,Ay,0,Bx,By,0,Cx,Cy,0,Dx,Dy,0)
+
+	if Ttra == 1 then
+	obj.load("tempbuffer")
+	end
+
+--Ver.2.0 仮想バッファを忘れていたのを修正

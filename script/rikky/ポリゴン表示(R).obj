@@ -1,0 +1,188 @@
+--track0:裏非表示,0,1,0,1
+--track1:上下中心,-5000,5000,0
+--track2:拡大率,0,2000,100
+--file:
+local f=file
+local culling=obj.track0
+local zom=obj.track2*.01
+local centery=obj.track1*zom
+POLY_R_CK=0
+POLY_R_COL=0
+POLYGON_ZOOM_R={x=1,y=1,z=1}
+local p0,p1,p2,path
+p0=#f
+p1=0
+p2=1
+while(p2<=p0)do
+	path=f:byte(p2)
+	if((0<=path and path<=127) or (161<=path and path<=223))then
+		if(path==92)then
+			p1=p2
+		end
+		p2=p2+1
+	else
+		p2=p2+2
+	end
+end
+path=f:sub(1,p1)
+require("pmd_aviutl")
+POLYGON_POS_R,POLYGON_FACE_R,POLYGON_TEXTURE_R,POLYGON_BONE_R=pmd_aviutl.load(f)
+polygon_MMD=function()
+	local ck=POLY_R_CK
+	local col=POLY_R_COL
+	local e,x0,y0,z0,x1,y1,z1,x2,y2,z2,u0,v0,u1,v1,u2,v2,w,h
+	local px=POLYGON_POS_R.x
+	local py=POLYGON_POS_R.y
+	local pz=POLYGON_POS_R.z
+	local pu=POLYGON_POS_R.u
+	local pv=POLYGON_POS_R.v
+	local face=POLYGON_FACE_R
+	local texture=POLYGON_TEXTURE_R
+	local zoom=obj.getvalue("zoom")*.128*zom
+	local zoomx=zoom*POLYGON_ZOOM_R.x
+	local zoomy=zoom*POLYGON_ZOOM_R.y
+	local zoomz=zoom*POLYGON_ZOOM_R.z
+	local s=1
+	if ck==0 then
+		obj.setoption("culling",culling)
+	elseif ck==2 then
+		obj.setoption("billboard",3)
+	end
+	local nzt={}
+	local w,h,a
+	for i=1,#texture do
+		e=s-1+texture[i][2]
+		if 0<texture[i][1] then
+			if ck==1 then
+				obj.load("figure","四角形",col,100,2)
+				obj.cy=-centery
+				for j=s,e,3 do
+					p0=face[j]
+					p1=face[j+1]
+					p2=face[j+2]
+					x0=px[p0]*zoomx
+					y0=py[p0]*zoomy
+					z0=pz[p0]*zoomz
+					x1=px[p1]*zoomx
+					y1=py[p1]*zoomy
+					z1=pz[p1]*zoomz
+					x2=px[p2]*zoomx
+					y2=py[p2]*zoomy
+					z2=pz[p2]*zoomz
+					obj.drawpoly(
+					x0,y0,z0,
+					x0,y0,z0,
+					x1,y1,z1,
+					x2,y2,z2
+					)
+				end
+			elseif ck==2 then
+				obj.load("figure","四角形",col,2)
+				obj.cy=-centery
+				for j=s,e,3 do
+					p0=face[j]
+					if nzt[p0]==nil then
+						obj.draw(px[p0]*zoomx,py[p0]*zoomy,pz[p0]*zoomz)
+						nzt[p0]=1
+					end
+					p1=face[j+1]
+					if nzt[p1]==nil then
+						obj.draw(px[p1]*zoomx,py[p1]*zoomy,pz[p1]*zoomz)
+						nzt[p1]=1
+					end
+					p2=face[j+2]
+					if nzt[p2]==nil then
+						obj.draw(px[p2]*zoomx,py[p2]*zoomy,pz[p2]*zoomz)
+						nzt[p2]=1
+					end
+				end
+			else
+				if texture[i][3]=="" then
+					obj.load("figure","四角形",texture[i][6],1)
+				else
+					obj.load("image",path..texture[i][3])
+				end
+				obj.cy=-centery
+				w=obj.w
+				h=obj.h
+				a=texture[i][1]
+				for j=s,e,3 do
+					p0=face[j]
+					p1=face[j+1]
+					p2=face[j+2]
+					x0=px[p0]*zoomx
+					y0=py[p0]*zoomy
+					z0=pz[p0]*zoomz
+					x1=px[p1]*zoomx
+					y1=py[p1]*zoomy
+					z1=pz[p1]*zoomz
+					x2=px[p2]*zoomx
+					y2=py[p2]*zoomy
+					z2=pz[p2]*zoomz
+					u0=pu[p0]*w
+					v0=pv[p0]*h
+					u1=pu[p1]*w
+					v1=pv[p1]*h
+					u2=pu[p2]*w
+					v2=pv[p2]*h
+					obj.drawpoly(
+					x0,y0,z0,
+					x0,y0,z0,
+					x1,y1,z1,
+					x2,y2,z2,
+					u0,v0,u0,v0,u1,v1,u2,v2,a
+					)
+				end
+			end
+		end
+		s=e+1
+	end
+	--ファイルが膨大なのでメモリを圧迫しないようにnilを入れる
+	POLYGON_TEXTURE_R=nil
+	POLYGON_BONE_R=nil
+	POLYGON_FACE_R=nil
+	POLYGON_POS_R=nil
+	collectgarbage ("collect")
+end
+if rikky_module==nil then
+	local CPATH = {}
+	local cpath = package.cpath .. ";"
+	while(1)do
+		n = cpath:find(";")
+		if n then
+			CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+			cpath = cpath:sub(n + 1, #cpath)
+		else
+			break
+		end
+	end
+	if not CPATH[2]:find("script\\?.dll") then
+		CPATH[3]=CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+		package.cpath = package.cpath .. ";" .. CPATH[3]
+	end
+	for i=1,#CPATH do
+		local f=io.open(CPATH[i]:gsub("?", "rikky_module"),"rb")
+		if f then
+			require("rikky_module")
+			f:close()
+			break
+		end
+	end
+end
+if rikky_module then
+	local e0,e1,e2=rikky_module.getinfo("filter",1)
+	local flag=1
+	for i=1,e2 do
+		if e0[i]:find("ポリゴン表示(R)",1,true) then
+			flag=0
+			break
+		end
+	end
+	if flag==1 then
+		polygon_MMD()
+	else
+		obj.load("figure","四角形")
+	end
+else
+	polygon_MMD()
+end

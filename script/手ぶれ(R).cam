@@ -1,0 +1,203 @@
+--track0:x,0,1000,20
+--track1:y,0,1000,20
+--track2:z,0,1000,20
+--track3:周期ms,1,5000,300
+--check0:最大/最少値表示,0
+--dialog:傾き,local rz=10;水平ぶれ度,local hd=3;垂直ぶれ度,local vd=3;視野角ぶれ,local va=0;周期その2,local stime2="";周期ぶれ%,local th=20;乱数,local seed=1;
+--ハンディカムの応用
+if not string.find(tostring(HS_camea_max_min),"table:") then
+HS_camea_max_min={}
+end
+if not string.find(tostring(HS_camea_max_min[obj.layer]),"table:") then
+HS_camea_max_min[obj.layer]={}
+end
+if HS_camea_max_min[obj.layer]==nil then
+HS_camea_max_min[obj.layer][1]=1
+HS_camea_max_min[obj.layer][2]=0
+end
+local thousand
+if not obj.check0 then
+HS_camea_max_min[obj.layer][2]=0
+end
+if obj.check0 and HS_camea_max_min[obj.layer][2]==0 then
+if HS_camea_max_min[obj.layer][1]==0 then
+HS_camea_max_min[obj.layer][1]=1
+else
+HS_camea_max_min[obj.layer][1]=0
+end
+HS_camea_max_min[obj.layer][2]=1
+end
+if obj.check0 then
+if HS_camea_max_min[obj.layer][1]==0 then
+thousand=1000
+else
+thousand=-1000
+end
+end
+local stime=obj.track3*0.001
+local sf=0
+if stime2~="" then
+local v=tonumber(stime2)
+if(0<v)then sf=1 end
+end
+th=th*10
+if(th<0)then th=0 elseif(950<th) then th=950 end
+if seed==0 then seed=1 end
+local thh=1000+th
+local thl=1000-th
+local t=obj.getvalue(3,0)*obj.rand(thl,thh,9*seed,0)*0.001*0.001
+local i=0
+local dt=0
+local otime=obj.time
+while(t<otime) do
+i=i+1
+dt=t
+local v=obj.getvalue(3,t)*0.001
+t=t+v*obj.rand(thl,thh,9*seed,i)*0.001
+end
+local temp1=i
+local tp1=1-(t-otime)/(t-dt)
+local temp2,tp2
+if sf==1 then
+stime2=tonumber(stime2)*0.001
+t=stime2*obj.rand(thl,thh,5*seed,0)*0.001
+i=0
+dt=0
+while(t<otime) do
+i=i+1
+dt=t
+t=t+stime2*obj.rand(thl,thh,8*seed,i)*0.001
+end
+temp2=i
+tp2=1-(t-otime)/(t-dt)
+else
+temp2=temp1
+tp2=tp1
+end
+local ran1=obj.rand(-1000,1000,seed,(temp1-1))
+local ran2=obj.rand(-1000,1000,seed,temp1)
+local ran3=obj.rand(-1000,1000,seed,(temp1+1))
+local ran4=obj.rand(-1000,1000,seed,(temp1+2))
+local yran1=obj.rand(-1000,1000,seed,2*(temp1-1))
+local yran2=obj.rand(-1000,1000,seed,2*temp1)
+local yran3=obj.rand(-1000,1000,seed,2*(temp1+1))
+local yran4=obj.rand(-1000,1000,seed,2*(temp1+2))
+local zran1=obj.rand(-1000,1000,seed,3*(temp1-1))
+local zran2=obj.rand(-1000,1000,seed,3*temp1)
+local zran3=obj.rand(-1000,1000,seed,3*(temp1+1))
+local zran4=obj.rand(-1000,1000,seed,3*(temp1+2))
+local dx,dy,dz=obj.interpolation(tp1,ran1,yran1,zran1,ran2,yran2,zran2,ran3,yran3,zran3,ran4,yran4,zran4)
+if obj.check0 then
+dx=thousand
+dy=thousand
+dz=thousand
+end
+dx=obj.track0*dx*0.001
+dy=obj.track1*dy*0.001
+dz=obj.track2*dz*0.001
+ran1=obj.rand(-1000,1000,seed,4*(temp2-1))
+ran2=obj.rand(-1000,1000,seed,4*temp2)
+ran3=obj.rand(-1000,1000,seed,4*(temp2+1))
+ran4=obj.rand(-1000,1000,seed,4*(temp2+2))
+yran1=obj.rand(-1000,1000,seed,5*(temp2-1))
+yran2=obj.rand(-1000,1000,seed,5*temp2)
+yran3=obj.rand(-1000,1000,seed,5*(temp2+1))
+yran4=obj.rand(-1000,1000,seed,5*(temp2+2))
+zran1=obj.rand(-1000,1000,seed,6*(temp2-1))
+zran2=obj.rand(-1000,1000,seed,6*temp2)
+zran3=obj.rand(-1000,1000,seed,6*(temp2+1))
+zran4=obj.rand(-1000,1000,seed,6*(temp2+2))
+local drz,dhd,dvd=obj.interpolation(tp2,ran1,yran1,zran1,ran2,yran2,zran2,ran3,yran3,zran3,ran4,yran4,zran4)
+if obj.check0 then
+drz=thousand
+dhd=thousand
+dvd=thousand
+end
+drz=rz*drz*0.001
+dhd=hd*dhd*0.001*math.pi/180;
+dvd=vd*dvd*0.001*math.pi/180;
+local camera=obj.getoption("camera_param")
+local ex=camera.tx-camera.x
+local ey=camera.ty-camera.y
+local ez=camera.tz-camera.z
+local dis=(ex*ex+ey*ey+ez*ez)^0.5
+if dis==0 then
+ex=0
+ey=0
+ez=1
+else
+ex=ex/dis
+ey=ey/dis
+ez=ez/dis
+end
+if camera.ux*camera.ux+camera.uy*camera.uy+camera.uz*camera.uz==0 then
+camera.ux=0
+camera.uy=-1
+camera.uz=0
+end
+local uxx=camera.uy*ez-camera.uz*ey
+local uxy=camera.uz*ex-camera.ux*ez
+local uxz=camera.ux*ey-camera.uy*ex
+local ur=(uxx*uxx+uxy*uxy+uxz*uxz)^0.5
+if ur==0 then
+uxx=-1
+uxy=0
+uxz=0
+else
+uxx=uxx/ur
+uxy=uxy/ur
+uxz=uxz/ur
+end
+local uyx=ey*uxz-ez*uxy
+local uyy=ez*uxx-ex*uxz
+local uyz=ex*uxy-ey*uxx
+ur=(uyx*uyx+uyy*uyy+uyz*uyz)^0.5
+if ur~=0 then
+uyx=uyx/ur
+uyy=uyy/ur
+uyz=uyz/ur
+else
+uyx=0
+uyy=-1
+uyz=0
+end
+local scos=math.cos(dhd)
+local ssin=math.sin(dhd)
+local cos1=1-scos
+local eyx=(uyx*uyx*cos1+scos)*ex+(uyx*uyy*cos1-uyz*ssin)*ey+(uyz*uyx*cos1+uyy*ssin)*ez
+local eyy=(uyx*uyy*cos1+uyz*ssin)*ex+(uyy*uyy*cos1+scos)*ey+(uyy*uyz*cos1-uyx*ssin)*ez
+local eyz=(uyz*uyx*cos1-uyy*ssin)*ex+(uyy*uyz*cos1+uyx*ssin)*ey+(uyz*uyz*cos1+scos)*ez
+local nx=(uyx*uyx*cos1+scos)*uxx+(uyx*uyy*cos1-uyz*ssin)*uxy+(uyz*uyx*cos1+uyy*ssin)*uxz
+local ny=(uyx*uyy*cos1+uyz*ssin)*uxx+(uyy*uyy*cos1+scos)*uxy+(uyy*uyz*cos1-uyx*ssin)*uxz
+local nz=(uyz*uyx*cos1-uyy*ssin)*uxx+(uyy*uyz*cos1+uyx*ssin)*uxy+(uyz*uyz*cos1+scos)*uxz
+scos=math.cos(dvd)
+ssin=math.sin(dvd)
+cos1=1-scos
+local tx=(nx*nx*cos1+scos)*eyx+(nx*ny*cos1-nz*ssin)*eyy+(nz*nx*cos1+ny*ssin)*eyz
+local ty=(nx*ny*cos1+nz*ssin)*eyx+(ny*ny*cos1+scos)*eyy+(ny*nz*cos1-nx*ssin)*eyz
+local tz=(nz*nx*cos1-ny*ssin)*eyx+(ny*nz*cos1+nx*ssin)*eyy+(nz*nz*cos1+scos)*eyz
+local ux=(nx*nx*cos1+scos)*uyx+(nx*ny*cos1-nz*ssin)*uyy+(nz*nx*cos1+ny*ssin)*uyz
+local uy=(nx*ny*cos1+nz*ssin)*uyx+(ny*ny*cos1+scos)*uyy+(ny*nz*cos1-nx*ssin)*uyz
+local uz=(nz*nx*cos1-ny*ssin)*uyx+(ny*nz*cos1+nx*ssin)*uyy+(nz*nz*cos1+scos)*uyz
+camera.x=camera.x+dx
+camera.y=camera.y+dy
+camera.z=camera.z+dz
+camera.tx=tx*dis+camera.x
+camera.ty=ty*dis+camera.y
+camera.tz=tz*dis+camera.z
+camera.ux=ux
+camera.uy=uy
+camera.uz=uz
+camera.rz=camera.rz+drz
+if va~=0 then
+if obj.check0 then
+camera.d=1024+va*0.001*thousand
+else
+ran1=obj.rand(-1000,1000,seed,7*(temp2-1))
+ran2=obj.rand(-1000,1000,seed,7*temp2)
+ran3=obj.rand(-1000,1000,seed,7*(temp2+1))
+ran4=obj.rand(-1000,1000,seed,7*(temp2+2))
+camera.d=1024+va*obj.interpolation(tp2,ran1,ran2,ran3,ran4)*0.001
+end
+end
+obj.setoption("camera_param",camera)

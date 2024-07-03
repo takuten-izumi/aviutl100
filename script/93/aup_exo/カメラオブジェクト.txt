@@ -1,0 +1,47 @@
+--drawpolyを使った場合、拡張描画で勝手に回転の計算をしてくれるので
+--初期座標さえ指定すればOKの心
+
+local camobj=function(D,w,h)
+
+	--色はオブジェクトの色(図形推奨)
+	local col=obj.getpixel(0,0)
+
+	--w,h指定なしだとスクリーン比率に合わせる(h省略でも同様)
+	local asp = obj.screen_w/obj.screen_h
+	w = w or (asp*100)*2
+	h = h or (w/asp)
+	w = w/2
+	h = h/2
+
+	D = D or 0	
+	--カメラのズームと合わせて変形、カメラエディットモードと似た感じに。
+	local d = obj.getoption("camera_param").d
+	--d = math.atan(obj.screen_h/(d*2))*360/math.pi -- 視野角(不要でした)
+	d = d/2 - 60 + D
+	
+	--拡大率を加味
+	local zoom = obj.getvalue("zoom")*.01 
+	w = w*zoom
+	h = h*zoom
+	d = d*zoom
+	
+	local x0,y0 = -w,-h
+	local x1,y1 =  w,-h
+	local x2,y2 =  w, h
+	local x3,y3 = -w, h
+
+	obj.load("figure","四角形",col + 0x21f0d4*0,1)
+	obj.alpha = .8
+	obj.drawpoly(x0,y0,d, x1,y1,d, x2,y2,d,x3,y3,d)
+
+	obj.load("figure","四角形",0xffffff,100,1)
+	local u = 200 --ライン1の図形を適当なサイズで三角形に切り取る(全面だと汚いので)
+	obj.alpha =.5
+	obj.drawpoly(x0,y0,d, x1,y1,d, 0,0,0,0,0,0 ,u,0,0,u,0,0,0,0)
+	obj.drawpoly(x1,y1,d, x2,y2,d, 0,0,0,0,0,0 ,u,0,0,u,0,0,0,0)
+	obj.drawpoly(x2,y2,d, x3,y3,d, 0,0,0,0,0,0 ,u,0,0,u,0,0,0,0)
+	obj.drawpoly(x3,y3,d, x0,y0,d, 0,0,0,0,0,0 ,u,0,0,u,0,0,0,0)
+	obj.draw()
+end
+
+camobj()

@@ -1,0 +1,50 @@
+function particle_anm(objtrack0,objtrack1,objcheck0,objtime,objframe,objtotaltime,objtotalframe,objindex)
+t = objtime/objtotaltime
+t = -math.cos(math.pi*t)
+b = 1-math.abs(t)
+b = 2*b*b*objtrack1/100/objtotalframe
+if( t < 0 ) then
+	t = (t+1)*(t+1)-1
+else
+	t = 1-(1-t)*(1-t)
+end
+vx = objtrack0
+if( vx == 0 ) then
+	vx = objtotaltime*2
+	if( objcheck0 ) then
+		vx = -vx
+	end
+end
+t = t*math.floor(math.abs(vx)+0.5)
+b = b*math.floor(math.abs(vx)+0.5)
+if( vx < 0 ) then
+	vx = -1
+else
+	vx = 1;
+end
+if( objcheck0 ) then
+	vy = 0
+else
+	vy = vx
+	vx = 0
+end
+x = math.fmod(t,1)
+if( x < 0 ) then
+	x = x+1
+end
+
+w,h = obj.getpixel();
+obj.setoption("drawtarget","tempbuffer",w,h);
+obj.setoption('antialias',0)
+obj.draw(vx*x    *obj.w,vy*x    *obj.h,0)
+obj.draw(vx*(x-1)*obj.w,vy*(x-1)*obj.h,0)
+obj.setoption('antialias',1)
+obj.load("tempbuffer")
+if( objcheck0 ) then
+	obj.effect("ぼかし","サイズ固定",1,"縦横比",100,"範囲",b*w)
+else
+	obj.effect("ぼかし","サイズ固定",1,"縦横比",-100,"範囲",b*h)
+end
+obj.setoption("dst","frm")
+
+end

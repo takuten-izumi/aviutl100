@@ -1,0 +1,29 @@
+obj.effect("リサイズ","X",200,"Y",200,"ドット数でサイズ指定",1)
+local w,h=obj.getpixel()
+local zoom=4
+local D =300*(obj.time/obj.totaltime)
+local dn = 2.5 --密度
+local T={}
+for i =0,w-1 do 
+T[i]={}
+for j=0,h-1 do
+local col=obj.getpixel(i,j)
+local y,cb,cr,a=obj.getpixel(i,j,"yc")
+T[i][j]={y,a,col}
+end
+end
+
+
+for i =0,w-1 do 
+for j=0,h-1 do
+local y,a,col = T[i][j][1],T[i][j][2],T[i][j][3]
+obj.setoption("billboard",3)
+obj.load("figure","円",col,6)
+local A=(a/4096)-.5
+local Y=(y/4096)-.5
+
+local x=i-w/2
+local y=j-h/2
+obj.draw(x*dn,y*dn,(A*Y)*D,(1-(A*Y))*zoom*1/6,1)
+end
+end

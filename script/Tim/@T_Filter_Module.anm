@@ -1,0 +1,367 @@
+@グラフィックペンT
+--track0:線長,2,200,40,1
+--track1:しきい値,0,255,128,1
+--track2:白線量,0,100,8
+--track3:黒線量,0,100,8
+--dialog:向き[0..3],local Vec=2;シャドウ/col,col1=0x0;ハイライト/col,col2=0xffffff;シード固定/chk,local sechk=1;シード,local seed=0;
+--check0:しきい値を自動計算,1;
+
+	require("T_Filter_Module")
+	local Lng=obj.track0
+	obj.effect("単色化")
+	obj.effect("領域拡張","塗りつぶし",1,"上",Lng,"下",Lng,"左",Lng,"右",Lng)
+
+	if sechk==0 then
+		seed=seed+obj.time*obj.framerate
+	end
+	Vec=math.floor(((Vec or 2)%4))
+	local userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.Graphicpen(userdata,w,h,Lng,obj.track1,obj.track2*0.01,obj.track3*0.01,Vec,seed,obj.check0)
+	obj.putpixeldata(userdata)
+
+	userdata,w,h=obj.getpixeldata()
+	local r1,g1,b1=RGB(col1)
+	local r2,g2,b2=RGB(col2)
+	T_Filter_Module.GrayColor(userdata,w,h,r1,g1,b1,r2,g2,b2)
+	obj.putpixeldata(userdata)
+	obj.effect("クリッピング","上",Lng,"下",Lng,"左",Lng,"右",Lng)
+
+
+@ノート用紙T
+--track0:しきい値,0,255,128,1
+--track1:きめ,0,100,75
+--track2:レリーフ,0,500,100
+--track3:向き,0,7,3,1
+--dialog:シャドウ/col,col1=0x0;ハイライト/col,col2=0xffffff;
+
+	require("T_Filter_Module")
+	local userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.easybinarization(userdata,w,h,obj.track0)
+	obj.putpixeldata(userdata)
+	userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.GrayColor(userdata,w,h,128,128,128,255,255,255)
+	obj.putpixeldata(userdata)
+	obj.setoption("drawtarget","tempbuffer",w,h)
+	obj.draw()
+	obj.load("figure","四角形",0xffffff,math.max(w,h))
+	obj.effect("ノイズ","周期X",100,"周期Y",100,"type",0,"mode",1)
+	obj.effect("領域拡張","塗りつぶし",1,"上",1,"下",1,"左",1,"右",1)
+	userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.Emboss(userdata,w,h,1,2)
+	obj.putpixeldata(userdata)
+	obj.effect("クリッピング","上",1,"下",1,"左",1,"右",1)
+	obj.setoption("blend",2)
+	obj.draw(0,0,0,1,0.5*(1-obj.track1*0.01))
+	obj.load("tempbuffer")
+	obj.setoption("blend",0)
+	userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.Emboss(userdata,w,h,obj.track2*0.01,obj.track3)
+	obj.putpixeldata(userdata)
+	userdata,w,h=obj.getpixeldata()
+	local r1,g1,b1=RGB(col1)
+	local r2,g2,b2=RGB(col2)
+	T_Filter_Module.GrayColor(userdata,w,h,r1,g1,b1,r2,g2,b2)
+	obj.putpixeldata(userdata)
+
+
+@チョーク・木炭T
+--track0:木炭適用,0,100,0
+--track1:ﾁｭｰｸ適用,0,100,0
+--track2:筆圧,0,100,50
+--track3:しきい値,0,255,0,1
+--dialog:長さ[1-10],local len=7;ノイズ強度,local np=30;シャドウ/col,col1=0x0;ハイライト/col,col2=0xffffff;シード固定/chk,local sechk=1;シード,local seed=0;
+--check0:しきい値を自動計算,1;
+
+	require("T_Filter_Module")
+	if sechk==0 then
+		seed=seed+obj.time*obj.framerate
+	end
+	if len<1 then
+		len=1
+	elseif len>10 then
+		len=10
+	end
+	obj.effect("単色化")
+	local userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.Preprocessing(userdata,w,h,obj.track0*0.01,obj.track1*0.01,obj.track2*0.01,obj.track3,obj.check0)
+	obj.putpixeldata(userdata)
+	obj.setoption("drawtarget","tempbuffer",w,h)
+	obj.draw()
+	obj.effect("単色化","輝度を保持する",0)
+	obj.effect("ノイズ","強さ",100,"周期X",50,"周期Y",50,"type",0,"mode",1,"seed",seed)
+	obj.effect("ぼかし","範囲",3,"サイズ固定",1)
+	obj.setoption("blend",5)
+	obj.draw(0,0,0,1,np*0.01)
+	obj.load("tempbuffer")
+	userdata,w,h=obj.getpixeldata()
+	local r1,g1,b1=RGB(col1)
+	local r2,g2,b2=RGB(col2)
+	T_Filter_Module.ChalkCharcoal(userdata,w,h,len,r1,g1,b1,r2,g2,b2)
+	obj.putpixeldata(userdata)
+	obj.setoption("blend",0)
+
+
+@ブラスターT
+--track0:しきい値,0,255,128,1
+--track1:なめらか,1,100,3,1,1
+--track2:向き,0,7,1,1
+--track3:距離,1,10,5,1
+--dialog:シャドウ/col,col1=0x0;ハイライト/col,col2=0xffffff;エッジ強度,local ed=100;
+
+	require("T_Filter_Module")
+	local Len=obj.track3
+	local Vec=obj.track2
+	local userdata,w,h,w0,h0
+
+	obj.copybuffer("cache:original","obj")
+
+	w0,h0=obj.getpixel()
+	obj.setoption("drawtarget","tempbuffer",w0,h0)
+	obj.draw()
+	obj.effect("反転","透明度反転",1)
+	obj.setoption("blend","alpha_add")
+	obj.draw()
+	obj.load("tempbuffer")
+	obj.setoption("blend",0)
+
+	obj.effect("ぼかし","範囲",obj.track1,"サイズ固定",1)
+	userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.easybinarization(userdata,w,h,obj.track0)
+	obj.putpixeldata(userdata)
+	obj.copybuffer("cache:saveimg","obj")
+
+	obj.setoption("drawtarget","tempbuffer",w0,h0)
+
+	obj.effect("ぼかし","範囲",Len,"サイズ固定",1)
+	obj.effect("領域拡張","塗りつぶし",1,"上",3,"下",3,"左",3,"右",3)	
+	userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.Blaster(userdata,w,h,Vec,ed*0.01)
+	obj.putpixeldata(userdata)
+	obj.draw()
+
+	obj.copybuffer("obj","cache:saveimg")
+	obj.effect("エッジ抽出","color",0x808080,"しきい値",100)
+	obj.effect("ぼかし","範囲",1,"サイズ固定",1)
+	obj.draw()
+
+	obj.copybuffer("cache:saveimg","tmp")
+
+	obj.load("figure","四角形",0xffffff,math.max(w0,h0))
+	obj.effect("グラデーション","角度",-45+45*Vec,"幅",math.max(w0,h0),"color",0xeeeeee,"color2",0x111111)
+	obj.draw()
+	obj.copybuffer("obj","cache:saveimg")
+	obj.draw()
+
+	obj.load("tempbuffer")
+	userdata,w,h=obj.getpixeldata()
+	local r1,g1,b1=RGB(col1)
+	local r2,g2,b2=RGB(col2)
+	T_Filter_Module.GrayColor(userdata,w,h,r1,g1,b1,r2,g2,b2)
+	obj.putpixeldata(userdata)
+
+	obj.copybuffer("tmp","obj")
+	obj.copybuffer("obj","cache:original")
+	obj.effect("反転","透明度反転",1)
+	obj.setoption("blend","alpha_sub")
+	obj.draw()
+	obj.load("tempbuffer")
+	obj.setoption("blend",0)
+
+
+@モザイクタイルT
+--track0:サイズ,0,2000,50
+--track1:溝幅,0,1000,1
+--track2:細かさ,1,100,10
+--track3:変形量,-500,500,30
+--dialog:縦横比％,local asp=100;溝明度,local BL=70;凸エッジ幅,local tw=2;凸エッジ高さ,local th=1;凸エッジ角度,local tr=-45;がさつき,local gs=50;変化速度,local nv=0;乱数シード,local seed=0;
+--check0:がさつき,1;
+
+	local w,h = obj.getpixel()
+	asp=asp*0.01
+	local Sw=obj.track0
+	local Sh=Sw*asp
+	local Bw=obj.track1
+	local Fr=obj.track2*0.1
+	local Rf=obj.track3
+	local w2,h2 = w+Sw,h+Sh
+
+	if obj.check0 then
+		require("T_Filter_Module")
+		local Vec=math.floor((tr+45)/45-0.5)
+		Vec=Vec % 8
+		obj.effect("領域拡張","塗りつぶし",1,"上",1,"下",1,"左",1,"右",1)
+		local userdata,w,h=obj.getpixeldata()
+		T_Filter_Module.Sharp(userdata,w,h,0.5)
+		obj.putpixeldata(userdata)
+		userdata,w,h=obj.getpixeldata()
+		T_Filter_Module.Emboss(userdata,w,h,gs*0.01,Vec)
+		obj.putpixeldata(userdata)
+		obj.effect("クリッピング","上",1,"下",1,"左",1,"右",1)
+	end
+
+	obj.copybuffer("cache:ori","obj")
+	obj.effect("色調補正","明るさ",BL)
+	obj.copybuffer("cache:D-ori","obj")
+	obj.setoption("drawtarget","tempbuffer",w2,h2)
+	obj.load("figure","四角形",0xffffff,math.max(Sw,Sh))
+	w2,h2 = w2*0.5,h2*0.5
+	local nx=math.ceil(w2/Sw)
+	local ny=math.ceil(h2/Sh)
+	local Bw1=-math.floor(Bw*0.5)
+	local Bw2=Bw1+Bw
+	for i=-nx,nx do
+		local x=i*Sw
+		obj.drawpoly(x+Bw1,-h2,0, x+Bw2,-h2,0, x+Bw2,h2,0, x+Bw1,h2,0)
+	end
+	for j=-ny,ny do
+		local y=j*Sh
+		obj.drawpoly(-w2,y+Bw1,0, w2,y+Bw1,0, w2,y+Bw2,0, -w2,y+Bw2,0)
+	end
+	obj.copybuffer("cache:Lat","tmp")
+
+	obj.load("figure","四角形",0xffffff,2*math.max(w2,h2))
+	obj.effect("ノイズ","mode",1,"周期X",Fr,"周期Y",Fr,"seed",seed,"変化速度",nv)
+	local userdata,w0,h0=obj.getpixeldata()
+	T_Filter_Module.FlatRGB(userdata,w0,h0,1)
+	obj.putpixeldata(userdata)
+	obj.setoption("blend",0)
+	obj.draw()
+	obj.load("figure","四角形",0xffffff,2*math.max(w2,h2))
+	obj.effect("ノイズ","mode",1,"周期X",Fr,"周期Y",Fr,"seed",seed+100,"変化速度",nv)
+	userdata,w0,h0=obj.getpixeldata()
+	T_Filter_Module.FlatRGB(userdata,w0,h0,2)
+	obj.putpixeldata(userdata)
+	obj.setoption("blend",5)
+	obj.draw()
+	obj.setoption("blend",0)
+	obj.copybuffer("obj","cache:Lat")
+	obj.effect("ディスプレイスメントマップ","type",0,"name","*tempbuffer","元のサイズに合わせる",1,"param0",Rf,"param1",Rf)
+
+	obj.copybuffer("tmp","cache:ori")
+	obj.setoption("blend","alpha_sub")
+	obj.draw()
+	obj.copybuffer("obj","tmp")
+	obj.effect("凸エッジ","幅",tw,"高さ",th,"角度",tr)
+	obj.copybuffer("tmp","cache:D-ori")
+	obj.setoption("blend",0)
+	obj.draw()
+	obj.load("tempbuffer")
+
+
+@ガラスT
+--track0:歪み量,0,500,50
+--track1:滑らか,0,200,5,1
+--track2:周期/ｻｲｽﾞ,1,100,20
+--track3:分断,0,100,0
+--dialog:形状[1..3],local fig=1;変化速度,local nv=0;乱数シード,local seed=0;
+
+	require("T_Filter_Module")
+	local size=obj.track0
+	local per=obj.track2
+	fig=((fig or 1)-1)%3+1
+	obj.effect("領域拡張","塗りつぶし",1,"上",size,"下",size,"左",size,"右",size)
+	obj.copybuffer("cache:ori","obj")
+	local w,h = obj.getpixel()
+
+	if fig==1 then
+		obj.setoption("drawtarget","tempbuffer",w,h)
+		obj.load("figure","四角形",0xffffff,math.max(w,h))
+		obj.effect("ノイズ","周期X",per,"周期Y",per,"type",0,"mode",1,"seed",seed,"変化速度",nv)
+		local userdata,w0,h0=obj.getpixeldata()
+		T_Filter_Module.FlatRGB(userdata,w0,h0,1)
+		obj.putpixeldata(userdata)
+		obj.setoption("blend",5)
+		obj.draw()
+		obj.load("figure","四角形",0xffffff,math.max(w,h))
+		obj.effect("ノイズ","周期X",per,"周期Y",per,"type",0,"mode",1,"seed",seed+100,"変化速度",nv)
+		local userdata,w0,h0=obj.getpixeldata()
+		T_Filter_Module.FlatRGB(userdata,w0,h0,2)
+		obj.putpixeldata(userdata)
+		obj.setoption("blend",5)
+		obj.draw()
+		obj.setoption("blend",0)
+	elseif fig==2 then
+		local siz=per*2.5
+		obj.load("figure","四角形",0x808080,50)
+		local userdata,w0,h0=obj.getpixeldata()
+		T_Filter_Module.GlassSQ(userdata,w0,h0)
+		obj.putpixeldata(userdata)
+		obj.effect("ぼかし","範囲",2,"サイズ固定",1)
+		local pp=siz/50*100
+		obj.effect("リサイズ","拡大率",pp)
+		local nx=-math.floor(-w/siz)
+		local ny=-math.floor(-h/siz)
+		nx=2*math.floor((nx+1)/2)
+		ny=2*math.floor((ny+1)/2)
+		obj.effect("画像ループ","横回数",nx,"縦回数",ny)
+	else
+		local siz=per*5
+		obj.setoption("drawtarget","tempbuffer",100,100)
+		obj.load("figure","四角形",0x808080,100)
+		obj.draw()
+		obj.load("figure","四角形",0xffffff,100)
+		obj.draw(0,0,0,1,0.2)
+		obj.load("figure","円",0x808080,70.71)
+		obj.effect("グラデーション","幅",140,"blend",5,"color",0x80ff80,"color2",0x800080)
+		obj.effect("グラデーション","幅",140,"blend",5,"color2",0xff8080,"color",0x008080,"角度",90)
+		obj.draw(50,0,0)
+		obj.draw(-50,0,0)
+		obj.draw(0,50,0)
+		obj.draw(0,-50,0)
+		obj.load("tempbuffer")
+		obj.effect("リサイズ","拡大率",siz)
+		local nx=-math.floor(-w/siz)
+		local ny=-math.floor(-h/siz)
+		nx=2*math.floor((nx+1)/2)
+		ny=2*math.floor((ny+1)/2)
+		obj.effect("画像ループ","横回数",nx,"縦回数",ny)
+		obj.effect("ぼかし","範囲",siz*0.02,"サイズ固定",1)
+	end
+	obj.setoption("drawtarget","tempbuffer",w,h)
+
+	local userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.Flattening(userdata,w,h,obj.track3*0.01)
+	obj.putpixeldata(userdata)
+	obj.draw()
+
+	obj.copybuffer("obj","cache:ori")
+	obj.effect("ディスプレイスメントマップ","type",0,"name","*tempbuffer","元のサイズに合わせる",1,"param0",size,"param1",size,"ぼかし",obj.track1)
+	obj.effect("クリッピング","上",size,"下",size,"左",size,"右",size)
+
+
+@エンボスT
+--track0:強さ,0,1000,100
+--track1:向き,0,7,1,1
+
+	require("T_Filter_Module")
+	local St=obj.track0*0.01
+	local Vec=obj.track1
+
+	obj.effect("領域拡張","塗りつぶし",1,"上",1,"下",1,"左",1,"右",1)
+	local userdata,w,h=obj.getpixeldata()
+	T_Filter_Module.Emboss(userdata,w,h,St,Vec)
+	obj.putpixeldata(userdata)
+	obj.effect("クリッピング","上",1,"下",1,"左",1,"右",1)
+
+
+@シャープT
+--track0:強さ,0,1000,100
+--track1:半径,1,100,1,1
+--check0:アンシャープマスク,1;
+	require("T_Filter_Module")
+	local St=obj.track0*0.01
+
+	if obj.check0 then
+		local userdata,w,h=obj.getpixeldata()
+		T_Filter_Module.SetPublicImage(userdata,w,h)
+		obj.effect("ぼかし","範囲",obj.track1,"サイズ固定",1)
+		userdata,w,h=obj.getpixeldata()
+		T_Filter_Module.UnSharpMask(userdata,w,h,St)
+		obj.putpixeldata(userdata)
+	else
+		obj.effect("領域拡張","塗りつぶし",1,"上",1,"下",1,"左",1,"右",1)
+		local userdata,w,h=obj.getpixeldata()
+		T_Filter_Module.Sharp(userdata,w,h,St)
+		obj.putpixeldata(userdata)
+		obj.effect("クリッピング","上",1,"下",1,"左",1,"右",1)
+	end

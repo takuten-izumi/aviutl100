@@ -1,0 +1,316 @@
+function particle_obj(t,t0,life,pi,pj,seed,track1,track2,track3,col1,chk1,chk2)
+local type=function(v)
+local v=v
+local s=tostring(v)
+if s==v then return "string" end
+if s=="nil" then return "nil" end
+if s=="true" or s=="false" then return "boolean" end
+if string.find(s,"table:") then return "table" end
+if string.find(s,"function:") then return "function" end
+if string.find(s,"userdata:") then return "userdata" end
+return "number"
+end
+local track1=track1
+if type(track1)~="number" then track1=100 end
+local s=math.floor(track1)
+if s<0 then s=0 end
+local h=track2
+if type(h)~="number" then h=20 end
+if h<0 then h=0 end
+local chk1=chk1
+if type(chk1)~="number" then chk1=0 end
+local chk2=chk2
+if type(chk2)~="number" then chk2=1 end
+if chk2==1 then
+h=h*obj.rand(500,1200,seed,pi+pj)*0.0001
+else
+h=h*0.1
+end
+local track3=track3
+if type(track3)~="number" then track3=0 end
+local n=math.floor(track3)
+if n<0 then
+n=0
+elseif 5<n then
+n=5
+end
+if chk1==1 then
+n=obj.rand(0,5,seed,seed+pi*8+pj*11)
+end
+local col1=col1
+if type(col1)~="number" then col1=0xddecff end
+local dp=obj.drawpoly
+obj.load("figure","四角形",col1)
+obj.setoption("dst","tmp",s,s)
+obj.setoption("blend","alpha_add")
+if n==0 then
+local s1=s*0.9
+local s2=s1*0.5
+local h2=h*0.5
+dp(-h2,-s2,0,h2,-s2,0,h2,0,0,-h2,0,0)
+local s3=s2/4
+local x=h2/math.sin(math.pi/3)
+local x1=s3*math.cos(math.pi/6)
+local y1=s3*math.sin(math.pi/6)
+local x2=x*math.cos(math.pi/6)
+local y2=x*math.sin(math.pi/6)
+dp(0,-s3-x,0,x1+x2,-y1-x-s3-y2,0,x1,-y1+x-s3,0,0,-s3+x,0)
+dp(0,-s3-x,0,-x1-x2,-y1-x-s3-y2,0,-x1,-y1+x-s3,0,0,-s3+x,0)
+dp(0,-s3*2-x,0,x1+x2,-y1-x-s3*2-y2,0,x1,-y1+x-s3*2,0,0,-s3*2+x,0)
+dp(0,-s3*2-x,0,-x1-x2,-y1-x-s3*2-y2,0,-x1,-y1+x-s3*2,0,0,-s3*2+x,0)
+dp(0,-s*0.5,0,h,-s2,0,h2,-s2+h*5,0,0,-s2+h*5,0)
+dp(0,-s*0.5,0,-h,-s2,0,-h2,-s2+h*5,0,0,-s2+h*5,0)
+obj.copybuffer("obj","tmp")
+obj.setoption("dst","tmp",s,s)
+obj.draw()
+obj.draw(0,0,0,1,1,0,0,60)
+obj.draw(0,0,0,1,1,0,0,120)
+obj.draw(0,0,0,1,1,0,0,180)
+obj.draw(0,0,0,1,1,0,0,240)
+obj.draw(0,0,0,1,1,0,0,300)
+elseif n==1 then
+local r3=math.sqrt(3)
+local s2=s*0.5*0.75
+local x1=-r3*s2*0.25
+local y1=-3*s2*0.25
+local y2=-s2
+local h1=h/math.cos(math.pi/6)
+local y3=-s2+h1
+local x4=x1+h*math.cos(math.pi/3)
+local y4=y1+h*math.sin(math.pi/3)
+dp(x1,y1,0,0,y2,0,0,y3,0,x4,y4,0)
+dp(-x1,y1,0,-x4,y4,0,0,y3,0,0,y2,0)
+local tx1=x1*0.8
+local ty1=y1*0.8
+local ty2=y2*0.8
+local th1=h1*0.25
+local ty3=-s2*0.8+th1
+local tx4=tx1+h*0.25*math.cos(math.pi/3)
+local ty4=ty1+h*0.25*math.sin(math.pi/3)
+dp(tx1,ty1,0,0,ty2,0,0,ty3,0,tx4,ty4,0)
+dp(-tx1,ty1,0,-tx4,ty4,0,0,ty3,0,0,ty2,0)
+tx1=x1*0.6
+ty1=y1*0.6
+ty2=y2*0.6
+th1=h1*0.25
+ty3=-s2*0.6+th1
+tx4=tx1+h*0.25*math.cos(math.pi/3)
+ty4=ty1+h*0.25*math.sin(math.pi/3)
+dp(tx1,ty1,0,0,ty2,0,0,ty3,0,tx4,ty4,0)
+dp(-tx1,ty1,0,-tx4,ty4,0,0,ty3,0,0,ty2,0)
+tx1=x1*0.4
+ty1=y1*0.4
+ty2=y2*0.4
+th1=h1*0.75
+ty3=-s2*0.4+th1
+tx4=tx1+h*0.75*math.cos(math.pi/3)
+ty4=ty1+h*0.75*math.sin(math.pi/3)
+dp(tx1,ty1,0,0,ty2,0,0,ty3,0,tx4,ty4,0)
+dp(-tx1,ty1,0,-tx4,ty4,0,0,ty3,0,0,ty2,0)
+local h2=h*0.5
+local hx=h2*math.cos(math.pi/6)
+local hy=-s2+h2*math.sin(math.pi/6)
+dp(-hx,hy,0,hx,hy,0,0,0,0,0,0,0)
+local s3=s*0.25*0.5
+obj.load("figure","六角形",col1,s3,2)
+obj.draw(0,-s*0.875*0.5)
+obj.load("figure","六角形",col1,s3*0.5,1)
+obj.draw(0,-s*0.875*0.5)
+obj.copybuffer("obj","tmp")
+obj.setoption("dst","tmp",s,s)
+obj.draw()
+obj.draw(0,0,0,1,1,0,0,60)
+obj.draw(0,0,0,1,1,0,0,120)
+obj.draw(0,0,0,1,1,0,0,180)
+obj.draw(0,0,0,1,1,0,0,240)
+obj.draw(0,0,0,1,1,0,0,300)
+elseif n==2 then
+local ss=s*0.5
+local s1=ss*0.2
+local s2=ss*0.4
+local s3=ss*0.6
+local deg=math.pi*obj.rand(15,30,seed,pi+pj)/180
+local x1=0
+local y1=-ss
+local x2=0
+local y2=y1+h/math.sin(deg)
+local x4=-s2*math.tan(deg)
+local x3=x4+h/math.cos(deg)
+local y3=-s3
+local y4=-s3
+local x5=math.sqrt(s1*s1+x4*x4)
+local y6=-s2
+local y5=y6-h*x5/math.abs(x4)
+local h1=h*0.5
+local y7=(y5+y6)*0.5
+dp(0,y1,0,0,y2,0,x3,y3,0,x4,y4,0)
+dp(x4,y4,0,x3,y3,0,0,y5,0,0,y6,0)
+dp(x1,y1,0,-x4,y4,0,-x3,y3,0,x2,y2,0)
+dp(-x3,y3,0,-x4,y4,0,0,y6,0,0,y5,0)
+deg=math.pi*obj.rand(25,40,seed,pi+pj)/180
+ss=s2
+s3=s1*obj.rand(900,1300,seed,pi*5+pj*9+123)*0.001
+s1=ss/3
+s2=s1*2
+y1=-s1-h/math.sin(deg)*0.5
+x2=-s3*math.sin(deg)
+y2=-s1-s3*math.cos(deg)-h/math.sin(deg)*0.5
+x3=-s3*math.sin(deg)
+y3=-s1-s3*math.cos(deg)+h/math.sin(deg)*0.5
+y4=-s1+h/math.sin(deg)*0.5
+dp(0,y1,0,x2,y2,0,x3,y3,0,0,y4,0)
+dp(0,y1,0,-x2,y2,0,-x3,y3,0,0,y4,0)
+dp(0,y1-s1,0,x2,y2-s1,0,x3,y3-s1,0,0,y4-s1,0)
+dp(0,y1-s1,0,-x2,y2-s1,0,-x3,y3-s1,0,0,y4-s1,0)
+dp(-h1,y7,0,h1,y7,0,h1,0,0,-h1,0,0)
+obj.copybuffer("obj","tmp")
+obj.setoption("dst","tmp",s,s)
+obj.draw()
+obj.draw(0,0,0,1,1,0,0,60)
+obj.draw(0,0,0,1,1,0,0,120)
+obj.draw(0,0,0,1,1,0,0,180)
+obj.draw(0,0,0,1,1,0,0,240)
+obj.draw(0,0,0,1,1,0,0,300)
+elseif n==3 then
+local deg=obj.rand(45,60,seed,pi+pj)/180*math.pi
+local s3=s/3
+local s2=s3*0.5
+local h2=h*0.5
+dp(-h2,-s2,0,h2,-s2,0,h2,0,0,-h2,0,0)
+local y1=-s2
+local L=s2*math.tan(math.pi/6)/(math.sin(deg)-math.cos(deg)*math.tan(math.pi/6))
+local x2=L*math.sin(deg)
+local y2=-s2-L*math.cos(deg)
+local LL=h/math.sin(deg-math.pi/6)
+local x3=x2-LL*math.sin(math.pi/6)
+local y3=y2+LL*math.cos(math.pi/6)
+local y4=y1+h/math.sin(deg)
+dp(0,y1,0,x2,y2,0,x3,y3,0,0,y4,0)
+dp(0,y1,0,-x2,y2,0,-x3,y3,0,0,y4,0)
+L=s*0.5+y2
+LL=math.sqrt(L*L+x2*x2)
+local sinphy=x2/LL
+local cosphy=L/LL
+y1=-s*0.5
+x3=x2-h/(math.sin(deg)*cosphy+math.cos(deg)*sinphy)*math.sin(deg)
+y3=y2+h/(math.sin(deg)*cosphy+math.cos(deg)*sinphy)*math.cos(deg)
+y4=y1+h/sinphy
+dp(0,y1,0,x2,y2,0,x3,y3,0,0,y4,0)
+dp(0,y1,0,-x2,y2,0,-x3,y3,0,0,y4,0)
+obj.copybuffer("obj","tmp")
+obj.setoption("dst","tmp",s,s)
+obj.draw()
+obj.draw(0,0,0,1,1,0,0,60)
+obj.draw(0,0,0,1,1,0,0,120)
+obj.draw(0,0,0,1,1,0,0,180)
+obj.draw(0,0,0,1,1,0,0,240)
+obj.draw(0,0,0,1,1,0,0,300)
+elseif n==4 then
+local h1=h*0.5*0.75
+local ss=s*0.375
+local deg=math.pi/180*obj.rand(40,60,seed,pi+pj)
+local deg25=math.pi*25/180
+dp(-h1,-ss-h1*0.5,0,h1,-ss-h1*0.5,0,h1,0,0,-h1,0,0)
+local s3=ss/3
+local L=s3*math.tan(deg25)/(math.sin(deg)-math.cos(deg)*math.tan(deg25))
+local y1=-s3-h/math.sin(deg)*0.5
+local LL=h/math.sin(deg-deg25)*0.5
+local x2=L*math.sin(deg)+LL*math.sin(deg25)
+local y2=-s3-L*math.cos(deg)-LL*math.cos(deg25)
+local x3=L*math.sin(deg)-LL*math.sin(deg25)
+local y3=-s3-L*math.cos(deg)+LL*math.cos(deg25)
+local y4=-s3+h/math.sin(deg)*0.5
+dp(0,y1,0,x2,y2,0,x3,y3,0,0,y4,0)
+dp(0,y1,0,-x2,y2,0,-x3,y3,0,0,y4,0)
+y1=-s3-h/math.sin(deg)*0.5-s3
+L=L*0.5
+x2=L*math.sin(deg)-h*0.5*math.cos(deg)
+y2=-s3-L*math.cos(deg)-h*0.5*math.sin(deg)-s3
+x3=L*math.sin(deg)+h*0.5*math.cos(deg)
+y3=-s3-L*math.cos(deg)+h*0.5*math.sin(deg)-s3
+y4=-s3+h/math.sin(deg)*0.5-s3
+dp(0,y1,0,x2,y2,0,x3,y3,0,0,y4,0)
+dp(0,y1,0,-x2,y2,0,-x3,y3,0,0,y4,0)
+s3=s*0.25*0.5
+local h2=h*0.25
+obj.load("figure","六角形",col1,s3,math.ceil(h2))
+obj.draw(0,-s*0.875*0.5)
+obj.load("figure","六角形",col1,s3*0.75,math.ceil(h2))
+x2=(L+s3*0.25-h2)*math.sin(deg)
+y2=-s3*2-(L+s3*0.25-h2)*math.cos(deg)
+obj.draw(x2,y2,0,1,1,0,0,deg/math.pi*180)
+obj.draw(-x2,y2,0,1,1,0,0,-deg/math.pi*180)
+obj.copybuffer("obj","tmp")
+obj.setoption("dst","tmp",s,s)
+obj.draw()
+obj.draw(0,0,0,1,1,0,0,60)
+obj.draw(0,0,0,1,1,0,0,120)
+obj.draw(0,0,0,1,1,0,0,180)
+obj.draw(0,0,0,1,1,0,0,240)
+obj.draw(0,0,0,1,1,0,0,300)
+elseif n==5 then
+local ss=s*0.5
+local deg5=math.pi/36
+local y1=-ss
+local x2=ss*math.tan(deg5)
+local y4=y1+h/math.sin(deg5)*0.4
+local x3=-y4*math.tan(deg5)
+dp(0,y1,0,x2,0,0,x3,0,0,0,y4,0)
+dp(0,y1,0,-x2,0,0,-x3,0,0,0,y4,0)
+local s1=ss*0.75*0.5
+local deg=math.pi/180*obj.rand(10,80,seed,pi*88+pj+99)
+x2=s1*math.sin(math.pi/3)
+y2=y1+s1*math.cos(math.pi/3)
+local degh=(math.pi-deg)*0.5
+local D=degh+deg-math.pi/3
+local L=h/math.sin(degh)
+x3=x2-L*math.sin(D)
+y3=y2+L*math.cos(D)
+y4=y1+h/math.sin(math.pi/3)
+dp(0,y1,0,x2,y2,0,x3,y3,0,0,y4,0)
+dp(0,y1,0,-x2,y2,0,-x3,y3,0,0,y4,0)
+local x4=ss*math.sin(math.pi/3)*0.5
+y4=-ss*(1-math.cos(math.pi/3)*0.5)
+L=ss*0.25*math.tan(deg)*0.5
+x1=x4-L*math.sin(math.pi/6)
+y1=y4+L*math.cos(math.pi/6)
+D=h/math.cos(deg)
+x4=x4-(D+L)*math.sin(math.pi/6)
+y4=y4+(D+L)*math.cos(math.pi/6)
+dp(x3,y3,0,x2,y2,0,x1,y1,0,x4,y4,0)
+dp(-x3,y3,0,-x2,y2,0,-x1,y1,0,-x4,y4,0)
+obj.copybuffer("obj","tmp")
+obj.setoption("dst","tmp",s,s)
+obj.draw()
+obj.draw(0,0,0,1,1,0,0,60)
+obj.draw(0,0,0,1,1,0,0,120)
+obj.draw(0,0,0,1,1,0,0,180)
+obj.draw(0,0,0,1,1,0,0,240)
+obj.draw(0,0,0,1,1,0,0,300)
+obj.load("figure","六角形",col1,ss*0.5,math.ceil(h*0.2))
+obj.draw()
+end
+obj.load("tempbuffer")
+end
+
+function particle_disp()
+obj.setfont("",50,1,0xffffff,0)
+obj.load("使用引数は")
+obj.draw(0,-200)
+obj.load("{1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,1}にしてください")
+obj.draw(0,-150)
+obj.load("値1で結晶のサイズを変えられます")
+obj.draw(0,-100)
+obj.load("値2で結晶の幅を変えられます")
+obj.draw(0,-50)
+obj.load("値3で結晶の種類を変えられます")
+obj.draw(0,0)
+obj.load("結晶の種類は全部で6種類です")
+obj.draw(0,50)
+obj.load("色1で色を変えられます")
+obj.draw(0,100)
+obj.load("チェックボックス1で結晶の種類をランダムにできます")
+obj.draw(0,150)
+obj.load("チェックボックス2で結晶の幅を結晶ごとに多少変化させます")
+obj.draw(0,200)
+end

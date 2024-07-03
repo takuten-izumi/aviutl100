@@ -1,0 +1,40 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objcheck0,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack0 == 0 ) then
+	return
+elseif( objtrack0 < 0 ) then
+	t = (objtrack0-objtime+objtotaltime)/objtrack0
+else
+	t = (objtrack0-objtime)/objtrack0
+end
+if( t > 0 ) then
+	if( objcheck0 ) then
+		t = t*t
+	end
+	r = t
+	if( rand(0,1,objindex,0) == 0 ) then r = -r end
+	obj.rx = obj.rx+rand(90,360,objindex,0)*r*objtrack1
+	if( rand(0,1,objindex,1) == 0 ) then r = -r end
+	obj.ry = obj.ry+rand(90,360,objindex,1)*r*objtrack1
+	if( rand(0,1,objindex,2) == 0 ) then r = -r end
+	obj.rz = obj.rz+rand(90,360,objindex,2)*r*objtrack1*2
+	r = rand(0,360,objindex,0)
+	l = math.sqrt(obj.screen_w*obj.screen_w+obj.screen_h*obj.screen_h)
+	l = l*t
+	obj.ox = obj.ox+math.sin(r)*l
+	obj.oy = obj.oy-math.cos(r)*l
+	obj.zoom = obj.zoom*(1+t)
+	r = math.abs( math.cos((obj.rx-45)*math.pi/180)*math.cos((obj.ry+45)*math.pi/180) )
+	if( r > 0.5 ) then
+		l = 100+(r-0.5)*2*objtrack2
+		r = r*r
+		if( r > 0.9 ) then
+			l = l + (r-0.9)*20*objtrack2
+		end
+	else
+		l = 100-(0.5-r)*2*objtrack2
+	end
+	obj.effect("êFí≤ï‚ê≥","ñæÇÈÇ≥",l)
+end
+
+
+end

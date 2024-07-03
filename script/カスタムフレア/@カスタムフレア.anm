@@ -1,0 +1,1139 @@
+@ベース
+--track0:移動量,-500,500,0
+--track1:合成モード,0,1,0,1
+--dialog:ベースカラー/col,local col=0x5588ff;位置移動/chk,local mv=0;座標,pos={-200,-100,0, 0,0,0};
+
+  if mv==0 then
+    obj.setanchor("pos",2,"line","xyz")
+    CustomFlareXX=pos[1]
+    CustomFlareYY=pos[2]
+    CustomFlareZZ=pos[3]
+    CustomFlareCX=pos[4]
+    CustomFlareCY=pos[5]
+    CustomFlareCZ=pos[6]
+  else
+    obj.setanchor("pos",4,"line","xyz","inout")
+
+    local s=obj.track0*0.01
+    CustomFlareXX=(1-s)*pos[1]+s*pos[7]
+    CustomFlareYY=(1-s)*pos[2]+s*pos[8]
+    CustomFlareZZ=(1-s)*pos[3]+s*pos[9]
+    CustomFlareCX=(1-s)*pos[4]+s*pos[10]
+    CustomFlareCY=(1-s)*pos[5]+s*pos[11]
+    CustomFlareCZ=(1-s)*pos[6]+s*pos[12]
+
+  end
+
+  CustomFlaredX = CustomFlareCX-CustomFlareXX
+  CustomFlaredY = CustomFlareCY-CustomFlareYY
+  CustomFlaredZ = CustomFlareCZ-CustomFlareZZ
+  CustomFlareColor = col
+
+  CustomFlareW,CustomFlareH=obj.getpixel()
+  CustomFlareMode=1+3*obj.track1
+
+
+@アイリス
+--track0:形状,1,14,1,1
+--track1:数,1,100,4,1
+--track2:サイズ％,0,5000,30
+--track3:強度,0,100,50
+--dialog:サイズ幅％,local dsize=50;順次拡大/chk,local biger=0;強度幅％,local dalp=5;ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;色幅％,local dcol=5;位置％,local PP={0,5};位置オフセット,local OFSET={0,0,0};散らばり％,local SIG={100,25};回転,local KAITEN={0,0};ｱﾝｶｰに合わせる/chk,local acr=0;ぼかし,local blur=10;点滅,local blink=0.2;乱数シード,local seed=0;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local fig  =obj.track0
+  local count=obj.track1
+  local size =obj.track2*0.01
+  local alp  =obj.track3*0.01
+  local t=PP[1]*0.01
+  local dt=PP[2]
+  local sp=SIG[1]*0.01
+  local dsp=SIG[2]
+  local rot=KAITEN[1]
+  local drot=KAITEN[2]*0.5
+  OFSET[1]=OFSET[1]*0.01
+  OFSET[2]=OFSET[2]*0.01
+  OFSET[3]=OFSET[3]*0.01
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\I"..fig..".png")
+  obj.effect("グラデーション","color",col,"color2",col,"blend",5)
+  obj.effect("ぼかし","範囲",blur)
+
+  local OF=math.floor(obj.time*obj.framerate)
+  for i=1,count do
+
+    if dcol>0 then
+      obj.load("image",obj.getinfo("script_path").."CF-image\\I"..fig..".png")
+      local h,s,v = HSV(col)
+      h=math.floor(h+math.floor(3.6*obj.rand(0,dcol,i,seed)))%360
+      col = HSV(h,s,v)
+      obj.effect("グラデーション","color",col,"color2",col,"blend",5)
+      obj.effect("ぼかし","範囲",blur)
+    end
+
+    local hi=((i-0.5)/count-0.5)*(1+obj.rand(-dsp,dsp,i,1000+seed)*0.01)
+    hi=t+hi*sp
+    local ox=CustomFlaredX*(hi+obj.rand(-dt,dt,i,2000+seed)*0.005+OFSET[1])
+    local oy=CustomFlaredY*(hi+obj.rand(-dt,dt,i,3000+seed)*0.005+OFSET[2])
+    local oz=CustomFlaredZ*(hi+obj.rand(-dt,dt,i,4000+seed)*0.005+OFSET[3])
+
+    local zoom=CustomFlaredX*CustomFlaredX+CustomFlaredY*CustomFlaredY+CustomFlaredZ*CustomFlaredZ
+
+    if zoom==0 or biger==0 then
+      zoom=1
+    else
+      zoom=math.sqrt(((CustomFlaredX+ox)*(CustomFlaredX+ox)+(CustomFlaredY+oy)*(CustomFlaredY+oy)+(CustomFlaredZ+oz)*(CustomFlaredZ+oz))/zoom*0.25)
+    end
+
+    ox=CustomFlareCX+ox
+    oy=CustomFlareCY+oy
+    oz=CustomFlareCZ+oz
+
+    zoom=zoom*size*(1-obj.rand(0,dsize,i,5000+seed)*0.01)
+
+    local alpha = obj.rand(0,100,i,OF+seed)/100+(1-blink)
+    if alpha>1 then alpha=1 end
+    alpha=alp*alpha*obj.rand(100-dalp*0.5,100+dalp*0.5,i,6000+seed)*0.01
+
+    local rz=rot+obj.rand(-drot,drot,i,7000+seed)
+    if acr==1 then
+      rz=rz+math.deg(math.atan2(CustomFlaredY,CustomFlaredX))
+    end
+    obj.draw(ox,oy,oz,zoom,alpha,0,0,rz)
+
+  end
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@アイリス(単)
+--track0:形状,1,14,1,1
+--track1:サイズ％,0,5000,30
+--track2:強度,0,100,50
+--track3:ぼかし,0,1000,5
+
+--dialog:ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;位置％,local t=0;位置ズレ％,local OFSET={0,0,0};回転,local rot=0;ｱﾝｶｰに合わせる/chk,local acr=0;点滅,local blink=0.2;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha>1 then alpha=1 end
+  alpha=alpha* obj.track2*0.01
+
+  local fig  =obj.track0
+  local size =obj.track1*0.01
+  local blur=obj.track3
+  t=t*0.01
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\I"..fig..".png")
+  obj.effect("グラデーション","color",col,"color2",col,"blend",5)
+  obj.effect("ぼかし","範囲",blur)
+
+  ox=CustomFlareCX+t*CustomFlaredX+OFSET[1]*CustomFlaredX*0.01
+  oy=CustomFlareCY+t*CustomFlaredY+OFSET[2]*CustomFlaredY*0.01
+  oz=CustomFlareCZ+t*CustomFlaredZ+OFSET[3]*CustomFlaredZ*0.01
+
+  if acr==1 then
+    rot=rot+math.deg(math.atan2(CustomFlaredY,CustomFlaredX))
+  end
+
+  obj.draw(ox,oy,oz,size,alpha,0,0,rot)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@リング
+--track0:サイズ,0,5000,200
+--track1:幅,0,4000,10
+--track2:数,1,100,3,1
+--track3:強度,0,100,50
+--dialog:サイズ幅％,local dsize=50;順次拡大/chk,local biger=0;強度幅％,local dalp=5;ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;色幅％,local dcol=5;位置％,local PP={0,5};位置オフセット,local OFSET={0,0,0};散らばり％,local SIG={100,25};ぼかし,local blur=10;点滅,local blink=0.2;乱数シード,local seed=0;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local size =obj.track0
+  local haba =obj.track1
+  local count=obj.track2
+  local alp  =obj.track3*0.01
+
+  local t=PP[1]
+  local dt=PP[2]
+  local sp=SIG[1]*0.01
+  local dsp=SIG[2]
+  OFSET[1]=OFSET[1]*0.01
+  OFSET[2]=OFSET[2]*0.01
+  OFSET[3]=OFSET[3]*0.01
+
+  obj.load("figure","円",col,size,haba)
+  obj.effect("ぼかし","範囲",blur)
+
+  local OF=math.floor(obj.time*obj.framerate)
+  for i=1,count do
+
+    if dcol>0 then
+      local h,s,v = HSV(col)
+      h=math.floor(h+3.6*obj.rand(0,dcol,i,seed))%360
+      col = HSV(h,s,v)
+      obj.load("figure","円",col,size,haba)
+      obj.effect("ぼかし","範囲",blur)
+    end
+
+    local hi=((i-0.5)/count-0.5)*(1+obj.rand(-dsp,dsp,i,1000+seed)*0.01)
+    hi=t+hi*sp
+    local ox=CustomFlaredX*(hi+obj.rand(-dt,dt,i,2000+seed)*0.005+OFSET[1])
+    local oy=CustomFlaredY*(hi+obj.rand(-dt,dt,i,3000+seed)*0.005+OFSET[2])
+    local oz=CustomFlaredZ*(hi+obj.rand(-dt,dt,i,4000+seed)*0.005+OFSET[3])
+
+    local zoom=CustomFlaredX*CustomFlaredX+CustomFlaredY*CustomFlaredY+CustomFlaredZ*CustomFlaredZ
+
+    if zoom==0 or biger==0 then
+      zoom=1
+    else
+      zoom=math.sqrt(((CustomFlaredX+ox)*(CustomFlaredX+ox)+(CustomFlaredY+oy)*(CustomFlaredY+oy)+(CustomFlaredZ+oz)*(CustomFlaredZ+oz))/zoom*0.25)
+    end
+
+    ox=CustomFlareCX+ox
+    oy=CustomFlareCY+oy
+    oz=CustomFlareCZ+oz
+
+    zoom=zoom*(1-obj.rand(0,dsize,i,5000+seed)*0.01)
+
+
+    local alpha = obj.rand(0,100,i,OF+seed)/100+(1-blink)
+    if alpha>1 then alpha=1 end
+    alpha=alp*alpha*obj.rand(100-dalp*0.5,100+dalp*0.5,i,6000+seed)*0.01
+    obj.draw(ox,oy,oz,zoom,alpha)
+
+  end
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@リング(単)
+--track0:サイズ,0,5000,200
+--track1:幅,0,4000,10
+--track2:強度,0,100,50
+--track3:ぼかし,0,1000,10
+
+--dialog:ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;位置％,local dt=0;位置オフセット,local OFSET={0,0,0};点滅,local blink=0.2;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha>1 then alpha=1 end
+  alpha=alpha* obj.track2*0.01
+
+  local size =obj.track0
+  local haba =obj.track1
+  local blur=obj.track3
+
+  dt=dt*0.01
+
+  obj.load("figure","円",col,size,haba)
+  obj.effect("ぼかし","範囲",blur)
+
+  ox=CustomFlareCX+dt*CustomFlaredX+OFSET[1]*CustomFlaredX*0.01
+  oy=CustomFlareCY+dt*CustomFlaredY+OFSET[2]*CustomFlaredY*0.01
+  oz=CustomFlareCZ+dt*CustomFlaredZ+OFSET[3]*CustomFlaredZ*0.01
+
+  obj.draw(ox,oy,oz,1,alpha)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@2色リング(単)
+--track0:サイズ,0,5000,200
+--track1:幅,0,4000,20
+--track2:強度,0,100,80
+--track3:回転,-3600,3600,0
+
+--dialog:ベースカラー/chk,local basechk=0;色1/col,local col1=0xff0000;色2/col,local col2=0x22ff22;グラデ幅,local grh=40;ぼかし,local blur=5;開口量％,local ew=40;開口ぼかし％,local bw=20;位置％,local t=25;位置オフセット,local OFSET={0,0,0};自動消去/chk,local auba=0;基準距離,local Rmax=400;点滅,local blink=0.2;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha>1 then alpha=1 end
+  alpha=alpha*obj.track2*0.01
+
+  if auba==1 then
+    alpha=alpha*math.sqrt(CustomFlaredX*CustomFlaredX+CustomFlaredY*CustomFlaredY+CustomFlaredZ*CustomFlaredZ)/Rmax
+  end
+
+  local l =obj.track0*math.pi/4
+  local cy =(l-obj.track1*math.pi)*0.5
+
+  local rot=obj.track3+math.deg(math.atan2(CustomFlaredY,CustomFlaredX))-90
+
+  t=t*0.01
+
+  obj.load("figure","四角形",CustomFlareColor,l)
+  obj.effect("斜めクリッピング","角度",-180,"中心Y",cy)
+
+  if basechk==0 then
+    obj.effect("グラデーション","color",col1,"color2",col2,"中心Y",cy/2+l/4,"幅",grh)
+  end
+
+  if ew>0 then
+    obj.effect("斜めクリッピング","角度",90,"幅",l*(100-ew)*0.01,"ぼかし",l*bw*0.01)
+  end
+
+  obj.effect("極座標変換")
+
+  obj.effect("ぼかし","範囲",blur)
+
+  ox=CustomFlareCX+t*CustomFlaredX+OFSET[1]*CustomFlaredX*0.01
+  oy=CustomFlareCY+t*CustomFlaredY+OFSET[2]*CustomFlaredY*0.01
+  oz=CustomFlareCZ+t*CustomFlaredZ+OFSET[3]*CustomFlaredZ*0.01
+
+  obj.draw(ox,oy,oz,1,alpha,0,0,rot)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+@円
+--track0:サイズ,0,5000,300
+--track1:強度,0,100,50
+--track2:ぼかし％,0,100,10
+--track3:位置％,-5000,5000,0
+
+--dialog:ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;位置ズレ％,local OFSET={0,0,0};点滅,local blink=0.2;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha>1 then alpha=1 end
+  alpha=alpha* obj.track1*0.01
+
+  local size =obj.track0
+  local blur=obj.track2
+  local t=obj.track3*0.01
+
+  obj.load("figure","円",col,100)
+
+  obj.effect("ぼかし","範囲",blur)
+
+  ox=CustomFlareCX+t*CustomFlaredX+OFSET[1]*CustomFlaredX*0.01
+  oy=CustomFlareCY+t*CustomFlaredY+OFSET[2]*CustomFlaredY*0.01
+  oz=CustomFlareCZ+t*CustomFlaredZ+OFSET[3]*CustomFlaredZ*0.01
+
+  obj.draw(ox,oy,oz,size/100,alpha)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@発光
+--track0:大きさ,1,5000,80
+--track1:ぼかし％,1,1000,10
+--track2:強度,0,100,30
+--track3:中心強度,0,100,100
+
+--dialog:ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;位置％,local t=-100;位置オフセット％,local OFSET={0,0,0};発光中心サイズ％,local hs=80;自動拡大/chk,local aubg=0;基準距離,local Rmax=400;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local size =obj.track0
+  local alp =obj.track2*0.01
+  hs=hs*0.01
+
+  if aubg==1 then
+    size=size*(1-math.sqrt(CustomFlaredX*CustomFlaredX+CustomFlaredY*CustomFlaredY+CustomFlaredZ*CustomFlaredZ)/Rmax)
+    if size<0 then size=0 end
+  end
+
+  local blur =size*obj.track1*0.01
+
+  local dx=(t+OFSET[1])*0.01*CustomFlaredX+CustomFlareCX
+  local dy=(t+OFSET[2])*0.01*CustomFlaredY+CustomFlareCY
+  local dz=(t+OFSET[3])*0.01*CustomFlaredZ+CustomFlareCZ
+
+  obj.load("figure","円",col,size)
+  obj.effect("ぼかし","範囲",blur)
+  obj.draw(dx,dy,dz,1,alp)
+
+  obj.load("figure","円",0xffffff,size*hs)
+  obj.effect("ぼかし","範囲",blur*hs)
+  obj.draw(dx,dy,dz,1,alp*obj.track3*0.01)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@ストリーク
+--track0:光芒長,0,2000,400
+--track1:光芒高さ,0,2000,20
+--track2:強度,0,100,50
+--track3:回転,-3600,3600,0
+
+--dialog:ベースカラー/chk,local basechk=1;光芒色/col,local col=0x9999ff;位置％,local t=-100;位置オフセット％,local OFSET={0,0,0};ｱﾝｶｰに合わせる/chk,local acr=0;点滅,local blink=0.1;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha>1 then alpha=1 end
+  alpha=alpha* obj.track2*0.01
+  local l = obj.track0*2
+  local r = obj.track1*0.5
+  local rot = -obj.track3/180*math.pi
+
+  if acr==1 then
+    rot=rot-math.atan2(CustomFlaredY,CustomFlaredX)
+  end
+
+  obj.load("figure","円",col,r)
+  obj.effect("ぼかし","範囲",r/2.5)
+
+  local dx=(t+OFSET[1])*0.01*CustomFlaredX+CustomFlareCX
+  local dy=(t+OFSET[2])*0.01*CustomFlaredY+CustomFlareCY
+  local dz=(t+OFSET[3])*0.01*CustomFlaredZ+CustomFlareCZ
+
+  local a = alpha
+  local yr = r
+  local c=math.cos(rot)
+  local s=math.sin(rot)
+
+  for i=1,3 do
+    local x0=-l
+    local y0=-yr
+    local x1=-l
+    local y1=yr
+    local x2=l
+    local y2=yr
+    local x3=l
+    local y3=-yr
+    x0,y0=x0*c+y0*s+dx,-x0*s+y0*c+dy
+    x1,y1=x1*c+y1*s+dx,-x1*s+y1*c+dy
+    x2,y2=x2*c+y2*s+dx,-x2*s+y2*c+dy
+    x3,y3=x3*c+y3*s+dx,-x3*s+y3*c+dy
+    obj.drawpoly(x0,y0,dz,x1,y1,dz,x2,y2,dz,x3,y3,dz   , 0,0,obj.w,0,obj.w,obj.h,0,obj.h ,a)
+    a = a/2
+    yr = yr*2
+  end
+ 
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@ストリーク(複)
+--track0:光芒長,0,2000,400
+--track1:光芒高さ,0,2000,5
+--track2:強度,0,100,100
+--track3:回転,-3600,3600,0
+
+--dialog:ベースカラー/chk,local basechk=1;光芒色/col,local col=0x9999ff;本数,local n=3;位置％,local t=-100;位置オフセット％,local OFSET={0,0,0};拡大率,local exp=50;間隔,local dh=5;間隔ﾗﾝﾀﾞﾑ,local ddh=5;横ﾗﾝﾀﾞﾑ,local dw=10;点滅,local blink=0.1;
+
+  obj.copybuffer("cache:BKIMG","obj")  --背景をBKIMGに保存
+
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local l = obj.track0*2
+  local r = obj.track1*0.5
+  local rot = obj.track3
+  exp=exp*0.01
+
+  obj.load("figure","円",col,r)
+  obj.effect("ぼかし","範囲",r/2.5)
+
+  obj.setoption("blend",0)
+  obj.setoption("drawtarget","tempbuffer",2*l,8*r)
+
+  local a = 1
+  local yr = r
+  for i=1,3 do
+    local x0=-l
+    local y0=-yr
+    local x1=-l
+    local y1=yr
+    local x2=l
+    local y2=yr
+    local x3=l
+    local y3=-yr
+    obj.drawpoly(x0,y0,0,x1,y1,0,x2,y2,0,x3,y3,0 , 0,0,obj.w,0,obj.w,obj.h,0,obj.h)
+    a = a/2
+    yr = yr*2
+  end
+  obj.load("tempbuffer")
+
+  obj.copybuffer("tmp","cache:BKIMG")
+
+  obj.setoption("blend",CustomFlareMode)
+
+  local dx=(t+OFSET[1])*0.01*CustomFlaredX+CustomFlareCX
+  local dy=(t+OFSET[2])*0.01*CustomFlaredY+CustomFlareCY
+  local dz=(t+OFSET[3])*0.01*CustomFlaredZ+CustomFlareCZ
+
+  local cos=math.cos(rot*math.pi/180)
+  local sin=math.sin(-rot*math.pi/180)
+  local of =obj.time*obj.framerate
+  for i=0,n-1 do
+ 
+    local alpha = obj.rand(0,100,i,of)/100+(1-blink)
+    if alpha>1 then alpha=1 end
+    alpha=alpha* obj.track2*0.01
+
+    local ox=obj.rand(-dw,dw,i,1000)*0.5
+    local oy=(i-(n-1)*0.5)*dh+obj.rand(-ddh,ddh,i,2000)*0.5
+    
+    ox,oy=cos*ox+sin*oy,-sin*ox+cos*oy
+  
+    obj.draw(ox+dx,oy+dy,dz,exp,alpha,0,0,rot)
+
+  end
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+  extbuffer.clear(id1)
+  extbuffer.clear(id2)
+
+@スパイク
+
+--track0:長さ,0,3000,230
+--track1:数,0,5000,50,1
+--track2:強度,0,200,40
+--track3:回転,-3600,3600,0
+
+--dialog:ベースカラー/chk,local basechk=1;光芒色/col,local col=0x9999ff;幅比率％,local dH0=8;高さランダム％,local hrnd=50;ぼかし,local blur=5;ステップ角度,local spdeg=0;誤差角度,local ddeg=360;位置％,local t=-100;位置オフセット％,local OFSET={0,0,0};形状[1-4],local fig=1;点滅,local blink=0.2;乱数シード,local seed=0;
+
+  local figmax=4
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local dL0=obj.track0*0.5
+  local n=obj.track1
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha>1 then alpha=1 end
+  alpha=alpha*obj.track2*0.02
+
+  dH0=dL0*dH0*0.01
+  ddeg=ddeg*0.5
+
+  fig=math.floor(fig)
+  if fig>figmax then fig=figmax end
+  if fig<1 then fig=1 end
+
+  local dx=(t+OFSET[1])*0.01*CustomFlaredX+CustomFlareCX
+  local dy=(t+OFSET[2])*0.01*CustomFlaredY+CustomFlareCY
+  local dz=(t+OFSET[3])*0.01*CustomFlaredZ+CustomFlareCZ
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\spike"..fig..".png")
+
+  obj.effect("グラデーション","color",col,"color2",col,"blend",3)
+  obj.effect("ぼかし","範囲",blur)
+
+  local w0,h0=obj.getpixel()
+  local rz={}
+
+  for i=1,n do
+    local rnd=obj.rand(100-hrnd,100,i,seed)*0.01
+    local dH=dH0*rnd
+    local dL=dL0*rnd
+
+    dH=w0*dH/30
+    dL=h0*dL/100  
+    local rz=math.rad(i*spdeg+obj.rand(-ddeg,ddeg,i,1000+seed)-obj.track3)
+    local r=dL
+    local s=math.sin(rz)
+    local c=math.cos(rz)
+
+    local x0=-dH
+    local y0=dL+r
+    local x1=dH
+    local y1=dL+r
+    local x2=dH
+    local y2=-dL+r
+    local x3=-dH
+    local y3=-dL+r
+
+    x0,y0=x0*c+y0*s+dx,-x0*s+y0*c+dy
+    x1,y1=x1*c+y1*s+dx,-x1*s+y1*c+dy
+    x2,y2=x2*c+y2*s+dx,-x2*s+y2*c+dy
+    x3,y3=x3*c+y3*s+dx,-x3*s+y3*c+dy
+
+   local rp=math.floor(alpha)
+   local md=alpha-rp
+   for i=1,rp do
+     obj.drawpoly(x0,y0,dz,x1,y1,dz,x2,y2,dz,x3,y3,dz,   0,0,obj.w,0,obj.w,obj.h,0,obj.h ,1) 
+   end
+   obj.drawpoly(x0,y0,dz,x1,y1,dz,x2,y2,dz,x3,y3,dz,   0,0,obj.w,0,obj.w,obj.h,0,obj.h ,md)
+
+  end
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@ゆらめき
+--track0:サイズ,10,1000,250
+--track1:光芒量,0,100,55
+--track2:強度,0,200,60
+--track3:回転,-3600,3600,0
+
+--dialog:ベースカラー/chk,local basechk=1;光芒色/col,local col=0x9999ff;位置％,local t=-100;位置オフセット％,local OFSET={0,0,0};先端ぼかし％,rnd=100;光芒変化速度,local speed=0.2;形状[1-8],local fig=5;ｸﾘｯﾌﾟ位置幅ﾎﾞｶｼ,local clp={0,0,0};ｸﾘｯﾌﾟ向き/chk,local aub=0;点滅,local blink=0.1;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha >1 then alpha=1 end
+  local w = obj.track0
+  local c_num=obj.track1
+  local c_alp=obj.track2*0.01
+
+  fig=math.floor(fig)
+  if fig>8 then fig=8 end
+  if fig<1 then fig=1 end
+
+  local dx=(t+OFSET[1])*0.01*CustomFlaredX+CustomFlareCX
+  local dy=(t+OFSET[2])*0.01*CustomFlaredY+CustomFlareCY
+  local dz=(t+OFSET[3])*0.01*CustomFlaredZ+CustomFlareCZ
+
+  local r = 2*w
+  obj.load("figure","四角形",col,r)
+
+  if fig<=4 then
+    obj.effect("ノイズ","type",fig,"周期X",1,"周期Y",0,"しきい値",100-c_num,"速度Y",-speed)
+  else
+    fig=fig-4
+    obj.effect("ノイズ","type",fig,"周期X",c_num*0.05,"周期Y",0,"しきい値",0,"速度Y",-speed)
+  end
+
+  obj.effect("境界ぼかし","範囲",r*rnd*0.01,"縦横比",-100)
+
+  clp[1]=-r*(clp[1]/360%1)
+  clp[2]= r*(clp[2]/360%1)
+
+  if aub==1 then
+    clp[1]=-r*(  math.atan2(CustomFlaredY,CustomFlaredX)*0.5+math.pi/4   )/math.pi
+
+  end
+
+  if clp[2]>0 then
+    obj.effect("斜めクリッピング","角度",90,"中心X",clp[1]-r,"幅",-clp[2],"ぼかし",clp[3])
+    obj.effect("斜めクリッピング","角度",90,"中心X",clp[1],"幅",-clp[2],"ぼかし",clp[3])
+    obj.effect("斜めクリッピング","角度",90,"中心X",clp[1]+r,"幅",-clp[2],"ぼかし",clp[3])
+  end
+
+  r = r/2.5
+  obj.effect("クリッピング","上",r)
+  obj.effect("極座標変換","回転",obj.track3)
+
+  local x0=-r+dx
+  local y0=-r+dy
+  local x1=r+dx
+  local y1=-r+dy
+  local x2=r+dx
+  local y2=r+dy
+  local x3=-r+dx
+  local y3=r+dy
+
+  alpha=alpha*c_alp
+
+  if alpha<=1 then
+    obj.drawpoly(x0,y0,dz,x1,y1,dz,x2,y2,dz,x3,y3,dz,   0,0,obj.w,0,obj.w,obj.h,0,obj.h ,alpha)
+  else
+    obj.drawpoly(x0,y0,dz,x1,y1,dz,x2,y2,dz,x3,y3,dz,   0,0,obj.w,0,obj.w,obj.h,0,obj.h ,1)
+    obj.drawpoly(x0,y0,dz,x1,y1,dz,x2,y2,dz,x3,y3,dz,   0,0,obj.w,0,obj.w,obj.h,0,obj.h ,alpha-1)
+  end
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@スパーク
+--track0:サイズ,0,5000,400
+--track1:長さ,0,1000,60
+--track2:強度,0,100,20
+--track3:回転,-3600,3600,0
+
+--dialog:数,local n=150;ベースカラー/chk,local basechk=1;光芒色/col,local col=0x9999ff;幅比率％,local dH=10;ぼかし,local blur=5;放射ブラー,rblur=50;位置％,local t=-100;位置オフセット％,local OFSET={0,0,0};動径方向バラツキ％,local drh=100;点滅,local blink=0.2;乱数シード,local seed=0;
+
+  obj.copybuffer("cache:BKIMG","obj")  --背景をBKIMGに保存
+
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha >1 then alpha=1 end
+
+  local size=obj.track0*0.5
+  local dL=obj.track1*0.5
+  alpha=alpha*obj.track2*0.01
+  local rot=obj.track3;
+
+  dH=dL*dH*0.01
+
+  local dx=(t+OFSET[1])*0.01*CustomFlaredX+CustomFlareCX
+  local dy=(t+OFSET[2])*0.01*CustomFlaredY+CustomFlareCY
+  local dz=(t+OFSET[3])*0.01*CustomFlaredZ+CustomFlareCZ
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\leaf.png")
+  obj.effect("グラデーション","color",col,"color2",col,"blend",3)
+
+  obj.effect("ぼかし","範囲",blur)
+
+  local w0,h0=obj.getpixel()
+
+  local LS=dL
+  local LL=math.max(size*0.5,dL)
+  dH=w0*dH/30
+  dL=h0*dL/100  
+  drh=drh*0.01
+
+  local wh=2*(dL+LL)
+
+  obj.setoption("drawtarget","tempbuffer",wh,wh)
+  obj.setoption("blend",6)
+
+  LS=drh*LS+(1-drh)*LL
+
+  for i=1,n do
+    local rz=(obj.rand(-3600,3600,i,seed)*0.1-rot)*math.pi/180
+    local r=obj.rand(LS,LL,i,1000+seed)
+    local s=math.sin(rz)
+    local c=math.cos(rz)
+
+    local x0=-dH
+    local y0=-dL+r
+    local x1=dH
+    local y1=-dL+r
+    local x2=dH
+    local y2=dL+r
+    local x3=-dH
+    local y3=dL+r
+
+    x0,y0=x0*c+y0*s,-x0*s+y0*c
+    x1,y1=x1*c+y1*s,-x1*s+y1*c
+    x2,y2=x2*c+y2*s,-x2*s+y2*c
+    x3,y3=x3*c+y3*s,-x3*s+y3*c
+
+   obj.drawpoly(x0,y0,0,x1,y1,0,x2,y2,0,x3,y3,0,   0,0,obj.w,0,obj.w,obj.h,0,obj.h ,alpha) 
+
+  end
+
+  obj.load("tempbuffer")
+  obj.effect("放射ブラー","範囲",rblur)
+
+  obj.copybuffer("tmp","cache:BKIMG")
+
+  obj.setoption("blend",CustomFlareMode)
+
+  obj.draw(dx,dy,dz)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+  extbuffer.clear(id1)
+  extbuffer.clear(id2)
+
+
+@カラースパーク
+--track0:サイズ,0,5000,400
+--track1:長さ,0,1000,100
+--track2:強度,0,100,60
+--track3:回転,-3600,3600,0
+
+--dialog:数,local n=100;カラーパターン[1-5],local fig=1;幅比率％,local dH=5;ぼかし,local blur=5;放射ブラー,rblur=5;位置％,local t=-100;位置オフセット％,local OFSET={0,0,0};動径方向バラツキ％,local drh=100;点滅,local blink=0.2;乱数シード,local seed=1;
+
+  local figmax=5
+
+  obj.copybuffer("cache:BKIMG","obj")  --背景をBKIMGに保存
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha >1 then alpha=1 end
+
+  local size=obj.track0*0.5
+  local dL=obj.track1*0.5
+  alpha=alpha*obj.track2*0.01
+  local rot=obj.track3;
+  drh=drh*0.01
+
+  fig=math.floor(fig)
+  if fig>figmax then fig=figmax end
+  if fig<1 then fig=1 end
+
+  dH=dL*dH*0.01
+
+  local dx=(t+OFSET[1])*0.01*CustomFlaredX+CustomFlareCX
+  local dy=(t+OFSET[2])*0.01*CustomFlaredY+CustomFlareCY
+  local dz=(t+OFSET[3])*0.01*CustomFlaredZ+CustomFlareCZ
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\leafc"..fig..".png")
+
+
+  obj.effect("ぼかし","範囲",blur)
+
+  local w0,h0=obj.getpixel()
+
+  local LS=dL
+  local LL=math.max(size*0.5,dL)
+  dH=w0*dH/30
+  dL=h0*dL/100  
+
+  local wh=2*(dL+LL)
+
+  obj.setoption("drawtarget","tempbuffer",wh,wh)
+  obj.setoption("blend",6)
+
+  LS=drh*LS+(1-drh)*LL
+
+  for i=1,n do
+    local rz=(obj.rand(-3600,3600,i,seed)*0.1-rot)*math.pi/180
+    local r=obj.rand(LS,LL,i,1000+seed)
+    local s=math.sin(rz)
+    local c=math.cos(rz)
+
+    local x0=-dH
+    local y0=-dL+r
+    local x1=dH
+    local y1=-dL+r
+    local x2=dH
+    local y2=dL+r
+    local x3=-dH
+    local y3=dL+r
+
+    x0,y0=x0*c+y0*s,-x0*s+y0*c
+    x1,y1=x1*c+y1*s,-x1*s+y1*c
+    x2,y2=x2*c+y2*s,-x2*s+y2*c
+    x3,y3=x3*c+y3*s,-x3*s+y3*c
+
+   obj.drawpoly(x0,y0,0,x1,y1,0,x2,y2,0,x3,y3,0,   0,0,obj.w,0,obj.w,obj.h,0,obj.h ,alpha) 
+
+  end
+
+  obj.load("tempbuffer")
+  obj.effect("放射ブラー","範囲",rblur)
+
+  obj.copybuffer("tmp","cache:BKIMG")
+
+  obj.setoption("blend",CustomFlareMode)
+
+  obj.draw(dx,dy,dz)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+  extbuffer.clear(id1)
+  extbuffer.clear(id2)
+
+@コースティック
+--track0:サイズ,0,5000,200
+--track1:強度,0,100,20
+--track2:ぼかし,0,1000,5
+
+--dialog:ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;位置％,local t=100;位置オフセット％,local OFSET={0,0,0};最大半径,Rmax=400;点滅,local blink=0.2;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local size =obj.track0
+
+  local alpha = obj.rand(0,100)/100+(1-blink)
+  if alpha >1 then alpha=1 end
+
+  alpha =alpha*obj.track1*0.01
+  local blur=obj.track2
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\ctc1.png")
+
+  obj.effect("グラデーション","color",col,"color2",col,"blend",5)
+  obj.effect("ぼかし","範囲",blur)
+
+  local ox=(t+OFSET[1])*0.01*CustomFlaredX
+  local oy=(t+OFSET[2])*0.01*CustomFlaredY
+  local oz=(t+OFSET[3])*0.01*CustomFlaredZ
+
+  local zz=Rmax*Rmax-oy*oy-ox*ox
+  local s1,s2
+
+  if zz>0 then
+    zz=math.sqrt(zz)
+    local rr=math.sqrt(zz*zz+oy*oy)
+    if math.abs(ox)*10000>rr then 
+      s1=math.atan2(ox,rr)/math.pi*180
+      s2=math.atan2(oy,zz)/math.pi*180
+      ox=CustomFlareCX+ox
+      oy=CustomFlareCY+oy
+      oz=CustomFlareCZ+oz
+    else
+      ox,oy,oz,alpha,s1,s2=0,0,0,0,0,0
+    end
+  else
+    ox,oy,oz,alpha,s1,s2=0,0,0,0,0,0
+  end
+
+  obj.draw(ox,oy,oz,size/200,alpha,s2,-s1,0)
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\ctc2.png")
+  obj.effect("グラデーション","color",col,"color2",col,"blend",5)
+  obj.effect("ぼかし","範囲",blur)
+
+  local k=30
+
+  for i=0,k-1 do
+    local ds=i/k
+    obj.draw(ox+ds*CustomFlaredX*0.5,oy+ds*CustomFlaredY*0.5,oz+ds*CustomFlaredZ*0.5,(1-ds)*size/200,3*alpha/k,s2,-s1,0)
+  end
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+
+@虹輪
+--track0:大きさ,1,5000,250
+--track1:長さ％,1,100,20
+--track2:強度％,1,100,50
+--track3:回転,-3600,3600,0
+--dialog:位置％,local t=50;虹輪開％,local ds=20;裁ち落とし％,local spt=0;位置オフセット％,local OFSET={0,0,0};自動拡大/chk,local aubg=0;基準距離,local Rmax=400;偏平率％,local asp=100;ぼかし,local blur=1;パターン[1-4],local fig=1;色上書き/chk,local ovchk=0;上書き色/col,ovcol=0xccccff;点滅,local blink=0.2;発光,lt={0,250,80,0};
+
+  local figmax=4
+
+  obj.copybuffer("cache:BKIMG","obj")  --背景をBKIMGに保存
+
+  local n=10;
+  local r=obj.track0*0.5
+
+  if aubg==1 then
+    r=r*math.sqrt(CustomFlaredX*CustomFlaredX+CustomFlaredY*CustomFlaredY+CustomFlaredZ*CustomFlaredZ)/Rmax
+  end
+
+  local dr=r*obj.track1*0.01
+
+  local wh=2*(r+dr)
+  obj.setoption("drawtarget","tempbuffer",wh,wh)
+  obj.setoption("blend",0)
+
+  local pi=math.pi
+  local cos=math.cos
+  local sin=math.sin
+
+  local alpha=obj.track2*0.01
+  local rot=obj.track3/180*pi
+
+  ds=ds*0.01
+  spt=spt*0.01
+  asp=asp*0.01
+
+  fig=math.floor(fig)
+  if fig>figmax then fig=figmax end
+  if fig<1 then fig=1 end
+
+  obj.load("image",obj.getinfo("script_path").."CF-image\\hoop"..fig..".png")
+  obj.setoption("antialias",1)
+
+  local ox=(CustomFlaredX)*(t+OFSET[1])*0.01+CustomFlareCX
+  local oy=(CustomFlaredY)*(t+OFSET[2])*0.01+CustomFlareCY
+  local oz=(CustomFlaredZ)*(t+OFSET[3])*0.01+CustomFlareCZ
+
+  rot=rot+math.atan2(CustomFlaredY,CustomFlaredX)
+
+  local kmax=20*n
+
+  local k0=-1
+  for i=0,n-1 do
+  for j=0,19 do
+    k0=k0+1
+    local k1=k0+1
+
+    if spt*0.5*kmax<k0 and k1<(1-spt*0.5)*kmax then
+
+      local t0=(2*k0/kmax-1)*pi
+      local t1=(2*k1/kmax-1)*pi
+
+      if t0>0 then t0=t0*0.99 else t0=t0*1.01 end
+      if t1<0 then t1=t1*0.99 else t1=t1*1.01 end
+
+      local s0=t0
+      local s1=t1
+
+      local t0=t0/(1-ds)
+      local t1=t1/(1-ds)
+
+      if t0<-pi then t0=-pi end
+      if t1<-pi then t1=-pi end
+      if t0>pi then t0=pi end
+      if t1>pi then t1=pi end
+   
+      local r01=r+dr*(cos(t0)+1)/2
+      local r02=r-dr*(cos(t0)+1)/2
+
+      local r11=r+dr*(cos(t1)+1)/2
+      local r12=r-dr*(cos(t1)+1)/2
+
+      local x0=r01*cos(s0)
+      local y0=r01*sin(s0)
+      local x1=r11*cos(s1)
+      local y1=r11*sin(s1)
+      local x2=r12*cos(s1)
+      local y2=r12*sin(s1)
+      local x3=r02*cos(s0)
+      local y3=r02*sin(s0)
+
+      local u0=j*obj.w*0.05
+      local u1=(j+1)*obj.w*0.05
+      local v2=obj.h
+
+      obj.drawpoly(x0,y0,0, x1,y1,0, x2,y2,0, x3,y3,0, u0,0, u1,0, u1,v2, u0,v2, 1)
+    end
+  end
+  end
+
+  obj.load("tempbuffer")
+
+  obj.copybuffer("tmp","cache:BKIMG")
+
+  obj.setoption("blend",CustomFlareMode)
+
+  local alpi=obj.rand(0,100)/100+(1-blink)
+  if alpi>1 then alpi=1 end
+  alpha = alpi*alpha
+  if ovchk==1 then
+    obj.effect("グラデーション","color",ovcol,"color2",ovcol,"blend",3)
+  end
+  obj.effect("ぼかし","範囲",blur)
+  obj.effect("発光","強さ",lt[1],"拡散",lt[2],"しきい値",lt[3],"拡散速度",lt[4],"サイズ固定",1)
+
+  local w,h=obj.getpixel()
+  w=w*0.5
+  h=h*0.5
+
+  local wc=w*cos(rot) 
+  local ws=-w*sin(rot)
+  local hc=h*cos(rot) 
+  local hs=-h*sin(rot)
+
+  local x0=-wc-hs+ox
+  local y0= (ws-hc)*asp+oy
+  local x1= wc-hs+ox
+  local y1=(-ws-hc)*asp+oy
+  local x2= wc+hs+ox
+  local y2=(-ws+hc)*asp+oy
+  local x3=-wc+hs+ox
+  local y3= (ws+hc)*asp+oy
+
+  obj.drawpoly(x0,y0,oz, x1,y1,oz, x2,y2,oz, x3,y3,oz, 0,0,obj.w,0,obj.w,obj.h,0,obj.h , alpha)
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+
+  extbuffer.clear(id1)
+  extbuffer.clear(id2)
+
+
+@レンズ軌道
+--track0:密度,1,100,10
+--track1:サイズ％,0,50,15
+--track2:強度,0,100,15
+--track3:減衰率,0,100,40
+--dialog:形状/fig,fig="円";サイズ幅％,local dsize=10;強度幅％,local dalp=0;ベースカラー/chk,local basechk=1;色/col,local col=0xccccff;色幅％,local dcol=0;回転,local rot=0;回転幅,local drot=0;ぼかし,local blur=0;乱数シード,local seed=0;
+
+  obj.copybuffer("tmp","obj")
+  obj.setoption("drawtarget","tempbuffer")
+  obj.setoption("blend",CustomFlareMode)
+  if basechk==1 then
+    col=CustomFlareColor
+  end
+
+  local size =CustomFlareW*obj.track1*0.01
+  local alp  =obj.track2*0.01
+  local gen  =obj.track3*0.01
+
+  obj.load("figure",fig,col,size)
+  obj.effect("ぼかし","範囲",blur)
+
+  local countx=math.floor(CustomFlareW/600*obj.track0)
+  local county=math.floor(CustomFlareH/600*obj.track0)
+
+
+  gen=-200*gen/(CustomFlareW*CustomFlareW)
+
+local st=CustomFlareW/countx
+local dw=st*0.5
+
+  for i=0,countx do
+  for j=0,county do
+
+    if dcol>0 then
+      local h,s,v = HSV(col)
+      h=math.floor(h+math.floor(3.6*obj.rand(0,dcol,i,j+seed)))%360
+      col = HSV(h,s,v)
+      obj.load("figure",fig,col,size)
+      obj.effect("ぼかし","範囲",blur)
+    end
+
+    local zoom=1-obj.rand(0,dsize,i,j+4000+seed)*0.01
+
+    local alpha =alp*obj.rand(100-dalp,100,i,j+6000+seed)*0.01
+
+    local ox=i*st-CustomFlareW*0.5+obj.rand(-dw,dw,i,j+1000+seed)
+    local oy=j*st-CustomFlareH*0.5+obj.rand(-dw,dw,i,j+2000+seed)
+
+    local rr=(ox-CustomFlareXX)*(ox-CustomFlareXX)+(oy-CustomFlareYY)*(oy-CustomFlareYY)
+
+    alpha=alpha*math.exp(gen*rr)
+    local rz=rot+obj.rand(-drot,drot,i,j+7000+seed)
+    obj.draw(ox,oy,0,zoom,alpha,0,0,rz)
+
+  end
+  end
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)

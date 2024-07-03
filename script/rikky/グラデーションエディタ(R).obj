@@ -1,0 +1,473 @@
+--[[
+GRADATION_ABC[ID].col関数を使うことでグラデーションの色を取得することができます
+GRADATION_ABC[ID].col(percent)と0から100までの数値を渡すとグラデーションエディタで作った左からのパーセント位置の色を返します
+]]
+--track0:ID,1,200,1,1
+--track1:シフト,-5000,5000,0
+--track2:図表示幅,200,900,500
+--track3:精度,100,1000,100,1
+--check0:図表示,1
+--dialog:スポイト/col,c=0xffffff;色,G={0xffffff,0x000000};透明度,A={0,0};位置,P={0,100};アンカーで位置/chk,anc=0;両端固定/chk,F=0;イージング/chk,ck=0;イージングID,E=1;pos,pos={}
+--[[
+虹色の色と位置
+その1
+G={0xE60012,0xE60012,0xF39800,0xF39800,0xFFF100,0xFFF100,0x009944,0x009944,0x0068B7,0x0068B7,0x1D2088,0x1D2088,0x920783,0x920783}
+P={0,9.57,16.85,23.71,31.42,39.85,47.28,54.57,61.71,70.14,76.85,82.28,89.42,100}
+
+その2
+G={0xE60012,0xE60012,0xF39800,0xFFF100,0x009944,0x0068B7,0x1D2088,0x920783,0x920783}
+P={0,6.28,13.42,36.57,49.57,66.71,83.28,93.42,100}
+
+その3(ループあり)
+G=colt={0xE60012,0xF39800,0xFFF100,0x009944,0x0068B7,0x1D2088,0x920783,0xE60012}
+P={0,11.57,29.71,42.14,59.85,71.28,87,100}
+]]
+if not tostring(GRADATION_ABC):find("table:") then
+GRADATION_ABC={}
+end
+--グローバル変数からローカル変数に保存
+local gc=G
+local al=A
+local po=P
+local eid=E
+local fix=F
+--gcなどのグローバル変数はのちのち上書きされると正しく動かなくなるが、ローカルならその問題はなくなる
+--透明度の変数がテーブルかを調べる
+if not tostring(al):find("table:") then
+	al={}
+	for i=1,#gc do
+		al[i]=0
+	end
+end
+--透明度のテーブルの要素がnilだった場合は0にする
+for i=0,#gc do if al[i]==nil then al[i]=0 end end
+--位置の変数がテーブルかを調べる
+if not tostring(po):find("table:") then
+	po={}
+	local n=#gc-1
+	for i=2,n do
+		po[i]=(i-1)/n*100
+	end
+end
+--初めと終わりの両端は固定
+po[1]=0
+po[#gc]=100
+--色が3色以上のときだけアンカーを有効にする
+if anc==1 and 2<#gc then
+	local w=obj.track2%2+obj.track2
+	local hw=w*.5
+	w=100/w
+	obj.setanchor("pos",#gc-2)
+	local j
+	--アンカーのインデックスと位置のインデックスが異なっていることに注意が必要
+	for i=1,#gc*2-4,2 do
+		if pos[i]<-hw then
+			pos[i]=-hw
+		elseif hw<pos[i] then
+			pos[i]=hw
+		end
+		pos[i]=(pos[i]+hw)*w
+		j=(i+1)*.5+1
+		if pos[i]<po[j-1] then
+			po[j]=po[j-1]
+		else
+			po[j]=pos[i]
+		end
+	end
+end
+--シフトは0から100未満のと単純にマイナスにしたものを用意する
+local shift=(-obj.track1%100)
+local shift2=-obj.track1
+local acc=obj.track3
+local _acc=acc-1
+local percent
+--percentは関数名として複数のパターンに対応できるように先に宣言してしまう
+--チェックがない場合はAviUtlの通常のグラデーションと同じ変化の仕方
+if ck==0 then
+	percent=function(per)
+		return 1-(math.cos(per*math.pi)+1)*.5
+	end
+else
+	local PATH = {}
+	local path = package.path .. ";"
+	while(1)do
+		local n=path:find(";")
+		if n then
+			PATH[#PATH + 1] = path:sub(1, n - 1)
+			path = path:sub(n + 1, #path)
+		else
+			break
+		end
+	end
+	if not PATH[2]:find("script\\?.lua") then
+		PATH[3]=PATH[2]:sub(1, PATH[2]:find("\\script\\")) .. "script\\?.lua"
+		package.path = package.path .. ";" .. PATH[3]
+	end
+	percent=function(per)
+		return require("easing_aviutl").easing(eid,per,0,1,1)
+	end
+end
+--GRADATION_ABCというテーブルのID番目にcol関数、pos、fixをそれぞれ代入する
+GRADATION_ABC[obj.track0]={
+	fix=fix,
+	col=function(per)
+		if per<0 then
+			while(per<0)do
+				per=per+100
+			end
+		elseif 100<per then
+			while(100<per)do
+				per=per-100
+			end
+		end
+		if fix==1 then
+			per=per+shift2
+			if(100<per)then per=100 elseif(per<0)then per=0 end
+		else
+			per=per+shift
+			if(100<per)then per=per-100 end
+		end
+		for i=1,#po-1 do
+			if po[i]<=per and per<=po[i+1] then
+				local p=percent((per-po[i])/(po[i+1]-po[i]))
+				local r1,g1,b1=RGB(gc[i])
+				local r2,g2,b2=RGB(gc[i+1])
+				return RGB(r1+(r2-r1)*p,g1+(g2-g1)*p,b1+(b2-b1)*p),1-(al[i]+(al[i+1]-al[i])*p)*.01
+			end
+		end
+	end,
+	pos={unpack(po)}
+}
+if obj.check0 then
+	local w=obj.track2%2+obj.track2
+	local hw=-w*.5
+	obj.load("figure","四角形",0,acc)
+	obj.effect("クリッピング","下",_acc)
+	obj.setoption("drawtarget","tempbuffer",w,100)
+	obj.setoption("blend","alpha_add")
+	for i=1,#gc-1 do
+		local p2=po[i]
+		local p1=po[i+1]-p2
+		for x=0,_acc do
+			obj.putpixel(x,0,GRADATION_ABC[obj.track0].col(x/acc*p1+p2))
+		end
+		local x0=hw+w*p2*.01
+		local x1=hw+w*po[i+1]*.01
+		obj.drawpoly(x0,-50,0,x1,-50,0,x1,50,0,x0,50,0)
+	end
+	obj.load("tempbuffer")
+end
+
+--rikky_moduleを使うが、持っていない場合でもエラーにならないようにしておく
+if rikky_module == nil then
+	local CPATH = {}
+	local cpath = package.cpath .. ";"
+	while(1)do
+		n = cpath:find(";")
+		if n then
+			CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+			cpath = cpath:sub(n + 1, #cpath)
+		else
+			break
+		end
+	end
+	if not CPATH[2]:find("script\\?.dll") then
+		CPATH[3]=CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+		package.cpath = package.cpath .. ";" .. CPATH[3]
+	end
+	for i=1,#CPATH do
+		local f=io.open(CPATH[i]:gsub("?", "rikky_module"),"rb")
+		if f then
+			require("rikky_module")
+			f:close()
+			break
+		end
+	end
+end
+--ブレンドの種類を増やすDLLをロードする
+if blend_core_r == nil then
+	local CPATH = {}
+	local cpath = package.cpath .. ";"
+	while(1)do
+		n = cpath:find(";")
+		if n then
+			CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+			cpath = cpath:sub(n + 1, #cpath)
+		else
+			break
+		end
+	end
+	if not CPATH[2]:find("script\\?.dll") then
+		CPATH[3]=CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+		package.cpath = package.cpath .. ";" .. CPATH[3]
+	end
+	for i=1,#CPATH do
+		local f=io.open(CPATH[i]:gsub("?", "blend_core_r"),"rb")
+		if f then
+			require("blend_core_r")
+			f:close()
+			break
+		end
+	end
+end
+
+
+gradation_effect_R=function(ID,degree,length,blend,check,buffer,bblend)
+	if GRADATION_ABC[ID] == nil then
+		return
+	end
+	--回転させる際に必要な幅と高さをだす
+	--ピクセル単位で操作しかつ仮想バッファを用いるので、拡大率に依存しないobj.getpixelを使う
+	local w,h=obj.getpixel()
+	local x0,y0,x1,y1,W,H,tw,hw
+	if check==0 then
+		--回転角度は360で予め余剰を出して、ラジアンに変換する
+		degree=degree%360
+		local rad=(degree%360)*math.pi/180
+		--回転は上右下左の順番で考える
+		--90度おきにパターンを変える
+		--元イメージを内包する最小の四角形の二点を求める
+		--要領としては、各辺に円を設定して、その円周上を移動させる(直径の円周角は90度になることを利用する)
+		if degree<90 then
+			local phy=rad*2
+			x0=-w*.5*math.cos(phy)
+			y0=-h*.5-w*.5*math.sin(phy)
+			x1=w*.5+h*.5*math.sin(phy)
+			y1=-h*.5*math.cos(phy)
+		elseif degree<180 then
+			local phy=rad*2-math.pi
+			x0=w*.5+h*.5*math.sin(phy)
+			y0=-h*.5*math.cos(phy)
+			x1=w*.5*math.cos(phy)
+			y1=h*.5+w*.5*math.sin(phy)
+		elseif degree<270 then
+			local phy=(rad-math.pi)*2
+			x0=w*.5*math.cos(phy)
+			y0=h*.5+w*.5*math.sin(phy)
+			x1=-w*.5-h*.5*math.sin(phy)
+			y1=h*.5*math.cos(phy)
+		else
+			local phy=(rad-math.pi*1.5)*2
+			x0=-w*.5-h*.5*math.sin(phy)
+			y0=h*.5*math.cos(phy)
+			x1=-w*.5*math.cos(phy)
+			y1=-h*.5-w*.5*math.sin(phy)
+		end
+		--内包する四角形の横と縦のサイズを出して、2の倍数にする
+		W=math.ceil(((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0))^.5)
+		W=W+W%2
+		H=math.ceil(((x1+x0)*(x1+x0)+(y1+y0)*(y1+y0))^.5)
+		H=H+H%2
+		--グラデーションの幅を出す
+		tw=w
+		if length~=0 then
+			tw=length
+		end
+		hw=tw*.5
+		--グラデーションの位置は通常時は0にする
+		px=0
+		py=0
+	else
+		--円形ではdegreeは使わないので0
+		degree=0
+		--極座標変換の逆変換時の横幅を出す
+		W=math.ceil(math.pi*((w*w+h*h)^.5)*.5-1)
+		W=W+W%2
+		if W<=0 then W=2 end
+		H=1
+		tw=W
+		if length~=0 then
+			tw=length*math.pi-1
+			if tw<=0 then tw=1 end
+		end
+		hw=tw*.5
+	end
+	local hW=W*.5
+	local hH=H*.5
+	local image_id=nil
+	local tmp_id=nil
+	--rikky_moduleがある場合は、image関数でイメージを保存、ない場合はcopybuffer関数で代用
+	if rikky_module then
+		image_id=rikky_module.image("g")
+		rikky_module.image("w",image_id)
+		buffer=rikky_module.getinfo("buf")
+		obj.copybuffer("obj","tmp")
+		tmp_id=rikky_module.image("g")
+		rikky_module.image("w",tmp_id)
+		--現在の合成モードを一時保存して、後で元に戻せるようにする
+		bblend=rikky_module.getinfo("blend")
+		if bblend==20 then
+			bblend="alpha_add"
+		elseif bblend==21 then
+			bblend="alpha_max"
+		elseif bblend==22 then
+			bblend="alpha_sub"
+		elseif bblend==25 then
+			bblend="alpha_add2"
+		end
+	else
+		obj.copybuffer("cache:GRAEDI","obj")
+		obj.copybuffer("cache:GRAEDI_tmp","tmp")
+	end
+	--いったんイメージを呼び出すので、元のイメージの位置情報などが失われてしまうのでそれを保持しておく
+	local info={obj.ox,obj.oy,obj.oz,obj.cx,obj.cy,obj.cz,obj.rx,obj.ry,obj.rz,obj.zoom,obj.alpha,obj,aspect}
+	--仮想バッファサイズは内包する四角形
+	obj.setoption("drawtarget","tempbuffer",W,H)
+	--複数描画するのでalpha_addで隙間を埋める
+	obj.setoption("blend","alpha_add")
+	obj.load("figure","四角形",0,acc)
+	obj.effect("クリッピング","下",_acc)
+	--クリッピングでずれるので直す
+	obj.cy=0
+	--カスタムオブジェクトで設定したグラデーションを使う
+	--要は100×1のテトリスの長い棒のような画像イメージに色を付ける
+	--縦はobj.drawpolyで補間するので問題ないです
+	local p1,p2,p3
+	for i=1,#GRADATION_ABC[ID].pos-1 do
+		p2=GRADATION_ABC[ID].pos[i]
+		p1=GRADATION_ABC[ID].pos[i+1]
+		p3=(p1-p2)/acc
+		for x=0,_acc do
+			obj.putpixel(x,0,GRADATION_ABC[ID].col(x*p3+p2))
+		end
+		x0=-hw+tw*p2*.01
+		x1=-hw+tw*p1*.01
+		obj.drawpoly(x0,-hH,0,x1,-hH,0,x1,hH,0,x0,hH,0)
+	end
+	--両端固定でない場合は、同じイメージを等間隔に並べるだけ
+	if(GRADATION_ABC[ID].fix==0)then
+		obj.copybuffer("obj","tmp")
+		x0=hw
+		x1=tw
+		while(x0<hW)do
+			obj.draw(x1)
+			obj.draw(-x1)
+			x0=x0+tw
+			x1=x1+tw
+		end
+	else
+		x0=hw
+		x1=tw
+		local k=-100
+		--両端固定は面倒だけれど、ひとつひとつグラデーションを作っていく	
+		while(x0<hW)do
+			for i=1,#GRADATION_ABC[ID].pos-1 do
+				p2=GRADATION_ABC[ID].pos[i]
+				p1=GRADATION_ABC[ID].pos[i+1]
+				p3=(p1-p2)/acc
+				for x=0,_acc do
+					obj.putpixel(x,0,GRADATION_ABC[ID].col(x*p3+p2+k))
+				end
+				y0=-hw+tw*p2*.01-x1
+				y1=-hw+tw*p1*.01-x1
+				obj.drawpoly(y0,-hH,0,y1,-hH,0,y1,hH,0,y0,hH,0)
+			end
+			for i=1,#GRADATION_ABC[ID].pos-1 do
+				p2=GRADATION_ABC[ID].pos[i]
+				p1=GRADATION_ABC[ID].pos[i+1]
+				p3=(p1-p2)/acc
+				for x=0,_acc do
+					obj.putpixel(x,0,GRADATION_ABC[ID].col(x*p3+p2-k))
+				end
+				y0=-hw+tw*p2*.01+x1
+				y1=-hw+tw*p1*.01+x1
+				obj.drawpoly(y0,-hH,0,y1,-hH,0,y1,hH,0,y0,hH,0)
+			end
+			x0=x0+tw
+			x1=x1+tw
+			k=k-100
+		end
+	end
+	obj.copybuffer("obj","tmp")
+	if check==1 then
+		obj.effect("ローテーション","90度回転",-1)
+		obj.effect("極座標変換")
+	end
+	obj.setoption("drawtarget","tempbuffer",w,h)
+	obj.draw(0,0,0,1,1,0,0,degree)
+	--rikky_moduleの有無で処理が少し変わってくる
+	if image_id then
+		--元画像を呼び出す
+		rikky_module.image("r",image_id)
+		obj.effect("反転","透明度反転",1)
+		obj.setoption("blend","alpha_sub")
+		--ここまでの作業でグラデーションのイメージを元画像でくり抜くことができる
+		obj.draw()
+		obj.copybuffer("obj","tmp")
+		--imageの空いているIDを取得して、書き込む
+		local image_id2=rikky_module.image("g")
+		rikky_module.image("w",image_id2)
+		obj.setoption("drawtarget","tempbuffer",w,h)
+		obj.setoption("blend",0)
+		rikky_module.image("r",image_id)
+		obj.draw()
+		rikky_module.image("r",image_id2)
+		if blend~=0 then
+			if blend_core_r then
+				blend_core_r.draw(blend)
+			else
+				obj.setoption("blend",blend)
+				obj.draw()
+			end
+		else
+			obj.draw()
+		end
+		rikky_module.image("c",image_id2)
+		obj.copybuffer("obj","tmp")
+		rikky_module.image("w",image_id)
+		rikky_module.image("r",tmp_id)
+		obj.copybuffer("tmp","obj")
+		rikky_module.image("r",image_id)
+		--メモリを開放する
+		rikky_module.image("c",image_id)
+		rikky_module.image("c",tmp_id)
+		if buffer=="frm" then
+			obj.setoption("drawtarget","framebuffer")
+		else
+			obj.setoption("drawtarget","tempbuffer")
+		end
+	else
+		obj.copybuffer("obj","cache:GRAEDI")
+		obj.effect("反転","透明度反転",1)
+		obj.setoption("blend","alpha_sub")
+		obj.draw()
+		obj.copybuffer("cache:GRAEDI_buf","tmp")
+		obj.setoption("drawtarget","tempbuffer",w,h)
+		obj.setoption("blend",0)
+		obj.copybuffer("obj","cache:GRAEDI")
+		obj.draw()
+		obj.copybuffer("obj","cache:GRAEDI_buf")
+		if blend~=0 then
+			if blend_core_r then
+				blend_core_r.draw(blend)
+			else
+				obj.setoption("blend",blend)
+				obj.draw()
+			end
+		else
+			obj.draw()
+		end
+		--obj.copybufferはメモリの解放ができないので、AviUtlを使い続けるとゴミがたまり続けてあまりよろしくない
+		obj.copybuffer("obj","tmp")
+		obj.copybuffer("tmp","cache:GRAEDI_tmp")
+		if buffer=="frm" then
+			--描画先をもとに戻して、位置情報もともに戻す
+			obj.setoption("drawtarget","framebuffer")
+		else
+			obj.setoption("drawtarget","tempbuffer")
+		end
+	end
+	obj.setoption("blend",bblend)
+	obj.ox=info[1]
+	obj.oy=info[2]
+	obj.oz=info[3]
+	obj.cx=info[4]
+	obj.cy=info[5]
+	obj.cz=info[6]
+	obj.rx=info[7]
+	obj.ry=info[8]
+	obj.rz=info[9]
+	obj.zoom=info[10]
+	obj.alpha=info[11]
+	obj.aspect=info[12]
+end

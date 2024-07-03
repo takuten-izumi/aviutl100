@@ -1,0 +1,11 @@
+--param:2
+local index,ratio = math.modf(obj.getpoint("index"))
+local st = obj.getpoint(index);
+local ed = obj.getpoint(index+1);
+local m = obj.getpoint("param");
+local mpi = (m+1)*math.pi;
+local k = 0.1/math.abs(st-ed+0.001);
+local D = k^ratio;
+local C = math.cos(mpi*ratio);
+local f = (st-ed)*D*C + ed;
+return f;

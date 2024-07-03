@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=0.00
+track1=0.00
+track2=0.00
+track3=0.00
+check0=0
+type=0
+filter=0
+name=個別微調整@particle_ri_ver3
+param=local bv=0;local bac=0;local bro={0,0,0};local bal={0,0};local bzo={0,0};local bgv={0,0,0};local bfr=0;local bju=0;local biwn=0;local bfa={0,0};local bfc={0,0,0,0};

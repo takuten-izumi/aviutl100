@@ -1,0 +1,5 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objtime,objframe,objtotaltime,objtotalframe,objindex)
+obj.rz = obj.rz+math.sin((objtime*objtrack0+objindex*objtrack2/50)*math.pi)*objtrack1
+
+
+end

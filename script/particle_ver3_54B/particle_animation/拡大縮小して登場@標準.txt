@@ -1,0 +1,18 @@
+function particle_anm(objtrack0,objtrack1,objcheck0,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack0 == 0 ) then
+	return
+elseif( objtrack0 < 0 ) then
+	t = (objtrack0-objtime+objtotaltime)/objtrack0
+else
+	t = (objtrack0-objtime)/objtrack0
+end
+if( t > 0 ) then
+	obj.alpha = math.cos(t*math.pi/2)
+	if( objcheck0 ) then
+		t = t*t
+	end
+	obj.zoom = obj.zoom*( 1 + (objtrack1-100)*t/100 )
+end
+
+
+end

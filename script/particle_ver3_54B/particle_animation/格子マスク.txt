@@ -1,0 +1,102 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objtrack3,objcheck0,posi,che,ran,link,objtime,objframe,objtotaltime,objtotalframe,objindex)
+local pro,deg1,deg2,w,h,L,size,yo,Lo
+if objcheck0 then
+	pro=objtrack0/100
+else
+	pro=1-objtrack0/100
+end
+size=objtrack1
+deg1=objtrack2
+if(link==0) then
+	deg2=objtrack3
+else
+	deg2=objtrack3+deg1
+end
+w,h=obj.getpixel()
+L=(w^2+h^2)^0.5
+obj.copybuffer("cache:K1","obj")
+yo=math.ceil(L/size)
+if(L%yo~=0) then
+	Lo=yo*size/2
+else
+	Lo=L/2
+end
+if(posi[1]>Lo/2) then
+	posi[1]=Lo/2
+elseif(posi[1]<-Lo/2) then
+	posi[1]=-Lo/2
+end
+if(posi[2]>Lo/2) then
+	posi[2]=Lo/2
+elseif(posi[2]<-Lo/2) then
+	posi[2]=-Lo/2
+end
+obj.setoption("dst","tmp",2*Lo,2*Lo)
+obj.load("figure","ŽlŠpŒ`")
+if(che==0) then
+	for i=0,yo do
+		local x=-Lo+size*(i-1)+math.ceil(size/2)
+		local v1=x-math.ceil(size/2*pro)
+		local v2=x+math.ceil(size/2*pro)
+		local u1=-Lo
+		local u2=Lo
+		obj.drawpoly(v1,u1,0,v2,u1,0,v2,u2,0,v1,u2,0)
+	end
+	obj.load("tempbuffer")
+	obj.copybuffer("cache:K2","obj")
+else
+	local bun={}
+	bun[1]={}
+	bun[2]={}
+	bun[1][1]=-Lo
+	bun[2][1]=-Lo
+	bun[1][yo+1]=Lo
+	bun[2][yo+1]=Lo
+	for i=1,2 do
+	for j=2,yo do
+		bun[i][j]=-Lo+2*Lo/yo*(j-1)+obj.rand(-5,5,obj.rand(0,9,3*j+ran,yo)*i+obj.rand(0,7,11*i+yo,ran)*j+yo,ran)/10*2*Lo/yo
+	end
+	end
+	for i=1,2 do
+	for j=1,yo do
+		local x=(bun[i][j]+bun[i][j+1])/2
+		local ha=bun[i][j+1]-bun[i][j]
+		local v1=x-math.ceil(ha/2*pro)
+		local v2=x+math.ceil(ha/2*pro)
+		local u1=-Lo
+		local u2=Lo
+		obj.drawpoly(v1,u1,0,v2,u1,0,v2,u2,0,v1,u2,0)
+	end
+	obj.load("tempbuffer")
+	if(i==1) then
+		obj.copybuffer("cache:K2","obj")
+		obj.setoption("dst","tmp",2*Lo,2*Lo)
+		obj.load("figure","ŽlŠpŒ`")
+	else
+		obj.copybuffer("cache:K3","obj")
+	end
+	end
+end
+obj.setoption("dst","tmp",w,h)
+obj.copybuffer("obj","cache:K1")
+obj.draw()
+obj.load("figure","ŽlŠpŒ`")
+obj.copybuffer("obj","cache:K2")
+obj.setoption("blend","alpha_sub")
+obj.effect("”½“]","“§–¾“x”½“]",1)
+obj.draw(posi[1],0,0,1,1,0,0,deg1)
+obj.load("figure","ŽlŠpŒ`")
+if(che==0) then
+	obj.copybuffer("obj","cache:K2")
+else
+	obj.copybuffer("obj","cache:K3")
+end
+obj.setoption("blend","alpha_sub")
+obj.effect("”½“]","“§–¾“x”½“]",1)
+obj.draw(0,posi[2],0,1,1,0,0,deg2)
+obj.setoption("blend",0)
+obj.load("tempbuffer")
+if objcheck0 then
+	obj.effect("”½“]","“§–¾“x”½“]",1)
+end
+end

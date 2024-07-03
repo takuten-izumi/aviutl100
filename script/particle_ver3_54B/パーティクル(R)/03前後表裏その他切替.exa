@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=0.00
+track1=0.00
+track2=0.00
+track3=0.00
+check0=0
+type=0
+filter=0
+name=前後表裏その他切替@particle_ri_ver3
+param=local ref=0;local rep=0;local prog=0;local game=0;

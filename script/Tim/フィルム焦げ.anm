@@ -1,0 +1,52 @@
+--track0:Ä‚¯,0,200,30
+--track1:—ÖŠsÎŞ¶¼,0,100,35
+--track2:”RÄ”¼Œa,0,5000,50
+--track3:—”,0,10000
+
+--dialog:”­‰Î“_W’†,kei=50;”RÄF/col,col=0x000000;”RÄ‚Ú‚©‚µ(%),fibl=5;ˆÊ’uƒYƒŒ(%),porn=5;•£”­Œõ,lst=300;•£”­ŒõŠgU(%),lsig=7.5;
+--check0:•£”­Œõ,0;
+
+  local burn=obj.track0*0.01
+  local blur=obj.track1*0.01
+  local fiR=obj.track2*0.01
+  local seed=obj.track3
+  kei=kei*0.001
+  porn=porn*0.01
+  fibl=fibl*0.01
+  lsig=lsig*0.01
+
+  local w,h = obj.getpixel()
+  obj.setoption("drawtarget", "tempbuffer", w , h )
+  obj.draw()
+
+  dw=math.max(w,h)
+  dr=fiR*dw
+  dd=dw*porn
+
+  obj.load("figure","‰~",0xffffff,100)
+  obj.effect("‚Ú‚©‚µ","”ÍˆÍ",100*blur)
+
+  for i=-5,5 do
+  for j=-5,5 do
+    size=( burn+obj.rand(-500,0,i,j+seed)*0.001+0.5*math.exp(-kei*(i*i+j*j))-0.5 )*dr
+    if size<0 then size=0 end
+    obj.setoption("blend","alpha_sub")
+    dx=obj.rand(-dd,dd,i,j+1000+seed)
+    dy=obj.rand(-dd,dd,i,j+2000+seed)
+    obj.draw(i*dw*0.1+dx,j*dw*0.1+dy,0,size*0.01)
+  end
+  end
+
+  obj.load("tempbuffer")
+  obj.setoption("blend",0)
+  obj.setoption("drawtarget", "tempbuffer", w , h )
+  obj.effect("‰æ‚è","ƒTƒCƒY",1,"‚Ú‚©‚µ",fibl*dw,"color",col)
+  obj.draw()
+  obj.load("tempbuffer")
+
+  if obj.check0 then
+    obj.setoption("drawtarget", "tempbuffer", w , h )
+    obj.effect("ƒ‰ƒCƒg","‹­‚³",lst,"ŠgU",dw*lsig,"‹tŒõ",1)
+    obj.draw()
+   obj.load("tempbuffer")
+  end 

@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=1.00
+track1=1.00
+track2=1.00
+track3=3.00
+check0=100
+type=0
+filter=0
+name=跳ね返り@particle_ri_ver3
+param=xrange={-640,640};yrange={-360,360};zrange={-500,500};ex={0.9,0.9,0.9};pos={0,0,0};thph={0,0};radi=200;er=0.9;irreg=0;prob=30;inside=1;retime=0;reab=0;retype={4,4,4,3};area56=0;reblink={0,0,0,0,0,0,0,0,0,0,0};

@@ -1,0 +1,201 @@
+このrikky_memory.aufのバージョンは0.6aです
+!!!!!!!!!!!!!!!
+対応しているAviUtlのバージョンは0.99i6から1.10までです
+対応している拡張編集のバージョンは0.89jから0.92までです
+!!!!!!!!!!!!!!!
+
+
+rikky_memory.aufは拙作のプラグインやrikky_module.dllなどで必要になるものです
+aviutl.exeかexedit.aufと同じ階層においてください
+
+rikky_memory.aufには
+RikkyBackupRegister関数
+RikkyExitRegister関数
+RikkySaveRegister関数
+RikkyLoadRegister関数
+が用意してあります
+rikky_memory.aufをリンクすれば使えるようになります
+RikkyBackupRegister関数はプラグイン用
+RikkyExitRegister関数、RikkySaveRegister関数、RikkyLoadRegister関数はDLL用
+
+RikkyBackupRegister関数
+	この関数を使うと、プロジェクトファイルに保存するプラグインの保存データをバックアップファイルに保存することができるようになります
+	__declspec(dllimport) BOOL RikkyBackupRegister(FILTER *fp);
+	を宣言します
+	func_init関数内でRikkyBackupRegister(fp)を実行します
+	戻り値がTRUEならば、正しく登録されたことを意味します
+	例
+	BOOL func_init(FILTER *fp)
+	{
+		//何かしらの処理
+		RikkyBackupRegister(fp);
+		return TRUE;
+	}
+	後はrikky_memoryが実行します
+
+RikkyExitRegister関数
+	この関数を使うと、aviutl.exeを終了するときに設定した関数を実行することができます
+	pluginには終了時に実行できる関数がAviUtl側からあらかじめ用意してあり、これはDLL用の関数です
+	__declspec(dllimport) BOOL RikkyExitRegister(void *exit_function, void *param);
+	を宣言します
+	スクリプトなどで使う関数のどこかで
+	RikkyExitRegisterを実行すれば登録されます
+	登録する関数はvoid**を引数にする関数にしてください
+	TRUEなら成功、FALSEなら失敗です
+	第1引数は実行したい関数
+	第2引数は渡したい変数などのポインタ、なければNULL
+	例
+	PONIT p;
+	void func(void **param);
+	BOOL isfirst = 1;
+	static int aviutl_no_kansu(lua_State *L)
+	{
+		if(isfirst)
+		{
+			RikkyExitRegister(func, &p);
+			isfirst = 0;
+		}
+		//渡した関数が実行するタイミング的に、渡すアドレスはグローバル変数の方が適しています
+		p.x = 10;
+		p.y = 20;
+	}
+	void func(void **param)
+	{
+		POINT *pt = (POINT *)param[0];
+		//引数の[0]が登録時に渡したポインタ
+		//引数の[1]はEXFUNC *exfuncです
+		//何かしらの処理
+		//ちなみにpt->xは10、pt->yは20の値を示します
+	}
+
+RikkySaveRegister関数
+RikkyLoadRegister関数
+	これらの関数を使うと、プロジェクトを保存、読み込み時に変数をプロジェクトファイルに置く、取り出すなどできます
+	pluginには保存時、読み込み時に実行できる関数がAviUtl側からあらかじめ用意してあり、これはDLL用の関数です
+	__declspec(dllimport) BOOL RikkySaveRegister(char *register_name, void *save_function, void *param);
+	RikkySaveRegister関数は登録に成功すればTRUEを返し、失敗すればFALSEを返します
+	第1引数は登録名で、誰とも被らないようにします、また同一DLL内で別の名前なら別々にデータを保存し、同一名ならどれかで登録されます
+	第2引数は保存時に実行する関数です、引数や戻り値にルールがあります、下記参照
+	第3引数は渡したい変数のアドレスです、特に用がない場合はNULLを指定してください
+	__declspec(dllimport) BOOL RikkyLoadRegister(char *register_name, void *load_function, void *param0, void *reload_function, void *param1);
+	RikkyLoadRegister関数はプロジェクトファイルにデータがあれば、一度だけ実行されます
+	第1引数は登録名で、RikkySaveRegisterで登録した名前と同じにしてください
+	第2引数は読み込み時に実行する関数です、引数や戻り値にルールがあります、下記参照
+	第3引数は読み込み時に渡したい変数のアドレスです、特に用がない場合はNULLを指定してください
+	第4引数は再読込時に実行する関数です、不要の場合はNULLを指定してください、引数や戻り値にルールがあります、下記参照
+	第5引数は再読込時に渡したい変数のアドレスです、特に用がない場合はNULLを指定してください
+	ここでいう再読込とはF5を押したときではなく、新しくプロジェクトファイルを開いたときのことを意味します
+	aviutlのスクリプトで実際に使うdllの関数内で実行してください
+	RikkySaveRegisterに登録する関数は戻り値がBOOL型で引数がvoid*型とint*型とvoid*＊型の関数です
+	RikkyLoadRegisterに登録する1つ目の関数は戻り値がBOOL型で引数がvoid*型とint型とvoid**型の関数です
+	RikkyLoadRegisterに登録する2つ目の関数は戻り値がvoid型で引数がvoid**型の関数です
+	実行が成功したらTRUE、失敗したらFALSEを戻り値に設定してください
+	例
+	PONIT p;
+	BOOL save_func(void *data, int *size, void **param);
+	BOOL load_func(void *data, int size, void **param);
+	void reload_func(void **param);
+	BOOL isfirst = 1;
+	static int aviutl_no_kansu(lua_State *L)
+	{
+		int param0 = 10;
+		char *param1 = "test";
+		if(isfirst)
+		{
+			isfirst = 0;
+			RikkySaveRegister("rikky_new_module", save_func, &param0);
+			//保存するタイミングによっては関数内で宣言した変数は正しく受け渡されないので
+			//渡す際はグローバル変数を使うなどしてください
+			//基本的にparamはNULLが妥当です
+			RikkyLoadRegister("rikky_new_module", load_func, param1, reload_func, &isfirst);
+			//読み込みはその場で実行されるので、保存のときのような心配はいりません
+			//再読込の関数は保存同様、実行タイミングはいつになるか不明なのでグローバル変数を渡してください
+		}
+		p.x = 10;
+		p.y = 20;
+	}
+	BOOL save_func(void *data, int *size, void **param)
+	{
+		//aviutlの保存のルールとして2度関数は実行されます
+		//1度目は保存するデータのサイズを取得するため
+		//2度目はデータをdataに書き込むためです
+		//1度目と2度目の判別方法は引数のdataがNULLかどうかです
+		//この例の場合は*(int *)param[0]は10の値です※ただし例はローカル変数のアドレスを渡しているので実際どうなるかは不明です
+		if(data)
+		{
+			//1回目のサイズに合わてメモリを確保しているので
+			//1回目と同じ大きさのデータを引数に書き込んでください
+			//*sizeの値は1回目に代入した数値と同じになります
+			memcpy(data, &p, sizeof(POINT);
+		}
+		else
+		{
+			//必ず保存するサイズを返してください
+			*size = sizeof(POINT);
+		}
+		return TRUE;
+	}
+	BOOL load_func(void *data, int size, void **param)
+	{
+		//プロジェクトファイルにデータがあれば一度実行します
+		//dataは保存したデータ内容
+		//sizeはデータのサイズ、この例の場合はsizeof(POINT)の数値と同じです
+		//この例の場合はparam[0]は"test"の文字列です
+		memcpy(&p, data, size);
+		return TRUE;
+	}
+	void reload_func(void **param)
+	{
+		BOOL *isfirstp = (BOOL *)param[0];
+		*isfirstp = 1;
+		//変数isfistはグローバル変数なので、実際にはこのような手間をかける必要はなく
+		//isfirst = 1;
+		//とすれば、値は変更できます
+		//これはあくまでサンプルです
+	}
+	param[1]はEXFUNC *exfunc、param[2]はvoid *editpのポインタです
+	保存や読み出しについてはaviutlのSDK内のソースコードを見て参考にしてください
+	読み込みや再読込は保存データがないと実行されないのでRikkyLoadRegisterだけ実行しても意味がありません
+
+歴史
+
+2017 10 10 lua51.dllと同じ階層でなくても動くように改良
+	   バージョン0.2に変更
+
+2017 10 16 上書き保存するときに落ちることがあったので、それを修正
+	   バージョン0.2aに変更
+
+2017 11 18 上書き保存するときに落ちることがあったので、それを修正
+	   module用に内容を一部変更追加
+	   バージョン0.3に変更
+
+2018 02 03 lua51.dllと連携が取れず落ちることがあったので、それを修正
+	   バージョン0.3aに変更
+
+2018 05 31 rikky_module.dllバージョン1.3の機能拡張のために改良
+	   プラグインのデータを疑似的にバックアップできるようにした
+	   バージョン0.4に変更
+
+2018 06 16 取得メモリを一部変更
+	   プロジェクトオープン時に落ちる処理があったので変更
+	   バージョンを0.4aに変更
+
+2019 03 15 取得メモリを一部追加
+	   RikkySaveRegister関数、RikkyLoadRegister関数、RikkyExitRegister関数を追加して、dll側でもAviUtl終了時や保存時に任意の関数を実行できるようにした
+	   バージョンを0.5に変更
+
+2019 03 16 module側で定義していた関数をmemory側に移植
+	   バージョンを0.5aに変更
+
+2019 04 07 module側の仕様の変更に合わせて、こちらも一部修正
+	   バージョンを0.5bに変更
+
+2019 08 23 aviutl.exeの最新バージョン(1.10rc1)のアップに併せて、一部改良(動作は未確認)
+           AviUtlのソフトのバージョンを確認する内部の関数を変更
+	   バージョンを0.6に変更
+
+2019 09 13 aviutl.exeの最新バージョンアップ(1.10rc1→1.10rc2)に対応
+	   バージョンを0.6aに変更
+
+2020 01 13 aviutl.exeの最新バージョンアップ(1.10rc2→1.10)に対応
+	   バージョンを0.6bに変更

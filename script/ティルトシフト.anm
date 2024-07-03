@@ -1,0 +1,67 @@
+--track0:上下,-2048,2048,50,1
+--track1:焦点幅,0,2048,300,1
+--track2:上ぼかし,0,400,15,1
+--track3:下ぼかし,0,400,30,1
+--check0:色調補正,1
+--dialog:明るさ,local v0=90;コントラスト,local v1=130;色相,local v2=0;輝度,local v3=150;彩度,local v4=150;境界ぼかし係数,local kc=0.50;SEED,sd=100;
+------------------------------------set
+local t0 = math.floor(obj.track0)
+local t1 = math.floor(obj.track1)
+local t2 = math.floor(obj.track2)
+local t3 = math.floor(obj.track3)
+local sw,sh = obj.screen_w,obj.screen_h
+local ow,oh = obj.getpixel()
+local fs = sh / 24
+obj.setfont("",fs,3)
+------------------------------------
+obj.effect()
+if(obj.check0)then
+	obj.effect("色調補正","明るさ",v0,"ｺﾝﾄﾗｽﾄ",v1,"色相",v2,"輝度",v3,"彩度",v4)
+end
+obj.copybuffer("tmp","obj")
+
+local u0,v0,u1,v1,u2,v2,u3,v3,alp
+local x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3
+local dst0 = oh * 0.5 + t0
+local upboka=t2
+local dboka=t3
+
+u0,v0 = 0,0
+u1,v1 = ow,v0
+u2,v2 = u1,dst0
+u3,v3 = u0,v2
+alp = 1
+ 
+x0,y0,z0 = -ow*0.5,-oh*0.5,0
+x1,y1,z1 = ow*0.5,y0,0
+x2,y2,z2 = x1,-oh*0.5+dst0,0
+x3,y3,z3 = x0,y2,0
+obj.effect("ぼかし","範囲",upboka,"サイズ固定",1)
+obj.drawpoly(x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3,u0,v0,u1,v1,u2,v2,u3,v3,alp)
+
+
+obj.copybuffer("obj","tmp")
+u0,v0 = 0,dst0
+u1,v1 = ow,v0
+u2,v2 = u1,oh
+u3,v3 = u0,v2
+alp = 1
+ 
+x0,y0,z0 = -ow*0.5,-oh*0.5+dst0,0
+x1,y1,z1 = ow*0.5,y0,0
+x2,y2,z2 = x1,oh*0.5,0
+x3,y3,z3 = x0,y2,0
+obj.effect("ぼかし","範囲",dboka,"サイズ固定",1)
+obj.drawpoly(x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3,u0,v0,u1,v1,u2,v2,u3,v3,alp)
+
+obj.copybuffer("obj","tmp")
+local kboka = t1 * kc
+local cup = t0 + oh * 0.5 - t1 * 0.5
+local cdwn = oh - cup - t1
+obj.effect("クリッピング","上",cup,"下",cdwn)
+obj.effect("境界ぼかし","範囲",kboka,"透明度の境界をぼかす",1)
+obj.draw()
+
+
+
+--[[http://madeinpc.blog50.fc2.com/]]--

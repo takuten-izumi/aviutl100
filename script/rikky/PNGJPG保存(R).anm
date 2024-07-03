@@ -1,0 +1,62 @@
+--check0:保存,0
+--dialog:$ﾌｫﾙﾀﾞ1,dfr="";フォイル名,name="";連番保存/chk,sn=0;ゼロ詰桁,ze=3;
+if rikky_module==nil then
+	local CPATH = {}
+	local cpath = package.cpath .. ";"
+	local n
+	while(1)do
+		n = cpath:find(";")
+		if n then
+			CPATH[#CPATH + 1] = cpath:sub(1, n - 1)
+			cpath = cpath:sub(n + 1, #cpath)
+		else
+			break
+		end
+	end
+	if not CPATH[2]:find("script\\?.dll") then
+		CPATH[3]=CPATH[2]:sub(1, CPATH[2]:find("\\script\\")) .. "script\\?.dll"
+		package.cpath = package.cpath .. ";" .. CPATH[3]
+	end
+	for i=1,#CPATH do
+		local f=io.open(CPATH[i]:gsub("?", "rikky_module"),"rb")
+		if f then
+			require("rikky_module")
+			f:close()
+			break
+		end
+	end
+end
+if rikky_module then
+	rikky_module.fold(1)
+	if obj.check0 then
+		local L=#name
+		local ext=""
+		for i=L,1,-1 do
+			if name:byte(i)==46 then
+				ext=name:sub(i,L):lower()
+				name=name:sub(1,i-1)
+				break
+			end
+		end
+		L=#dfr
+		if L==0 then
+			dfr=rikky_module.getinfo("path")
+		else
+			if dfr:byte(L)~=92 then
+				dfr=dfr.."\\"
+			end
+		end
+		local path=dfr..name
+		if sn==1 then
+			path=path..string.format("%0"..ze.."d",obj.frame)
+		end
+		path=path..ext
+		if ext==".jpg" or ext==".jpeg" then
+			rikky_module.jpg(path)
+		elseif ext==".bmp" then
+			rikky_module.bmp(path)
+		else
+			rikky_module.png(path)
+		end
+	end
+end

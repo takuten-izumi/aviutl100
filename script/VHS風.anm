@@ -1,0 +1,23 @@
+--track0:色調,-50,50,40,0.01
+--track1:シャープ,0,100,90,0.01
+--track2:色ずれ,0,30,3,1
+--track3:ノイズ量,0,500,150,0.01
+--check0:ノイズ,0
+obj.effect("色調補正","ｺﾝﾄﾗｽﾄ",100-obj.track0,"彩度",100-obj.track0/2)
+obj.effect("シャープ","強さ",obj.track1,"範囲",15)
+obj.effect("ぼかし","範囲",1)
+obj.effect("色ずれ","ずれ幅",obj.track2,"角度",-90,"type",1)
+obj.effect()
+obj.draw()
+
+if (obj.check0==true) then
+obj.load("figure","背景",0xffffff)
+obj.zoom=2
+obj.setoption("blend",5)
+obj.effect("ノイズ","強さ",60,"変化速度",1,"type",3,"mode",1)
+obj.effect("方向ブラー","範囲",15,"角度",90)
+obj.effect("ルミナンスキー","基準輝度",3700-obj.track3,"type",0)
+obj.effect("シャープ","強さ",10,"範囲",2)
+obj.effect()
+obj.draw()
+end

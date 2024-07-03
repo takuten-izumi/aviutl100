@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=0.00
+track1=1.00
+track2=1.00
+track3=1.00
+check0=0
+type=0
+filter=0
+name=風@particle_ri_ver3
+param=pos={-200,0,200,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0,180,0};happ=nil;wdis=100;are=nil;cin=0;

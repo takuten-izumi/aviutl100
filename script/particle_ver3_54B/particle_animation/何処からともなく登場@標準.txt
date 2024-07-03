@@ -1,0 +1,24 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack0 == 0 ) then
+	return
+elseif( objtrack0 < 0 ) then
+	t = (objtrack0-objtime+objtotaltime)/objtrack0
+else
+	t = (objtrack0-objtime)/objtrack0
+end
+if( t > 0 ) then
+	obj.ox = obj.ox+rand(-obj.w*objtrack2/2,obj.w*objtrack2/2,objindex+100)
+	obj.oy = obj.oy+rand(-obj.h*objtrack2/2,obj.h*objtrack2/2,objindex+200)
+	obj.alpha = rand(0,100,objindex+300)/100
+	if( rand(0,1,objindex+400) == 0 ) then
+		obj.aspect = -(0.5+rand(0,40,objindex+500)/100)
+		obj.effect("‚Ú‚©‚µ","c‰¡”ä",90,"”ÍˆÍ",objtrack1*obj.w)
+	else
+		obj.aspect = 0.5+rand(0,40,objindex+500)/100
+		obj.effect("‚Ú‚©‚µ","c‰¡”ä",-90,"”ÍˆÍ",objtrack1*obj.h)
+	end
+	obj.effect("F’²•â³","–¾‚é‚³",rand(100,200,objindex+600))
+end
+
+
+end

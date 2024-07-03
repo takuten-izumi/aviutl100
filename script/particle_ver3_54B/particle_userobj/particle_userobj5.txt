@@ -1,0 +1,221 @@
+function particle_obj(t,t0,life,pi,pj,seed,track1,track2,track3,v1,v2,v3,v4,v5,v6,v7,v8,col1,fig1,chk1)
+local type=function(v)
+local v=v
+local s=tostring(v)
+if s==v then return "string" end
+if s=="nil" then return "nil" end
+if s=="true" or s=="false" then return "boolean" end
+if string.find(s,"table:") then return "table" end
+if string.find(s,"function:") then return "function" end
+if string.find(s,"userdata:") then return "userdata" end
+return "number"
+end
+local track1=track1
+if type(track1)~="number" then track1=50 end
+if track1<0 then track1=0 end
+local track2=track2
+if type(track2)~="number" then track2=100 end
+if track2<=0 then track2=0.01 end
+local track3=track3
+if type(track3)~="number" then track3=50 end
+if track3<0 then track3=0 end
+local v1=v1
+if type(v1)~="number" then v1=0 end
+v1=v1*0.1
+local v2=v2
+if type(v2)~="number" then v2=3 end
+if v2<=0 then v2=0.01 end
+local v3=v3
+if type(v3)~="number" then v3=60 end
+local v4=v4
+local s=type(v4)
+local a1,a2,z1,z2,w,h
+if s=="number" then
+a1=1
+a2=v4*0.01
+elseif s=="table" then
+a1=v4[1]
+a2=v4[2]
+if type(a1)~="number" then
+a1=1
+else
+a1=a1*0.01
+end
+if type(a2)~="number" then
+a2=1
+else
+a2=a2*0.01
+end
+else
+a1=1
+a2=1
+end
+a2=(a2-a1)/v2
+local v5=v5
+s=type(v5)
+if s=="number" then
+z1=1
+z2=v5*0.01
+elseif s=="table" then
+z1=v5[1]
+z2=v5[2]
+if type(z1)~="number" then
+z1=1
+else
+z1=z1*0.01
+end
+if type(z2)~="number" then
+z2=1
+else
+z2=z2*0.01
+end
+else
+z1=1
+z2=1
+end
+z2=(z2-z1)/v2
+local v6=v6
+s=type(v6)
+if s=="number" then
+if v6<0 then v6=0 end
+w=v6
+h=v6
+elseif s=="table" then
+w=v6[1]
+h=v6[2]
+if type(w)~="number" then
+w=300
+else
+if w<0 then w=0 end
+end
+if type(h)~="number" then
+h=300
+else
+if h<0 then h=0 end
+end
+else
+w=300
+h=300
+end
+local v7=v7
+if type(v7)~="number" then v7=0 end
+if v7<0 then v7=0 end
+local v8=v8
+local brflag,br0,br1
+if type(v8)=="number" then
+brflag=1
+br0=v8
+elseif type(v8)=="table" then
+brflag=2
+if v8[1]==nil then
+br0=0
+else
+br0=v8[1]
+end
+if v8[2]==nil then
+br1=0
+else
+br1=(v8[2]-br0)/v2
+end
+if br0==0 and br1==0 then brflag=0 end
+else
+brflag=0
+end
+local col1=col1
+if type(col1)~="number" then col1=0xffffff end
+local fig1=fig1
+if type(fig1)~="string" then fig1="四角形" end
+local chk1=chk1
+if type(chk1)~="number" then chk1=0 end
+if chk1~=1 then chk1=0 end
+obj.setoption("drawtarget","tempbuffer",w,h)
+obj.load("figure",fig1,col1,track3)
+if brflag==1 then
+obj.effect("ぼかし","範囲",br0)
+end
+local fre=10/track2
+local t1=t+v7
+local tt=life+v7
+local n=math.floor(tt/fre)
+local acflag=0
+local actime,acsp
+if v1<0 then
+acflag=1
+actime=-track1/v1
+acsp=(track1+v1*actime*0.5)*actime
+end
+for i=0,n do
+local ifre=fre*i
+local t2=t1-ifre
+if 0<=t2 and t2<=v2 then
+local d=obj.rand(0,1000,seed,pi*10+pj*100+i)*0.002*math.pi
+local x,y,r
+if acflag==1 then
+if actime<t2 then
+x=acsp*math.cos(d)
+y=acsp*math.sin(d)
+else
+local sp=track1+v1*t2*0.5
+x=sp*t2*math.cos(d)
+y=sp*t2*math.sin(d)
+end
+else
+local sp=track1+v1*t2*0.5
+x=sp*t2*math.cos(d)
+y=sp*t2*math.sin(d)
+end
+if chk1==0 then
+r=1
+else
+r=obj.rand(0,1,seed,pi*10+pj*100+i)
+if r==0 then r=-1 end
+end
+local z0=z1+z2*t2
+if z0<0 then z0=0 end
+local a0=a1+a2*t2
+if a0<0 then a0=0 elseif 1<a0 then a0=1 end
+if brflag==2 then
+obj.load("figure",fig1,col1,track3)
+obj.effect("ぼかし","範囲",br0+br1*t2)
+end
+obj.draw(x,y,0,z0,a0,0,0,r*v3*t2)
+end
+end
+obj.load("tempbuffer")
+end
+
+function particle_disp()
+obj.setfont("",30,1,0xffffff,0)
+obj.load("使用引数以下のようにしてください")
+obj.draw(0,-210)
+obj.load("{1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,0}")
+obj.draw(0,-180)
+obj.load("値1は出力速度です")
+obj.draw(0,-150)
+obj.load("値2は頻度です")
+obj.draw(0,-120)
+obj.load("値3は破片一つサイズです")
+obj.draw(0,-90)
+obj.load("設定1は加速度です")
+obj.draw(0,-60)
+obj.load("設定2は生存時間です")
+obj.draw(0,-30)
+obj.load("設定3は回転速度です")
+obj.draw(0,0)
+obj.load("設定4は透過率です")
+obj.draw(0,30)
+obj.load("設定5は拡大率です")
+obj.draw(0,60)
+obj.load("設定6は全体のサイズです")
+obj.draw(0,90)
+obj.load("設定7は開始時間です")
+obj.draw(0,120)
+obj.load("設定8はぼかしで、{始めの範囲の値、終わりの範囲の値}か数値で入力")
+obj.draw(0,150)
+obj.load("色1は破片の色です")
+obj.draw(0,180)
+obj.load("図形1は破片の形です")
+obj.draw(0,210)
+obj.load("チェックボックス1で回転速度に逆回転をありにします")
+obj.draw(0,240)
+end

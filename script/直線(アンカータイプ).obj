@@ -1,0 +1,39 @@
+--track0:ｱﾝｶｰ数,2,16,2,1
+--track1:進捗,0,200,100,0.01
+--dialog:座標,pos={};補間数,local hokan=500;ｻｲｽﾞ,local size=5;色/col,color=0xffffff;線の図形/fig,zukei="四角形";
+local tracker=obj.track0
+obj.setanchor("pos",tracker,"line")
+obj.load("figure",zukei,color,size)
+for i=0,tracker-1 do
+local x=pos[i*2+1]
+local y=pos[i*2+2]
+end
+
+for te=0,tracker-1 do
+for t=0,hokan-1 do
+if (pos[(te+1)+1]~=nil) then
+if(obj.track1<=100) then
+
+if ((hokan*(te+1)-t)/(hokan*(tracker-1))*100<obj.track1) then
+local line_x=(-pos[(te+1)*2+1]+pos[te*2+1])/hokan*t+pos[(te+1)*2+1]
+local line_y=(-pos[(te+1)*2+2]+pos[te*2+2])/hokan*t+pos[(te+1)*2+2]
+obj.effect()
+obj.draw(line_x,line_y)
+
+end
+else
+if ((hokan*(te+1)-t)/(hokan*(tracker-1))*100>=(obj.track1-100)) then
+local line_x=(-pos[(te+1)*2+1]+pos[te*2+1])/hokan*t+pos[(te+1)*2+1]
+local line_y=(-pos[(te+1)*2+2]+pos[te*2+2])/hokan*t+pos[(te+1)*2+2]
+obj.effect()
+obj.draw(line_x,line_y)
+
+end
+end
+end
+end
+end
+
+if (pos[0]==nil) then
+obj.alpha=0
+end

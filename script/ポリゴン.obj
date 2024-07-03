@@ -1,0 +1,85 @@
+--track0:高さ,0,1000,100,1
+--track1:速さ,0,1000,100,1
+--track2:x幅,1,100,10,1
+--track3:y幅,1,100,10,1
+--dialog:antialias/chk,antialias=0;色変化/chk,c1=0;色相変化1,w1=0;色相変化2,w2=0;明るさ変化1,w3=0;明るさ変化2,w4=0;色相基準1,w5=0;色相基準2,w6=0;明るさ基準1,w7=100;明るさ基準2,w8=0;色変化速度1,w9=50;色変化速度2,w10=100;ﾗﾝﾀﾞﾑ透明度/chk,w11=0;色/col,color=0xffffff;色変化ﾀｲﾐﾝｸﾞ反転/chk,t5=0;ｻｲｽﾞ,local kankaku=100;
+
+local t=0
+local t1=obj.track0
+local t2=obj.track1
+local x,y=0,0
+local kosuu_x=obj.track2+1
+local kosuu_y=obj.track3+1
+local list_x={}
+local list_y={}
+local list_z={}
+obj.copybuffer("tmp","obj")
+for q=0,kosuu_y-1 do
+for r=0,kosuu_x-1 do
+list_x[t]=x-(kosuu_x*kankaku/2-kankaku/2)
+list_y[t]=y-(kosuu_y*kankaku/2-kankaku/2)
+list_z[t]=math.sin(t2*math.pi/180*obj.time+q+r*obj.rand(0,200,q+r,0))*t1
+x=x+kankaku
+t=t+1
+end
+x=0
+y=y+kankaku
+end
+x,y=0,0
+if antialias==1 then
+obj.setoption("antialias",1)
+else
+obj.setoption("antialias",0)
+end
+for i=0,kosuu_x*kosuu_y-kosuu_x-1 do
+--r=obj.rand(0,255,i,0)
+--g=obj.rand(0,255,i,0)
+--b=obj.rand(0,255,i,0)
+
+
+if(i%kosuu_x==kosuu_x-1) then
+else
+--obj.load("tempbuffer")
+obj.load("figure","四角形",color,3)
+if w11==1 then
+obj.alpha=obj.rand(0,10,i,0)*0.1
+end
+if c1==1 then
+if t5==0 then
+obj.effect("色調補正","明るさ",math.abs(math.sin(w9*obj.time*math.pi/180+i)*w3)+w7)
+obj.effect("色調補正","色相",math.abs(math.sin(w9*obj.time*math.pi/180+i)*w1)+w5)
+else
+obj.effect("色調補正","明るさ",math.abs(math.sin(w10*obj.time*math.pi/180+i)*w4)+w8)
+obj.effect("色調補正","色相",math.abs(math.sin(w10*obj.time*math.pi/180+i)*w2)+w6)
+end
+end
+obj.drawpoly(
+list_x[i+0],list_y[i+0],list_z[i+0],
+list_x[i+1],list_y[i+1],list_z[i+1],
+list_x[i+kosuu_x+1],list_y[i+kosuu_x+1],list_z[i+kosuu_x+1],
+list_x[i+kosuu_x+1],list_y[i+kosuu_x+1],list_z[i+kosuu_x+1])
+
+--r=obj.rand(0,255,i+kosuu_x*kosuu_y,0)
+--g=obj.rand(0,255,i+kosuu_x*kosuu_y,0)
+--b=obj.rand(0,255,i+kosuu_x*kosuu_y,0)
+obj.load("figure","四角形",color,3)
+--obj.load("tempbuffer")
+if w11==1 then
+obj.alpha=obj.rand(0,10,i,0)*0.1
+end
+if c1==1 then
+if t5==0 then
+obj.effect("色調補正","明るさ",math.abs(math.sin(w10*obj.time*math.pi/180+i)*w4)+w8)
+obj.effect("色調補正","色相",math.abs(math.sin(w10*obj.time*math.pi/180+i)*w2)+w6)
+else
+obj.effect("色調補正","明るさ",math.abs(math.sin(w9*obj.time*math.pi/180+i)*w3)+w7)
+obj.effect("色調補正","色相",math.abs(math.sin(w9*obj.time*math.pi/180+i)*w1)+w5)
+end
+end
+obj.drawpoly(
+list_x[i+0],list_y[i+0],list_z[i+0],
+list_x[i+0],list_y[i+0],list_z[i+0],
+list_x[i+kosuu_x+1],list_y[i+kosuu_x+1],list_z[i+kosuu_x+1],
+list_x[i+kosuu_x],list_y[i+kosuu_x],list_z[i+kosuu_x])
+end
+end

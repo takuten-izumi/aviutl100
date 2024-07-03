@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=5.00
+track1=30.00
+track2=100.00
+track3=15.00
+check0=100
+type=0
+filter=0
+name=ﾕｰｻﾞｰｶｽﾀﾑｵﾌﾞｼﾞｪｸﾄ@particle_ri_ver3
+param=p_v_1=0;p_v_2=3;p_v_3=60;p_v_4={100,50};p_v_5={100,100};p_v_6={300,300};p_v_7=0;p_v_8={0,0};p_c_1=0xffffff;p_c_2=0xffffff;p_f_1="四角形";p_f_2="円";p_b_1=1;p_b_2=0;oncode={1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,0};disp=0;

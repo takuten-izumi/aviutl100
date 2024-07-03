@@ -1,0 +1,156 @@
+function particle_obj(t,t0,life,pi,pj,seed,track1,track2,track3,v1,v2,v3,v4,v5,v6,col1)
+--track1はフレアのサイズ
+--track2は光芒長さ
+--track3は水平光芒の長さ
+--v1は光芒の数
+--v2は光芒の強さ
+--v3は光芒変化速度
+--v4は点滅
+--v5は水平光芒の高さ
+--v6は水平光芒数
+--col1は光芒の色
+local type=function(v)
+local v=v
+local s=tostring(v)
+if s==v then return "string" end
+if s=="nil" then return "nil" end
+if s=="true" or s=="false" then return "boolean" end
+if string.find(s,"table:") then return "table" end
+if string.find(s,"function:") then return "function" end
+if string.find(s,"userdata:") then return "userdata" end
+return "number"
+end
+local track1=track1
+if type(track1)~="number" then track1=150 end
+if track1<0 then track1=0 end
+local track2=track2
+if type(track2)~="number" then track2=150 end
+if track2<0 then track2=0 end
+local track3=track3
+if type(track3)~="number" then track3=500 end
+if track3<0 then track3=0 end
+local v1=v1
+if type(v1)~="number" then v1=20 end
+local v2=v2
+if type(v2)~="number" then v2=0.5 end
+local v3=v3
+if type(v3)~="number" then v3=0.5 end
+local v4=v4
+if type(v4)~="number" then v4=0.1 end
+local v5=v5
+if type(v5)~="number" then v5=0.1 end
+local v6=v6
+if type(v6)~="number" then v6=1 end
+local col1=col1
+if type(col1)~="number" then col1=0x9090ff end
+local al=math.max(obj.getvalue("alpha")*1.5-0.5,0)
+local zm=obj.getvalue("zoom")*0.01
+local alpha=obj.rand(0,100,seed+pi+pj,math.floor(t*obj.framerate))*0.01+(1-v4)
+local k_num=math.floor(v1*obj.rand(50,100,seed+pi+pj,0)*0.01)
+local h_long=math.floor(track3*obj.rand(50,120,seed+pi+pj,3)*0.01)
+if alpha<0 then
+alpha=0
+elseif 1<alpha then
+alpha=1
+end
+local maxw=track1*6.4
+local maxh=track1*6.4
+maxw=math.max(maxw,track1*track2*0.016*al*zm)
+maxh=math.max(maxh,track1*track2*0.016*al*zm)
+maxw=math.max(maxw,2*h_long)
+obj.setoption("drawtarget","tempbuffer",maxw,maxh)
+local r=track1*0.2
+local a=1
+obj.load("figure","円",col1,r)
+obj.setoption("blend",4)
+obj.effect("ぼかし","範囲",r*0.4)
+r=r*al*zm
+for i=1,5 do
+obj.drawpoly(
+-r,-r,0,
+r,-r,0,
+r,r,0,
+-r,r,0,
+0,0,obj.w,0,obj.w,obj.h,0,obj.h,a)
+r=r*2
+a=a*0.5
+end
+if 0<k_num then
+r=track1*track2*0.02
+obj.load("figure","四角形",col1,r)
+obj.setoption("blend",1)
+obj.effect("ノイズ","type",2,"周期X",50,"周期Y",0,"しきい値",100-v1,"速度Y",-v3)
+obj.effect("境界ぼかし","範囲",r,"縦横比",-100)
+obj.effect("クリッピング","上",r*0.4)
+obj.effect("極座標変換")
+r=r*0.4*al*zm
+obj.drawpoly(
+-r,-r,0,
+r,-r,0,
+r,r,0,
+-r,r,0,
+0,0,obj.w,0,obj.w,obj.h,0,obj.h ,alpha*v1)
+end
+if 0<h_long then
+r=track1*v5*0.25*al
+obj.load("figure","円",col1,r)
+obj.setoption("blend",1)
+obj.effect("ぼかし","範囲",r/2.5)
+r=r*zm
+for j=1,v6 do
+a=alpha
+local xr,yr,xl,yl
+if v6==1 then
+xr=0
+yr=r
+xl=h_long
+yl=0
+else
+local s=math.sin(j*math.pi/num)
+local c=math.cos(j*math.pi/num)
+xr=c*r
+yr=s*r
+xl=-s*h_long
+yl=c*h_long
+end
+for i=1,3 do
+obj.drawpoly(
+-xr-xl,-yr-yl,0,
+xr-xl,yr-yl,0,
+xr+xl,yr+yl,0,
+-xr+xl,-yr+yl,0,
+0,0,obj.w,0,obj.w,obj.h,0,obj.h ,a)
+a=a/2
+xr=xr*2
+yr=yr*2
+end
+end
+end
+obj.load("tempbuffer")
+end
+
+function particle_disp()
+obj.setfont("",50,1,0xffffff,0)
+obj.load("使用引数の{1,1,1,1,1,1,1,1,1,0,0,1,0,0,0,0,0}としてください")
+obj.draw(0,-250)
+obj.load("トラック1はサイズです")
+obj.draw(0,-200)
+obj.load("トラック2は光芒の長さです")
+obj.draw(0,-150)
+obj.load("トラック3は水平光芒の長さです")
+obj.draw(0,-100)
+obj.load("設定値1は光芒の数です")
+obj.draw(0,-50)
+obj.load("設定値2は光芒の強さです")
+obj.draw(0,0)
+obj.load("設定値3は光芒変化速度です")
+obj.draw(0,50)
+obj.load("設定値4は点滅です")
+obj.draw(0,100)
+obj.load("設定値5は水平光芒の高さです")
+obj.draw(0,150)
+obj.load("設定値6は水平光芒の数です")
+obj.draw(0,200)
+obj.load("色1は光芒の色です")
+obj.draw(0,250)
+end

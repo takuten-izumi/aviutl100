@@ -1,0 +1,33 @@
+--track0:丸み,0,500,50,0.1
+--check0:出力時以外ピクセル処理を端折る,false
+	local maru = obj.track0
+	local chk = obj.check0
+	obj.effect("ぼかし","範囲",maru*0.2)
+
+	if chk == false or obj.getinfo("saving") == true then
+		local data, w, h = obj.getpixeldata()
+
+		for hc = 0, h-1 do
+			for wc = 0, w-1 do
+				local r, g, b, xa = obj.getpixel(wc, hc, "rgb")
+
+				if xa >= 140  then
+				xa = 255
+
+				--[[elseif xa < 160 and xa >= 180 then
+				xa = 150
+
+				elseif xa < 180 and xa >= 200 then
+				xa = 40]]
+
+				elseif xa < 150 then
+				xa = 0
+				end
+
+				obj.pixeloption("type", "rgb")
+				obj.putpixel(wc, hc, r, g, b, xa)
+			end
+		end
+
+		obj.effect("境界ぼかし","範囲",2,"透明度の境界をぼかす",1)
+	end

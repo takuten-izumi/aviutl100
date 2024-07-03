@@ -1,0 +1,69 @@
+@全方位ミラー１
+--track0:回転,-360,360,0
+--track1:境界,-2000,2000,0
+--track2:減衰１,0,100,0
+--track3:減衰２,0,900,0
+--check0:中心の変更,0
+--dialog:透明度,local al=0;隙間補正,local suki=0;
+local deg=-math.floor(obj.track0)
+local nanax1=-obj.track1*math.sin(math.rad(deg))
+local nanay1=obj.track1*math.cos(math.rad(deg))
+local x=(obj.track1+obj.track1)*math.sin(math.rad(-deg-obj.getvalue("rz")))
+local y=(obj.track1+obj.track1)*math.cos(math.rad(deg+obj.getvalue("rz")))
+local x2=0
+local y2=0
+if(suki<0) then
+suki=0
+elseif(suki>4) then
+suki=4
+end
+if(al>0) then
+al=(al+(suki+1)*100)/100
+end
+if obj.check0 then
+x2=x/2
+y2=y/2
+end
+local w,h=obj.getpixel()
+local L=(w^2+h^2)^0.5
+local nanax2=-L*(0.5-obj.track2/100)*math.sin(math.rad(deg))
+local nanay2=L*(0.5-obj.track2/100)*math.cos(math.rad(deg))
+obj.effect("斜めクリッピング","ぼかし",0,"角度",deg,"中心X",nanax1-1.5*math.sin(math.rad(deg)),"中心Y",nanay1+1.5*math.cos(math.rad(deg)))
+obj.draw(-x2*obj.getvalue("zoom")/100,-y2*obj.getvalue("zoom")/100,0,1,2+suki)
+obj.load("layer",obj.layer)
+obj.effect()
+obj.effect("斜めクリッピング","ぼかし",0,"角度",deg,"中心X",nanax1-0.5*math.sin(math.rad(deg)),"中心Y",nanay1+0.5*math.cos(math.rad(deg)))
+obj.effect("斜めクリッピング","ぼかし",obj.track3,"角度",180+deg,"中心X",-nanax2,"中心Y",-nanay2)
+obj.effect("反転","左右反転",1)
+obj.draw((x-x2)*obj.getvalue("zoom")/100,(y-y2)*obj.getvalue("zoom")/100,0,1,2+suki-al,0,0,deg*2+180)
+
+@全方位ミラー２
+--track0:回転,-360,360,0
+--track1:境界,-800,800,0
+--track2:減衰,0,500,0
+--track3:透明度,0,100,0
+--check0:中心の変更,0
+local hen=0
+if obj.check0 then
+hen=1
+end
+local w,h=obj.getpixel()
+local l=(w^2+h^2)^0.5
+local D=math.atan(h/w)
+local d=obj.track0
+if(d>90 and d<=180) then
+	d=180-d
+elseif(d>270 and d<=360) then
+	d=360-d
+elseif(-90<=d and d<0) then
+	d=-180-d
+elseif(-270<=d and d<-180) then
+	d=-360-d
+end
+local lw=l*math.abs(math.cos(D-math.rad(d)))
+local lh=l*math.abs(math.sin(D+math.rad(d)))
+obj.setoption("dst","tmp",lw,lh)
+obj.draw(0,0,0,1,1,0,0,obj.track0)
+obj.load("tempbuffer")
+obj.effect("ミラー","境目調整",obj.track1-(lh-h)/2-h/2,"減衰",obj.track2,"透明度",obj.track3,"中心の位置を変更",hen)
+obj.rz=obj.rz-obj.track0

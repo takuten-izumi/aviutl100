@@ -1,0 +1,86 @@
+--track0:水平角度,-3600,3600,0
+--track1:垂直角度,-3600,3600,0
+
+--カメラの情報を取得
+local camera=obj.getoption("camera_param")
+--カメラの位置から焦点までのベクトルとその長さを算出
+local ex=camera.tx-camera.x
+local ey=camera.ty-camera.y
+local ez=camera.tz-camera.z
+local dis=(ex*ex+ey*ey+ez*ez)^0.5
+--長さが0かそうでないかで分けて、規格化する
+--eベクトルは基本(0,0,1)とする
+if dis==0 then
+ex=0
+ey=0
+ez=1
+else
+ex=ex/dis
+ey=ey/dis
+ez=ez/dis
+end
+--カメラの上方を決めるベクトルの長さが0でないかを調べる
+--uベクトルは基本(0,-1,0)
+if camera.ux*camera.ux+camera.uy*camera.uy+camera.uz*camera.uz==0 then
+camera.ux=0
+camera.uy=-1
+camera.uz=0
+end
+--uxベクトルを外積で算出する
+local uxx=camera.uy*ez-camera.uz*ey
+local uxy=camera.uz*ex-camera.ux*ez
+local uxz=camera.ux*ey-camera.uy*ex
+local ur=(uxx*uxx+uxy*uxy+uxz*uxz)^0.5
+--uxベクトルは基本(-1,0,0)として、0だった場合に採用し、そうでない場合は規格化する
+if ur==0 then
+uxx=-1
+uxy=0
+uxz=0
+else
+uxx=uxx/ur
+uxy=uxy/ur
+uxz=uxz/ur
+end
+--uyベクトルを外積で算出するが、基本uベクトルと同じでなぜ必要なのかは忘れた
+local uyx=ey*uxz-ez*uxy
+local uyy=ez*uxx-ex*uxz
+local uyz=ex*uxy-ey*uxx
+ur=(uyx*uyx+uyy*uyy+uyz*uyz)^0.5
+--uyベクトルの規格化、長さが0だった場合は(0,-1,0)とする
+if ur~=0 then
+uyx=uyx/ur
+uyy=uyy/ur
+uyz=uyz/ur
+else
+uyx=0
+uyy=-1
+uyz=0
+end
+--それぞれのベクトルを軸に回転させる
+local rx=obj.track0*math.pi/180
+local scos=math.cos(rx)
+local ssin=math.sin(rx)
+local eyx=(uyx*uyx*(1-scos)+scos)*ex+(uyx*uyy*(1-scos)-uyz*ssin)*ey+(uyz*uyx*(1-scos)+uyy*ssin)*ez
+local eyy=(uyx*uyy*(1-scos)+uyz*ssin)*ex+(uyy*uyy*(1-scos)+scos)*ey+(uyy*uyz*(1-scos)-uyx*ssin)*ez
+local eyz=(uyz*uyx*(1-scos)-uyy*ssin)*ex+(uyy*uyz*(1-scos)+uyx*ssin)*ey+(uyz*uyz*(1-scos)+scos)*ez
+local nx=(uyx*uyx*(1-scos)+scos)*uxx+(uyx*uyy*(1-scos)-uyz*ssin)*uxy+(uyz*uyx*(1-scos)+uyy*ssin)*uxz
+local ny=(uyx*uyy*(1-scos)+uyz*ssin)*uxx+(uyy*uyy*(1-scos)+scos)*uxy+(uyy*uyz*(1-scos)-uyx*ssin)*uxz
+local nz=(uyz*uyx*(1-scos)-uyy*ssin)*uxx+(uyy*uyz*(1-scos)+uyx*ssin)*uxy+(uyz*uyz*(1-scos)+scos)*uxz
+local rz=obj.track1*math.pi/180
+local tcos=math.cos(rz)
+local tsin=math.sin(rz)
+local tx=(nx*nx*(1-tcos)+tcos)*eyx+(nx*ny*(1-tcos)-nz*tsin)*eyy+(nz*nx*(1-tcos)+ny*tsin)*eyz
+local ty=(nx*ny*(1-tcos)+nz*tsin)*eyx+(ny*ny*(1-tcos)+tcos)*eyy+(ny*nz*(1-tcos)-nx*tsin)*eyz
+local tz=(nz*nx*(1-tcos)-ny*tsin)*eyx+(ny*nz*(1-tcos)+nx*tsin)*eyy+(nz*nz*(1-tcos)+tcos)*eyz
+local ux=(nx*nx*(1-tcos)+tcos)*uyx+(nx*ny*(1-tcos)-nz*tsin)*uyy+(nz*nx*(1-tcos)+ny*tsin)*uyz
+local uy=(nx*ny*(1-tcos)+nz*tsin)*uyx+(ny*ny*(1-tcos)+tcos)*uyy+(ny*nz*(1-tcos)-nx*tsin)*uyz
+local uz=(nz*nx*(1-tcos)-ny*tsin)*uyx+(ny*nz*(1-tcos)+nx*tsin)*uyy+(nz*nz*(1-tcos)+tcos)*uyz
+--結果をカメラのテーブルに収めて、カメラ制御に反映させる
+--tベクトルをカメラの位置から元の長さだけ伸ばして、焦点の位置を確定させる
+camera.tx=tx*dis+camera.x
+camera.ty=ty*dis+camera.y
+camera.tz=tz*dis+camera.z
+camera.ux=ux
+camera.uy=uy
+camera.uz=uz
+obj.setoption("camera_param",camera)

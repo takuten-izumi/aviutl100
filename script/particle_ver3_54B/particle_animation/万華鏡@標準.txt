@@ -1,0 +1,127 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objtrack3,objcheck0,num,ln,size,mask,rsync,anti,objtime,objframe,objtotaltime,objtotalframe,objindex)
+x = objtrack0
+y = objtrack1
+l = objtrack2
+r = objtrack3*math.pi/180
+ln = math.floor(ln)
+if( ln < 0 ) then
+	ln = 0
+end
+if( ln > 50 ) then
+	ln = 50
+end
+num = math.floor(num)
+num = num-AND(num,1)
+if( num < 4 ) then
+	num = 4
+end
+if( num > 50 ) then
+	num = 50
+end
+if( size > 4000 ) then
+	size = 4000
+end
+
+-- 回転用に配列にいれる
+local u={}
+local v={}
+w,h = obj.getpixel()
+u[1] = x+w/2
+v[1] = y+h/2
+u[2] = x+w/2+math.sin(r+math.pi*5/6)*l
+v[2] = y+h/2-math.cos(r+math.pi*5/6)*l
+u[3] = x+w/2+math.sin(r+math.pi*7/6)*l
+v[3] = y+h/2-math.cos(r+math.pi*7/6)*l
+u[4] = u[1]
+v[4] = v[1]
+u[5] = u[2]
+v[5] = v[2]
+if( size > 0 ) then
+	l = size/(ln+1)/2
+end
+if( l <= 0 ) then
+	obj.alpha = 0
+	return
+end
+ll = l*math.sin(math.pi/num)*2
+
+if( obj.getoption("gui") ) then
+	if( objcheck0 ) then
+		pos = {}
+		pos[1] = u[1]-w/2
+		pos[2] = v[1]-h/2
+		pos[3] = u[2]-w/2
+		pos[4] = v[2]-h/2
+		pos[5] = u[3]-w/2
+		pos[6] = v[3]-h/2
+		obj.setanchor(pos,3,"loop")
+		return
+	end
+end
+
+-- 仮想バッファを作成
+h = math.ceil((ln+1)*l*math.cos(math.pi/num))*2
+if( AND(num,2) == 0 ) then
+	w = h
+else
+	w = math.ceil((ln+1)*l)*2
+end
+obj.setoption("drawtarget","tempbuffer",w,h)
+if( anti == 0 ) then
+	obj.setoption("antialias",0)
+else
+	obj.setoption("blend","alpha_add")
+end
+
+-- 角度毎に描画
+for ri=0,num-1 do
+	rr = ri*math.pi*2/num
+	dx0 =  math.sin(rr+math.pi+math.pi/num)*l
+	dy0 = -math.cos(rr+math.pi+math.pi/num)*l
+	dx1 =  math.sin(rr+math.pi/2)*ll
+	dy1 = -math.cos(rr+math.pi/2)*ll
+	for li=0,ln do
+		x0 = li*dx0
+		y0 = li*dy0
+		x1 = x0+dx0
+		y1 = y0+dy0
+		x2 = x1+dx1
+		y2 = y1+dy1
+		td = 1-SHIFT(AND(ri,1),1)
+		tr = li*td
+		for ci=0,li*2 do
+			p0 = ((tr+td*0)%3)+1
+			p1 = ((tr+td*1)%3)+1
+			p2 = ((tr+td*2)%3)+1
+			obj.drawpoly(x0,y0,0,x1,y1,0,x2,y2,0,x2,y2,0,u[p0],v[p0],u[p1],v[p1],u[p2],v[p2],u[p2],v[p2])
+			if( AND(ci,1)==0 ) then
+				x1 = x0+dx1
+				y1 = y0+dy1
+			else
+				x0 = x1
+				y0 = y1
+				x1 = x2
+				y1 = y2
+				x2 = x2+dx1
+				y2 = y2+dy1
+				tr = tr+td
+			end
+		end
+	end
+end
+
+if( anti == 0 ) then
+	obj.setoption("antialias",1)
+else
+	obj.setoption("blend",0)
+end
+obj.load("tempbuffer")
+if( mask ~= 0 ) then
+	obj.effect("マスク","サイズ",h,"type",1)
+end
+if( rsync ~= 0 ) then
+	obj.rz = obj.rz+r*180/math.pi
+end
+
+
+end

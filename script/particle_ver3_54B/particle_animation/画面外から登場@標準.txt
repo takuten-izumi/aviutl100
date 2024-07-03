@@ -1,0 +1,55 @@
+function particle_anm(objtrack0,objtrack1,objtrack2,objcheck0,objtime,objframe,objtotaltime,objtotalframe,objindex)
+if( objtrack0 == 0 ) then
+	return
+elseif( objtrack0 < 0 ) then
+	t = (objtrack0-objtime+objtotaltime)/objtrack0
+else
+	t = (objtrack0-objtime)/objtrack0
+end
+if( t > 0 ) then
+	r = objtrack1
+	if( objcheck0 ) then
+		r = ( r + rand(0,360,objindex,0) ) % 360
+	end
+	n = objtrack2
+	l = math.sqrt(obj.screen_w*obj.screen_w+obj.screen_h*obj.screen_h)
+	t = t*l
+	l = l/(math.abs(objtrack0)*75)
+	if( l > 100 ) then
+		l = 100
+	end
+	if( n < 2 ) then
+		obj.ox = obj.ox+math.sin(r*math.pi/180)*t
+		obj.oy = obj.oy-math.cos(r*math.pi/180)*t
+		if( l >= 1 ) then
+			obj.effect("方向ブラー","角度",r,"範囲",l)
+		end
+	else
+		ox = obj.ox; -- load()でパラメータが初期値になってしまうので…
+		oy = obj.oy
+		oz = obj.oz
+		if( l >= 1 ) then
+			obj.copybuffer("tmp","obj")
+		end
+		for i=1,n do
+			if( l >= 1 ) then
+				obj.load("tempbuffer")
+			end
+			obj.ox = ox+math.sin(r*math.pi/180)*t
+			obj.oy = oy-math.cos(r*math.pi/180)*t
+			obj.oz = oz
+			if( l >= 1 ) then
+				obj.effect("方向ブラー","角度",r,"範囲",l)
+			end
+			obj.draw()
+			if( objcheck0 ) then
+				r = ( r + rand(0,360,objindex,i) ) % 360
+			else
+				r = ( r + 360/n ) % 360
+			end
+		end
+	end
+end
+
+
+end

@@ -1,0 +1,11 @@
+[vo.0]
+_name=アニメーション効果
+track0=100.00
+track1=500.00
+track2=0.00
+track3=500.00
+check0=0
+type=0
+filter=0
+name=時間@particle_ri_ver3
+param=lod={0,0};dgs={500,500};loe={0,0};exs={500,500};rov={0,0,0};rvs={500,500,500};lal={100,100};als=500;loz={100,100};zos=500;loj=1;jus=500;lof=100;frs=500;loty={0,0,0,0,0,0,0,0,0,0,0,0,0};

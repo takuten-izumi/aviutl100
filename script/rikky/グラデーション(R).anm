@@ -1,0 +1,23 @@
+--[[
+gradation_effect_R関数はobj.effect("グラデーション")のように使うことができます
+といってもグラデーションの色や並びはカスタムオブジェクトの方で行うのでこの関数では
+専ら角度や合成モードぐらいです
+下を見れば関数の使い方はおおよそわかるかと思います
+"frm"ですが
+フレームバッファ上でグラデーションにする場合は"frm"で仮想バッファ上ならば"tmp"してください
+ただし、rikky_moduleを導入している場合は省略しても大丈夫です
+最後の0ですが
+直前で使用したobj.setoption("blend")のブレンドモードの数値または文字列を指定してください
+ただし、rikky_moduleを導入している場合は省略しても大丈夫です
+]]
+--track0:ID,1,200,1,1
+--track1:degree,-720,720,0
+--track2:length,0,2000,0
+--track3:blend,0,76,0,1
+--check0:circle,0
+if obj.check0 then
+obj.check0=1
+else
+obj.check0=0
+end
+gradation_effect_R(obj.track0,obj.track1,obj.track2,obj.track3,obj.check0,"frm",0)
